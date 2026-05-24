@@ -28,6 +28,7 @@ import {
   makeLocalMove,
 } from "../utils/gameEngine";
 import { getOrCreatePlayerToken } from "../utils/playerToken";
+import { getOpponentProfileLabel } from "../utils/opponent";
 import { getTurnMessage, getWinnerMessage } from "../utils/winner";
 import "./GamePage.css";
 
@@ -400,6 +401,11 @@ export function GamePage() {
         )
       : [];
 
+  const opponentLabel =
+    remoteGame.mode === "friend"
+      ? getOpponentProfileLabel(remoteGame, playerToken)
+      : null;
+
   const boardDisabled =
     !isPlaying ||
     actionLoading ||
@@ -419,6 +425,12 @@ export function GamePage() {
         symbol={statusSymbol}
         showLoader={showLoader}
       />
+
+      {opponentLabel && (
+        <p className="game-page__opponent">
+          Соперник: <span>{opponentLabel}</span>
+        </p>
+      )}
 
       {isWaitingFriend && remoteGame.invite_code && (
         <InviteBox inviteCode={remoteGame.invite_code} />

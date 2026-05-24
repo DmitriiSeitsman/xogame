@@ -54,6 +54,7 @@ npm run build
 1. `001_create_games.sql` — таблица `games`, индексы, trigger `updated_at`, базовая RLS policy
 2. `002_create_rpc_functions.sql` — RPC функции и helpers
 3. `003_realtime_and_rls_notes.md` — заметки по Realtime и безопасности
+4. `004_add_player_profiles.sql` — имена и возраст игроков (если БД создана до этого обновления)
 
 Выполните SQL в Supabase SQL Editor в указанном порядке.
 

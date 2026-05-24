@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AdSlot } from "../components/AdSlot/AdSlot";
 import { BoardSizeSelector } from "../components/BoardSizeSelector/BoardSizeSelector";
 import { ModeSelector } from "../components/ModeSelector/ModeSelector";
+import { PlayerProfileDialog } from "../components/PlayerProfileDialog/PlayerProfileDialog";
 import { Seo } from "../components/Seo/Seo";
 import {
   createFriendGame,
@@ -10,6 +11,11 @@ import {
 } from "../services/gameService";
 import { HOME_JSON_LD, SITE_URL } from "../constants/seo";
 import type { BoardSize, GameMode } from "../types/game";
+import {
+  loadPlayerProfile,
+  savePlayerProfile,
+  type PlayerProfile,
+} from "../utils/playerProfile";
 import { getOrCreatePlayerToken } from "../utils/playerToken";
 import "./HomePage.css";
 
@@ -20,6 +26,39 @@ export function HomePage() {
   const [inviteInput, setInviteInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [playerProfile, setPlayerProfile] = useState<PlayerProfile>(
+    loadPlayerProfile,
+  );
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [pendingJoinCode, setPendingJoinCode] = useState<string | null>(null);
+
+  const handleModeChange = (newMode: GameMode) => {
+    if (newMode === "friend") {
+      setProfileDialogOpen(true);
+      return;
+    }
+
+    setMode(newMode);
+  };
+
+  const handleProfileConfirm = (profile: PlayerProfile) => {
+    savePlayerProfile(profile);
+    setPlayerProfile(profile);
+    setProfileDialogOpen(false);
+
+    if (pendingJoinCode) {
+      navigate(`/join/${pendingJoinCode}`);
+      setPendingJoinCode(null);
+      return;
+    }
+
+    setMode("friend");
+  };
+
+  const handleProfileCancel = () => {
+    setProfileDialogOpen(false);
+    setPendingJoinCode(null);
+  };
 
   const handleStart = async () => {
     setError(null);
@@ -34,7 +73,17 @@ export function HomePage() {
       const playerToken = getOrCreatePlayerToken();
 
       if (mode === "friend") {
-        const game = await createFriendGame({ playerToken, boardSize });
+        if (!playerProfile.name.trim()) {
+          setProfileDialogOpen(true);
+          return;
+        }
+
+        const game = await createFriendGame({
+          playerToken,
+          boardSize,
+          playerName: playerProfile.name,
+          playerAge: playerProfile.age,
+        });
         navigate(`/game/${game.id}`);
         return;
       }
@@ -56,6 +105,13 @@ export function HomePage() {
     }
 
     setError(null);
+
+    if (!playerProfile.name.trim()) {
+      setPendingJoinCode(code);
+      setProfileDialogOpen(true);
+      return;
+    }
+
     navigate(`/join/${code}`);
   };
 
@@ -66,6 +122,13 @@ export function HomePage() {
         description="Играй в крестики-нолики онлайн бесплатно: с компьютером, другом по ссылке или случайным игроком. Поля 3×3, 4×4, 5×5 и 6×6. Без регистрации."
         canonical={`${SITE_URL}/`}
         jsonLd={HOME_JSON_LD as Record<string, unknown>}
+      />
+
+      <PlayerProfileDialog
+        open={profileDialogOpen}
+        initialProfile={playerProfile}
+        onConfirm={handleProfileConfirm}
+        onCancel={handleProfileCancel}
       />
 
       <AdSlot placement="home_top" />
@@ -80,7 +143,11 @@ export function HomePage() {
         </header>
 
         <section className="home-page__panel" aria-label="Настройки игры">
-          <ModeSelector value={mode} onChange={setMode} disabled={loading} />
+          <ModeSelector
+            value={mode}
+            onChange={handleModeChange}
+            disabled={loading}
+          />
           <BoardSizeSelector
             value={boardSize}
             onChange={setBoardSize}

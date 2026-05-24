@@ -11,6 +11,12 @@ function mapGame(row: Record<string, unknown>): Game {
     invite_code: (row.invite_code as string | null) ?? null,
     player_x_token: row.player_x_token as string,
     player_o_token: (row.player_o_token as string | null) ?? null,
+    player_x_name: (row.player_x_name as string | null) ?? null,
+    player_x_age:
+      row.player_x_age == null ? null : (row.player_x_age as number),
+    player_o_name: (row.player_o_name as string | null) ?? null,
+    player_o_age:
+      row.player_o_age == null ? null : (row.player_o_age as number),
     current_turn: row.current_turn as Game["current_turn"],
     board: row.board as Game["board"],
     winner: (row.winner as Game["winner"]) ?? null,
@@ -22,10 +28,14 @@ function mapGame(row: Record<string, unknown>): Game {
 export async function createFriendGame(params: {
   playerToken: string;
   boardSize: BoardSize;
+  playerName: string;
+  playerAge?: number | null;
 }): Promise<Game> {
   const { data, error } = await supabase.rpc("create_friend_game", {
     p_player_token: params.playerToken,
     p_board_size: params.boardSize,
+    p_player_name: params.playerName,
+    p_player_age: params.playerAge ?? null,
   });
 
   if (error) {
@@ -38,10 +48,14 @@ export async function createFriendGame(params: {
 export async function joinFriendGame(params: {
   playerToken: string;
   inviteCode: string;
+  playerName: string;
+  playerAge?: number | null;
 }): Promise<Game> {
   const { data, error } = await supabase.rpc("join_friend_game", {
     p_player_token: params.playerToken,
     p_invite_code: params.inviteCode.toUpperCase(),
+    p_player_name: params.playerName,
+    p_player_age: params.playerAge ?? null,
   });
 
   if (error) {

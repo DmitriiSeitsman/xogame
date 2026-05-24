@@ -21,6 +21,10 @@ export type Game = {
   invite_code: string | null;
   player_x_token: string;
   player_o_token: string | null;
+  player_x_name: string | null;
+  player_x_age: number | null;
+  player_o_name: string | null;
+  player_o_age: number | null;
   current_turn: PlayerSymbol;
   board: Cell[];
   winner: Winner;

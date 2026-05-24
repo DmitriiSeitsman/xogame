@@ -134,9 +134,51 @@ begin
 end;
 $$;
 
+create or replace function public.normalize_player_name(p_name text)
+returns text
+language plpgsql
+immutable
+as $$
+declare
+  v_name text;
+begin
+  v_name := nullif(trim(p_name), '');
+
+  if v_name is null then
+    return null;
+  end if;
+
+  if char_length(v_name) > 32 then
+    raise exception 'Player name is too long';
+  end if;
+
+  return v_name;
+end;
+$$;
+
+create or replace function public.normalize_player_age(p_age int)
+returns int
+language plpgsql
+immutable
+as $$
+begin
+  if p_age is null then
+    return null;
+  end if;
+
+  if p_age < 1 or p_age > 120 then
+    raise exception 'Invalid player age: %', p_age;
+  end if;
+
+  return p_age;
+end;
+$$;
+
 create or replace function public.create_friend_game(
   p_player_token text,
-  p_board_size int
+  p_board_size int,
+  p_player_name text default null,
+  p_player_age int default null
 )
 returns public.games
 language plpgsql
@@ -158,6 +200,8 @@ begin
     invite_code,
     player_x_token,
     player_o_token,
+    player_x_name,
+    player_x_age,
     current_turn,
     board
   )
@@ -169,6 +213,8 @@ begin
     public.generate_invite_code(),
     p_player_token,
     null,
+    public.normalize_player_name(p_player_name),
+    public.normalize_player_age(p_player_age),
     'X',
     public.create_empty_board(p_board_size)
   )
@@ -180,7 +226,9 @@ $$;
 
 create or replace function public.join_friend_game(
   p_player_token text,
-  p_invite_code text
+  p_invite_code text,
+  p_player_name text default null,
+  p_player_age int default null
 )
 returns public.games
 language plpgsql
@@ -216,6 +264,8 @@ begin
     update public.games
     set
       player_o_token = p_player_token,
+      player_o_name = public.normalize_player_name(p_player_name),
+      player_o_age = public.normalize_player_age(p_player_age),
       status = 'playing'
     where id = v_game.id
     returning * into v_game;
@@ -428,8 +478,8 @@ begin
 end;
 $$;
 
-grant execute on function public.create_friend_game(text, int) to anon, authenticated;
-grant execute on function public.join_friend_game(text, text) to anon, authenticated;
+grant execute on function public.create_friend_game(text, int, text, int) to anon, authenticated;
+grant execute on function public.join_friend_game(text, text, text, int) to anon, authenticated;
 grant execute on function public.find_or_create_random_game(text, int) to anon, authenticated;
 grant execute on function public.cancel_random_search(text, uuid) to anon, authenticated;
 grant execute on function public.make_move(text, uuid, int) to anon, authenticated;
