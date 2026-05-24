@@ -37,11 +37,16 @@ All moves go through `make_move` RPC.
 Flow:
 
 1. Player selects "Случайный игрок" and clicks Start.
-2. Frontend calls `find_or_create_random_game` RPC.
-3. If a compatible waiting game exists (same board size, different player), the caller becomes **O** and status becomes `playing`.
-4. Otherwise a new waiting game is created for the caller as **X**.
-5. The waiting player sees "Ищем случайного игрока..." and can cancel via `cancel_random_search`.
-6. When the second player joins, Realtime notifies both clients.
+2. Frontend asks for name and optional age (same profile dialog as friend mode).
+3. Frontend calls `join_random_matchmaking` RPC.
+4. The player is added to `matchmaking_queue` with a 45-second heartbeat window.
+5. If another active queue entry exists for the same board size, both players are matched into a `playing` game with profile names stored on the game row.
+6. Otherwise a `waiting` random game is created and the player sees "Ищем соперника…".
+7. While waiting, the client sends `heartbeat_random_matchmaking` every ~25 seconds to stay in queue and retry matching.
+8. Queue counts per board size are shown on the home page via `get_matchmaking_queue_counts`.
+9. Cancel or leaving the page calls `leave_random_matchmaking` (also exposed as `cancel_random_search`).
+
+SQL migration: `docs/database/005_matchmaking_queue.sql` (requires `004_add_player_profiles.sql` for name normalization helpers).
 
 ## Board sizes and win rules
 

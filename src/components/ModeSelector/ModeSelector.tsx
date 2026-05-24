@@ -1,11 +1,14 @@
-import type { GameMode } from "../../types/game";
+import type { BoardSize, GameMode } from "../../types/game";
 import "./ModeSelector.css";
 
 type ModeSelectorProps = {
   value: GameMode;
   onChange: (mode: GameMode) => void;
   disabled?: boolean;
+  queueCounts?: Record<BoardSize, number>;
 };
+
+const BOARD_SIZES: BoardSize[] = [3, 4, 5, 6];
 
 const MODES: {
   value: GameMode;
@@ -33,10 +36,23 @@ const MODES: {
   },
 ];
 
+function formatQueueCount(count: number): string {
+  if (count === 0) {
+    return "0";
+  }
+
+  if (count === 1) {
+    return "1 ищет";
+  }
+
+  return `${count} ищут`;
+}
+
 export function ModeSelector({
   value,
   onChange,
   disabled = false,
+  queueCounts,
 }: ModeSelectorProps) {
   return (
     <div className="mode-selector">
@@ -72,6 +88,23 @@ export function ModeSelector({
             <span className="mode-selector__text">
               <span className="mode-selector__name">{mode.label}</span>
               <span className="mode-selector__desc">{mode.description}</span>
+              {mode.value === "random" && queueCounts && (
+                <span
+                  className="mode-selector__queue"
+                  aria-label="Игроки в поиске соперника по размеру поля"
+                >
+                  {BOARD_SIZES.map((size) => (
+                    <span key={size} className="mode-selector__queue-item">
+                      <span className="mode-selector__queue-size">
+                        {size}×{size}
+                      </span>
+                      <span className="mode-selector__queue-count">
+                        {formatQueueCount(queueCounts[size])}
+                      </span>
+                    </span>
+                  ))}
+                </span>
+              )}
             </span>
           </button>
         ))}

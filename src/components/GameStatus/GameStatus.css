@@ -6,7 +6,7 @@
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-soft);
-  max-width: min(520px, 94vw);
+  max-width: min(var(--layout-content-max), 94vw);
   width: 100%;
 }
 

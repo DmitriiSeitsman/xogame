@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { GameBoard } from "../components/GameBoard/GameBoard";
 import { GameLayout } from "../components/GameLayout/GameLayout";
@@ -9,6 +9,8 @@ import { getComputerMove } from "../services/computerPlayerService";
 import {
   cancelRandomSearch,
   getGameById,
+  heartbeatRandomMatchmaking,
+  leaveRandomMatchmaking,
   makeMove,
   subscribeToGame,
 } from "../services/gameService";
@@ -50,6 +52,8 @@ function getPlayerSymbol(game: Game, playerToken: string): PlayerSymbol | null {
   return null;
 }
 
+const RANDOM_HEARTBEAT_MS = 25_000;
+
 export function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const [searchParams] = useSearchParams();
@@ -68,6 +72,18 @@ export function GamePage() {
   const [actionLoading, setActionLoading] = useState(false);
 
   const playerToken = useMemo(() => getOrCreatePlayerToken(), []);
+  const isWaitingRandomRef = useRef(false);
+  const gameIdRef = useRef<string | undefined>(gameId);
+  const playerTokenRef = useRef(playerToken);
+  const leaveQueueTimeoutRef = useRef<number | undefined>(undefined);
+
+  const remoteGameMode = remoteGame?.mode;
+  const remoteGameStatus = remoteGame?.status;
+
+  useEffect(() => {
+    gameIdRef.current = gameId;
+    playerTokenRef.current = playerToken;
+  }, [gameId, playerToken]);
 
   useEffect(() => {
     if (isLocal || !gameId) {
@@ -106,6 +122,68 @@ export function GamePage() {
       unsubscribe?.();
     };
   }, [gameId, isLocal]);
+
+  useEffect(() => {
+    if (isLocal || !gameId || !remoteGameMode) {
+      isWaitingRandomRef.current = false;
+      return;
+    }
+
+    const isWaitingRandom =
+      remoteGameMode === "random" && remoteGameStatus === "waiting";
+
+    isWaitingRandomRef.current = isWaitingRandom;
+
+    if (!isWaitingRandom) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const sendHeartbeat = async () => {
+      try {
+        const game = await heartbeatRandomMatchmaking({ playerToken });
+        if (!cancelled) {
+          setRemoteGame(game);
+          setError(null);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Поиск соперника прерван",
+          );
+        }
+      }
+    };
+
+    void sendHeartbeat();
+    const intervalId = window.setInterval(() => {
+      void sendHeartbeat();
+    }, RANDOM_HEARTBEAT_MS);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [gameId, isLocal, playerToken, remoteGameMode, remoteGameStatus]);
+
+  useEffect(() => {
+    if (leaveQueueTimeoutRef.current !== undefined) {
+      window.clearTimeout(leaveQueueTimeoutRef.current);
+      leaveQueueTimeoutRef.current = undefined;
+    }
+
+    return () => {
+      leaveQueueTimeoutRef.current = window.setTimeout(() => {
+        if (isWaitingRandomRef.current && gameIdRef.current) {
+          void leaveRandomMatchmaking({
+            playerToken: playerTokenRef.current,
+            gameId: gameIdRef.current,
+          }).catch(() => undefined);
+        }
+      }, 250);
+    };
+  }, []);
 
   const handleLocalMove = useCallback((index: number) => {
     setLocalGame((prev) => {
@@ -225,6 +303,13 @@ export function GamePage() {
 
   const handleCancelSearch = async () => {
     if (!remoteGame || !gameId) return;
+
+    isWaitingRandomRef.current = false;
+
+    if (leaveQueueTimeoutRef.current !== undefined) {
+      window.clearTimeout(leaveQueueTimeoutRef.current);
+      leaveQueueTimeoutRef.current = undefined;
+    }
 
     setActionLoading(true);
     try {
@@ -402,7 +487,8 @@ export function GamePage() {
       : [];
 
   const opponentLabel =
-    remoteGame.mode === "friend" && (isPlaying || isFinished)
+    (remoteGame.mode === "friend" || remoteGame.mode === "random") &&
+    (isPlaying || isFinished)
       ? getOpponentProfileLabel(remoteGame, playerToken)
       : null;
 

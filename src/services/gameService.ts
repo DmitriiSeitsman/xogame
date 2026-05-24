@@ -1,6 +1,24 @@
 import type { BoardSize, Game } from "../types/game";
 import { supabase } from "./supabaseClient";
 
+const BOARD_SIZES: BoardSize[] = [3, 4, 5, 6];
+
+function parseQueueCounts(payload: unknown): Record<BoardSize, number> {
+  const source =
+    payload && typeof payload === "object"
+      ? (payload as Record<string, unknown>)
+      : {};
+
+  return BOARD_SIZES.reduce<Record<BoardSize, number>>((counts, size) => {
+    const value = source[String(size)];
+    counts[size] =
+      typeof value === "number" && Number.isFinite(value)
+        ? Math.max(0, Math.floor(value))
+        : 0;
+    return counts;
+  }, { 3: 0, 4: 0, 5: 0, 6: 0 });
+}
+
 function mapGame(row: Record<string, unknown>): Game {
   return {
     id: row.id as string,
@@ -65,13 +83,59 @@ export async function joinFriendGame(params: {
   return mapGame(data as Record<string, unknown>);
 }
 
-export async function findOrCreateRandomGame(params: {
+export async function getMatchmakingQueueCounts(): Promise<
+  Record<BoardSize, number>
+> {
+  const { data, error } = await supabase.rpc("get_matchmaking_queue_counts");
+
+  if (error) {
+    throw error;
+  }
+
+  return parseQueueCounts(data);
+}
+
+export async function joinRandomMatchmaking(params: {
   playerToken: string;
   boardSize: BoardSize;
+  playerName: string;
+  playerAge?: number | null;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("find_or_create_random_game", {
+  const { data, error } = await supabase.rpc("join_random_matchmaking", {
     p_player_token: params.playerToken,
     p_board_size: params.boardSize,
+    p_player_name: params.playerName,
+    p_player_age: params.playerAge ?? null,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return mapGame(data as Record<string, unknown>);
+}
+
+export async function heartbeatRandomMatchmaking(params: {
+  playerToken: string;
+}): Promise<Game> {
+  const { data, error } = await supabase.rpc("heartbeat_random_matchmaking", {
+    p_player_token: params.playerToken,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return mapGame(data as Record<string, unknown>);
+}
+
+export async function leaveRandomMatchmaking(params: {
+  playerToken: string;
+  gameId: string;
+}): Promise<Game> {
+  const { data, error } = await supabase.rpc("leave_random_matchmaking", {
+    p_player_token: params.playerToken,
+    p_game_id: params.gameId,
   });
 
   if (error) {

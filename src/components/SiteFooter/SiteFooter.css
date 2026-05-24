@@ -2,31 +2,9 @@
   flex-shrink: 0;
   padding: 16px 20px 20px;
   text-align: center;
-}
-
-.site-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 20px;
-  margin-bottom: 12px;
-}
-
-.site-footer__link {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  transition: color var(--duration-fast);
-}
-
-.site-footer__link:hover {
-  color: var(--color-primary-start);
-}
-
-.site-footer__link:focus-visible {
-  outline: 3px solid rgba(249, 115, 22, 0.3);
-  outline-offset: 2px;
-  border-radius: 4px;
+  width: 100%;
+  max-width: var(--layout-content-max);
+  margin-inline: auto;
 }
 
 .site-footer__text {

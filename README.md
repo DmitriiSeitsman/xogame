@@ -55,6 +55,7 @@ npm run build
 2. `002_create_rpc_functions.sql` — RPC функции и helpers
 3. `003_realtime_and_rls_notes.md` — заметки по Realtime и безопасности
 4. `004_add_player_profiles.sql` — имена и возраст игроков (если БД создана до этого обновления)
+5. `005_matchmaking_queue.sql` — очередь matchmaking с heartbeat и счётчиками по размеру поля
 
 Выполните SQL в Supabase SQL Editor в указанном порядке.
 
@@ -64,8 +65,11 @@ npm run build
 |---------|------------|
 | `create_friend_game` | Создать игру с другом |
 | `join_friend_game` | Подключиться по invite code |
-| `find_or_create_random_game` | Найти или создать random-игру |
-| `cancel_random_search` | Отменить поиск случайного соперника |
+| `join_random_matchmaking` | Встать в очередь / найти соперника |
+| `heartbeat_random_matchmaking` | Поддержать presence в очереди |
+| `leave_random_matchmaking` | Выйти из очереди |
+| `get_matchmaking_queue_counts` | Счётчики поиска по размеру поля |
+| `cancel_random_search` | Отменить поиск (алиас для leave) |
 | `make_move` | Сделать ход |
 
 ## Realtime

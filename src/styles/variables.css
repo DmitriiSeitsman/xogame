@@ -40,6 +40,9 @@
   --duration-fast: 180ms;
   --duration-normal: 240ms;
 
+  --layout-content-max: 560px;
+  --layout-game-board-max: 520px;
+
   /* Legacy aliases */
   --color-bg: var(--color-bg-start);
   --color-text: var(--color-text-primary);
@@ -52,4 +55,10 @@
   --color-board-bg: rgba(255, 255, 255, 0.55);
   --color-cell-bg: rgba(255, 255, 255, 0.88);
   --color-cell-hover: rgba(255, 255, 255, 1);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --layout-content-max: 720px;
+  }
 }

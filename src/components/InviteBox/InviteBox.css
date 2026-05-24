@@ -1,6 +1,6 @@
 .invite-box {
   width: 100%;
-  max-width: 520px;
+  max-width: var(--layout-content-max);
   padding: 24px;
   border-radius: var(--radius-card);
   background: var(--color-surface-strong);

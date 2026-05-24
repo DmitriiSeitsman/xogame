@@ -24,7 +24,7 @@
   font-size: 0.95rem;
   color: var(--color-text-secondary);
   text-align: center;
-  max-width: min(520px, 94vw);
+  max-width: min(var(--layout-content-max), 94vw);
   width: 100%;
 }
 
@@ -44,7 +44,7 @@
 
 .game-page__waiting {
   width: 100%;
-  max-width: 420px;
+  max-width: var(--layout-content-max);
   padding: 28px 24px;
   border-radius: var(--radius-card);
   background: var(--color-surface-strong);

@@ -10,7 +10,10 @@ For the MVP, reading from `public.games` is allowed for `anon` and `authenticate
 - All game state changes must go through RPC functions:
   - `create_friend_game`
   - `join_friend_game`
-  - `find_or_create_random_game`
+  - `join_random_matchmaking`
+  - `heartbeat_random_matchmaking`
+  - `leave_random_matchmaking`
+  - `get_matchmaking_queue_counts`
   - `cancel_random_search`
   - `make_move`
 
@@ -63,7 +66,7 @@ Both players receive board updates after each RPC `make_move` call because the R
 
 ## Matchmaking race conditions
 
-Random matchmaking uses `find_or_create_random_game` with:
+Random matchmaking uses `matchmaking_queue` with heartbeat (45s TTL) and `join_random_matchmaking` / `try_match_random_player` with:
 
 ```sql
 for update skip locked

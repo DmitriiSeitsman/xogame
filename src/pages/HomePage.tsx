@@ -7,8 +7,9 @@ import { PlayerProfileDialog } from "../components/PlayerProfileDialog/PlayerPro
 import { Seo } from "../components/Seo/Seo";
 import {
   createFriendGame,
-  findOrCreateRandomGame,
+  joinRandomMatchmaking,
 } from "../services/gameService";
+import { useMatchmakingQueueCounts } from "../hooks/useMatchmakingQueueCounts";
 import { HOME_JSON_LD, SITE_URL } from "../constants/seo";
 import type { BoardSize, GameMode } from "../types/game";
 import {
@@ -19,7 +20,7 @@ import {
 import { getOrCreatePlayerToken } from "../utils/playerToken";
 import "./HomePage.css";
 
-type ProfileDialogIntent = "host" | "join" | null;
+type ProfileDialogIntent = "host" | "join" | "random" | null;
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ export function HomePage() {
   const [modeBeforeFriendDialog, setModeBeforeFriendDialog] =
     useState<GameMode | null>(null);
   const [pendingJoinCode, setPendingJoinCode] = useState<string | null>(null);
+  const queueCounts = useMatchmakingQueueCounts();
 
   const startFriendGame = async (profile: PlayerProfile) => {
     setError(null);
@@ -44,6 +46,26 @@ export function HomePage() {
     try {
       const playerToken = getOrCreatePlayerToken();
       const game = await createFriendGame({
+        playerToken,
+        boardSize,
+        playerName: profile.name,
+        playerAge: profile.age,
+      });
+      navigate(`/game/${game.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Не удалось начать игру");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startRandomGame = async (profile: PlayerProfile) => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const playerToken = getOrCreatePlayerToken();
+      const game = await joinRandomMatchmaking({
         playerToken,
         boardSize,
         playerName: profile.name,
@@ -96,6 +118,12 @@ export function HomePage() {
       return;
     }
 
+    if (dialogIntent === "random") {
+      setDialogIntent(null);
+      void startRandomGame(profile);
+      return;
+    }
+
     setMode("friend");
     setDialogIntent(null);
     setModeBeforeFriendDialog(null);
@@ -113,7 +141,7 @@ export function HomePage() {
     setModeBeforeFriendDialog(null);
   };
 
-  const handleStart = async () => {
+  const handleStart = () => {
     setError(null);
 
     if (mode === "computer") {
@@ -121,21 +149,14 @@ export function HomePage() {
       return;
     }
 
-    const playerToken = getOrCreatePlayerToken();
-
     if (mode === "friend") {
       openHostProfileDialog();
       return;
     }
 
-    setLoading(true);
-    try {
-      const game = await findOrCreateRandomGame({ playerToken, boardSize });
-      navigate(`/game/${game.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Не удалось начать игру");
-    } finally {
-      setLoading(false);
+    if (mode === "random") {
+      setDialogIntent("random");
+      setProfileDialogOpen(true);
     }
   };
 
@@ -167,12 +188,16 @@ export function HomePage() {
         title={
           dialogIntent === "join"
             ? "Как вас представить сопернику?"
-            : "Как вас представить другу?"
+            : dialogIntent === "random"
+              ? "Как вас представить сопернику?"
+              : "Как вас представить другу?"
         }
         description={
           dialogIntent === "join"
             ? "Укажите имя и, если хотите, возраст — создатель игры увидит их на экране."
-            : "Укажите имя и, если хотите, возраст. После этого мы создадим игру и покажем ссылку для друга."
+            : dialogIntent === "random"
+              ? "Укажите имя и, если хотите, возраст — случайный соперник увидит их во время игры."
+              : "Укажите имя и, если хотите, возраст. После этого мы создадим игру и покажем ссылку для друга."
         }
         onConfirm={handleProfileConfirm}
         onCancel={handleProfileCancel}
@@ -194,6 +219,7 @@ export function HomePage() {
             value={mode}
             onChange={handleModeChange}
             disabled={loading}
+            queueCounts={queueCounts}
           />
           <BoardSizeSelector
             value={boardSize}
