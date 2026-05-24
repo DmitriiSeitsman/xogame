@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdSlot } from "../components/AdSlot/AdSlot";
 import { BoardSizeSelector } from "../components/BoardSizeSelector/BoardSizeSelector";
+import { DifficultySelector } from "../components/DifficultySelector/DifficultySelector";
 import { ModeSelector } from "../components/ModeSelector/ModeSelector";
 import { PlayerProfileDialog } from "../components/PlayerProfileDialog/PlayerProfileDialog";
 import { Seo } from "../components/Seo/Seo";
@@ -11,7 +12,11 @@ import {
 } from "../services/gameService";
 import { useMatchmakingQueueCounts } from "../hooks/useMatchmakingQueueCounts";
 import { HOME_JSON_LD, SITE_URL } from "../constants/seo";
-import type { BoardSize, GameMode } from "../types/game";
+import type { BoardSize, ComputerDifficulty, GameMode } from "../types/game";
+import {
+  loadComputerDifficulty,
+  saveComputerDifficulty,
+} from "../utils/computerDifficulty";
 import {
   loadPlayerProfile,
   savePlayerProfile,
@@ -26,6 +31,9 @@ export function HomePage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<GameMode>("computer");
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
+  const [computerDifficulty, setComputerDifficulty] = useState<ComputerDifficulty>(
+    loadComputerDifficulty,
+  );
   const [inviteInput, setInviteInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -145,7 +153,10 @@ export function HomePage() {
     setError(null);
 
     if (mode === "computer") {
-      navigate(`/game/local?size=${boardSize}`);
+      saveComputerDifficulty(computerDifficulty);
+      navigate(
+        `/game/local?size=${boardSize}&difficulty=${computerDifficulty}`,
+      );
       return;
     }
 
@@ -226,6 +237,14 @@ export function HomePage() {
             onChange={setBoardSize}
             disabled={loading}
           />
+
+          {mode === "computer" && (
+            <DifficultySelector
+              value={computerDifficulty}
+              onChange={setComputerDifficulty}
+              disabled={loading}
+            />
+          )}
 
           <h2 className="home-page__section-title">
             Играть бесплатно без регистрации

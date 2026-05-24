@@ -1,3 +1,11 @@
+export type ComputerDifficulty = "easy" | "medium" | "hard";
+
+export const COMPUTER_DIFFICULTIES: ComputerDifficulty[] = [
+  "easy",
+  "medium",
+  "hard",
+];
+
 export type GameMode = "computer" | "friend" | "random";
 
 export type GameStatus = "waiting" | "playing" | "finished" | "cancelled";
@@ -46,6 +54,7 @@ export type LocalGameState = {
   mode: "computer";
   boardSize: BoardSize;
   winLength: WinLength;
+  difficulty: ComputerDifficulty;
   board: Cell[];
   currentTurn: PlayerSymbol;
   status: GameStatus;

@@ -6,6 +6,7 @@ import { GameStatus } from "../components/GameStatus/GameStatus";
 import { InviteBox } from "../components/InviteBox/InviteBox";
 import { Seo } from "../components/Seo/Seo";
 import { getComputerMove } from "../services/computerPlayerService";
+import type { ComputerMoveRequest } from "../services/computerPlayerService";
 import {
   cancelRandomSearch,
   getGameById,
@@ -17,6 +18,7 @@ import {
 import type {
   BoardSize,
   Cell,
+  ComputerDifficulty,
   Game,
   LocalGameState,
   PlayerSymbol,
@@ -29,21 +31,44 @@ import {
   isDraw,
   makeLocalMove,
 } from "../utils/gameEngine";
-import { getOrCreatePlayerToken } from "../utils/playerToken";
+import { applyComputerMove } from "../utils/applyComputerMove";
+import {
+  COMPUTER_DIFFICULTY_LABELS,
+  loadComputerDifficulty,
+  parseComputerDifficultyParam,
+} from "../utils/computerDifficulty";
+import type { ComputerMoveWorkerResponse } from "../workers/computerMove.worker";
 import { getOpponentProfileLabel } from "../utils/opponent";
+import { getOrCreatePlayerToken } from "../utils/playerToken";
 import { getTurnMessage, getWinnerMessage } from "../utils/winner";
 import "./GamePage.css";
 
-function createLocalGame(boardSize: BoardSize): LocalGameState {
+function createLocalGame(
+  boardSize: BoardSize,
+  difficulty: ComputerDifficulty,
+): LocalGameState {
   return {
     mode: "computer",
     boardSize,
     winLength: getWinLength(boardSize),
+    difficulty,
     board: createEmptyBoard(boardSize),
     currentTurn: "X",
     status: "playing",
     winner: null,
   };
+}
+
+function readLocalGameFromSearchParams(
+  searchParams: URLSearchParams,
+): LocalGameState {
+  const size = Number(searchParams.get("size")) as BoardSize;
+  const boardSize: BoardSize = [3, 4, 5, 6].includes(size) ? size : 3;
+  const difficulty =
+    parseComputerDifficultyParam(searchParams.get("difficulty")) ??
+    loadComputerDifficulty();
+
+  return createLocalGame(boardSize, difficulty);
 }
 
 function getPlayerSymbol(game: Game, playerToken: string): PlayerSymbol | null {
@@ -60,11 +85,11 @@ export function GamePage() {
   const navigate = useNavigate();
   const isLocal = gameId === "local";
 
-  const [localGame, setLocalGame] = useState<LocalGameState>(() => {
-    const size = Number(searchParams.get("size")) as BoardSize;
-    const boardSize: BoardSize = [3, 4, 5, 6].includes(size) ? size : 3;
-    return createLocalGame(boardSize);
-  });
+  const [localGame, setLocalGame] = useState<LocalGameState>(() =>
+    readLocalGameFromSearchParams(searchParams),
+  );
+  const [botThinking, setBotThinking] = useState(false);
+  const [botProgress, setBotProgress] = useState(0);
 
   const [remoteGame, setRemoteGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(!isLocal);
@@ -76,6 +101,13 @@ export function GamePage() {
   const gameIdRef = useRef<string | undefined>(gameId);
   const playerTokenRef = useRef(playerToken);
   const leaveQueueTimeoutRef = useRef<number | undefined>(undefined);
+  const pendingBotContextRef = useRef<{
+    turnId: number;
+    game: LocalGameState;
+    boardAfterPlayer: Cell[];
+  } | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+  const activeBotTurnIdRef = useRef(0);
 
   const remoteGameMode = remoteGame?.mode;
   const remoteGameStatus = remoteGame?.status;
@@ -185,93 +217,181 @@ export function GamePage() {
     };
   }, []);
 
-  const handleLocalMove = useCallback((index: number) => {
-    setLocalGame((prev) => {
-      if (prev.status !== "playing" || prev.currentTurn !== "X") {
-        return prev;
+  const finishBotTurn = useCallback((turnId: number, computerIndex: number | null) => {
+    setBotThinking(false);
+    setBotProgress(0);
+
+    if (turnId !== activeBotTurnIdRef.current) {
+      return;
+    }
+
+    const pending = pendingBotContextRef.current;
+
+    if (!pending || pending.turnId !== turnId) {
+      return;
+    }
+
+    pendingBotContextRef.current = null;
+
+    setLocalGame(
+      applyComputerMove(
+        pending.game,
+        pending.boardAfterPlayer,
+        computerIndex,
+      ),
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!isLocal) {
+      return;
+    }
+
+    const worker = new Worker(
+      new URL("../workers/computerMove.worker.ts", import.meta.url),
+      { type: "module" },
+    );
+
+    worker.onmessage = (event: MessageEvent<ComputerMoveWorkerResponse>) => {
+      const message = event.data;
+
+      if (message.turnId !== activeBotTurnIdRef.current) {
+        return;
       }
 
-      if (prev.board[index] !== "") {
-        return prev;
+      if (message.type === "progress") {
+        setBotProgress(message.progress);
+        return;
       }
 
-      const boardAfterPlayer = makeLocalMove(prev.board, index, "X");
-      const winnerAfterPlayer = calculateWinner(
-        boardAfterPlayer,
-        prev.boardSize,
-        prev.winLength,
-      );
-
-      if (winnerAfterPlayer) {
-        return {
-          ...prev,
-          board: boardAfterPlayer,
-          winner: winnerAfterPlayer,
-          status: "finished",
-        };
+      if (message.type === "error") {
+        finishBotTurn(message.turnId, null);
+        return;
       }
 
-      if (isDraw(boardAfterPlayer, null)) {
-        return {
-          ...prev,
-          board: boardAfterPlayer,
-          winner: "draw",
-          status: "finished",
-        };
-      }
+      finishBotTurn(message.turnId, message.index);
+    };
 
-      const computerIndex = getComputerMove({
+    workerRef.current = worker;
+
+    return () => {
+      activeBotTurnIdRef.current += 1;
+      pendingBotContextRef.current = null;
+      worker.terminate();
+      workerRef.current = null;
+    };
+  }, [isLocal, finishBotTurn]);
+
+  const beginBotTurn = useCallback(
+    (game: LocalGameState, boardAfterPlayer: Cell[]) => {
+      const turnId = activeBotTurnIdRef.current + 1;
+      activeBotTurnIdRef.current = turnId;
+      pendingBotContextRef.current = { turnId, game, boardAfterPlayer };
+      setBotThinking(true);
+      setBotProgress(0);
+
+      const request: ComputerMoveRequest = {
         board: boardAfterPlayer,
-        boardSize: prev.boardSize,
-        winLength: prev.winLength,
+        boardSize: game.boardSize,
+        winLength: game.winLength,
         computerSymbol: "O",
         playerSymbol: "X",
-      });
-
-      if (computerIndex === null) {
-        return {
-          ...prev,
-          board: boardAfterPlayer,
-          currentTurn: "O",
-        };
-      }
-
-      const boardAfterComputer = makeLocalMove(
-        boardAfterPlayer,
-        computerIndex,
-        "O",
-      );
-      const winnerAfterComputer = calculateWinner(
-        boardAfterComputer,
-        prev.boardSize,
-        prev.winLength,
-      );
-
-      if (winnerAfterComputer) {
-        return {
-          ...prev,
-          board: boardAfterComputer,
-          winner: winnerAfterComputer,
-          status: "finished",
-        };
-      }
-
-      if (isDraw(boardAfterComputer, null)) {
-        return {
-          ...prev,
-          board: boardAfterComputer,
-          winner: "draw",
-          status: "finished",
-        };
-      }
-
-      return {
-        ...prev,
-        board: boardAfterComputer,
-        currentTurn: "X",
+        difficulty: game.difficulty,
       };
-    });
-  }, []);
+
+      if (game.difficulty === "hard" && workerRef.current) {
+        workerRef.current.postMessage({ type: "compute", turnId, request });
+        return;
+      }
+
+      window.requestAnimationFrame(() => {
+        if (turnId !== activeBotTurnIdRef.current) {
+          return;
+        }
+
+        const computerIndex = getComputerMove({
+          ...request,
+          onProgress:
+            game.difficulty === "hard" ? setBotProgress : undefined,
+        });
+        finishBotTurn(turnId, computerIndex);
+      });
+    },
+    [finishBotTurn],
+  );
+
+  useEffect(() => {
+    if (!isLocal || !botThinking) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      const pending = pendingBotContextRef.current;
+      if (!pending) {
+        setBotThinking(false);
+        setBotProgress(0);
+        return;
+      }
+
+      finishBotTurn(pending.turnId, null);
+    }, 30_000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [botThinking, finishBotTurn, isLocal]);
+
+  const handleLocalMove = useCallback(
+    (index: number) => {
+      if (botThinking) {
+        return;
+      }
+
+      setLocalGame((prev) => {
+        if (prev.status !== "playing" || prev.currentTurn !== "X") {
+          return prev;
+        }
+
+        if (prev.board[index] !== "") {
+          return prev;
+        }
+
+        const boardAfterPlayer = makeLocalMove(prev.board, index, "X");
+        const winnerAfterPlayer = calculateWinner(
+          boardAfterPlayer,
+          prev.boardSize,
+          prev.winLength,
+        );
+
+        if (winnerAfterPlayer) {
+          return {
+            ...prev,
+            board: boardAfterPlayer,
+            winner: winnerAfterPlayer,
+            status: "finished",
+          };
+        }
+
+        if (isDraw(boardAfterPlayer, null)) {
+          return {
+            ...prev,
+            board: boardAfterPlayer,
+            winner: "draw",
+            status: "finished",
+          };
+        }
+
+        const gameAfterPlayer = { ...prev, board: boardAfterPlayer };
+
+        queueMicrotask(() => {
+          beginBotTurn(gameAfterPlayer, boardAfterPlayer);
+        });
+
+        return gameAfterPlayer;
+      });
+    },
+    [beginBotTurn, botThinking],
+  );
 
   const handleRemoteMove = async (index: number) => {
     if (!remoteGame || !gameId) return;
@@ -323,7 +443,7 @@ export function GamePage() {
   };
 
   const handleRestartLocal = () => {
-    setLocalGame(createLocalGame(localGame.boardSize));
+    setLocalGame(createLocalGame(localGame.boardSize, localGame.difficulty));
   };
 
   if (loading) {
@@ -370,9 +490,11 @@ export function GamePage() {
           )
         : [];
 
-    const statusTitle = isFinished
-      ? getWinnerMessage(localGame.winner, "X")
-      : getTurnMessage(localGame.currentTurn, "X", false);
+    const statusTitle = botThinking
+      ? "Бот думает"
+      : isFinished
+        ? getWinnerMessage(localGame.winner, "X")
+        : getTurnMessage(localGame.currentTurn, "X", false);
 
     const statusSymbol: PlayerSymbol | null = isFinished
       ? localGame.winner === "draw"
@@ -389,14 +511,38 @@ export function GamePage() {
         />
         <GameStatus
           title={statusTitle || "Игра с компьютером"}
-          subtitle={`Поле ${localGame.boardSize}×${localGame.boardSize} · победа: ${localGame.winLength} в ряд`}
-          variant={isFinished ? "success" : "default"}
-          symbol={statusSymbol}
+          subtitle={
+            botThinking
+              ? botProgress > 0
+                ? `Анализ ходов: ${botProgress}%`
+                : "Подготовка к расчёту…"
+              : `Поле ${localGame.boardSize}×${localGame.boardSize} · победа: ${localGame.winLength} в ряд · бот: ${COMPUTER_DIFFICULTY_LABELS[localGame.difficulty]}`
+          }
+          variant={isFinished ? "success" : botThinking ? "muted" : "default"}
+          symbol={botThinking ? "O" : statusSymbol}
+          showLoader={botThinking}
         />
+        {botThinking && (
+          <div
+            className="game-page__bot-thinking"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={botProgress}
+            aria-label="Бот думает"
+          >
+            <div className="game-page__bot-progress-track">
+              <div
+                className="game-page__bot-progress-bar"
+                style={{ width: `${Math.max(botProgress, 4)}%` }}
+              />
+            </div>
+          </div>
+        )}
         <GameBoard
           board={localGame.board}
           boardSize={localGame.boardSize}
-          disabled={isFinished}
+          disabled={isFinished || botThinking}
           winningCells={winningCells}
           onCellClick={handleLocalMove}
         />
