@@ -77,6 +77,13 @@
   font-size: 0.95rem;
 }
 
+.home-page__waiting-hint {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
 .home-page__join {
   width: 100%;
   padding: 22px 24px;

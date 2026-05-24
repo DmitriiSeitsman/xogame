@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PlayerProfileDialog } from "../components/PlayerProfileDialog/PlayerProfileDialog";
 import { Seo } from "../components/Seo/Seo";
@@ -11,56 +11,6 @@ import {
 import { getOrCreatePlayerToken } from "../utils/playerToken";
 import "./JoinGamePage.css";
 
-type JoinConnectingProps = {
-  inviteCode: string;
-  profile: PlayerProfile;
-  onError: (message: string) => void;
-};
-
-function JoinConnecting({ inviteCode, profile, onError }: JoinConnectingProps) {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const join = async () => {
-      try {
-        const playerToken = getOrCreatePlayerToken();
-        const game = await joinFriendGame({
-          playerToken,
-          inviteCode,
-          playerName: profile.name,
-          playerAge: profile.age,
-        });
-
-        if (!cancelled) {
-          navigate(`/game/${game.id}`, { replace: true });
-        }
-      } catch (err) {
-        if (!cancelled) {
-          onError(
-            err instanceof Error ? err.message : "Не удалось подключиться к игре",
-          );
-        }
-      }
-    };
-
-    void join();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [inviteCode, profile, navigate, onError]);
-
-  return (
-    <>
-      <div className="join-page__loader" aria-hidden="true" />
-      <h1 className="join-page__title">Подключение...</h1>
-      <p className="join-page__message">Присоединяемся к игре</p>
-    </>
-  );
-}
-
 export function JoinGamePage() {
   const { inviteCode } = useParams<{ inviteCode: string }>();
   const navigate = useNavigate();
@@ -68,18 +18,40 @@ export function JoinGamePage() {
     inviteCode ? null : "Код приглашения не указан",
   );
   const [profile, setProfile] = useState<PlayerProfile>(() => loadPlayerProfile());
-  const [profileDialogOpen, setProfileDialogOpen] = useState(
-    () => !loadPlayerProfile().name.trim(),
-  );
-  const [isConnecting, setIsConnecting] = useState(
-    () => Boolean(inviteCode) && loadPlayerProfile().name.trim().length > 0,
-  );
+  const [profileDialogOpen, setProfileDialogOpen] = useState(true);
+  const [isJoining, setIsJoining] = useState(false);
+
+  const joinGame = async (playerProfile: PlayerProfile) => {
+    if (!inviteCode) {
+      return;
+    }
+
+    setIsJoining(true);
+    setError(null);
+
+    try {
+      const playerToken = getOrCreatePlayerToken();
+      const game = await joinFriendGame({
+        playerToken,
+        inviteCode,
+        playerName: playerProfile.name,
+        playerAge: playerProfile.age,
+      });
+
+      navigate(`/game/${game.id}`, { replace: true });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Не удалось подключиться к игре",
+      );
+      setIsJoining(false);
+    }
+  };
 
   const handleProfileConfirm = (nextProfile: PlayerProfile) => {
     savePlayerProfile(nextProfile);
     setProfile(nextProfile);
     setProfileDialogOpen(false);
-    setIsConnecting(true);
+    void joinGame(nextProfile);
   };
 
   const handleProfileCancel = () => {
@@ -116,19 +88,13 @@ export function JoinGamePage() {
               На главную
             </button>
           </>
-        ) : isConnecting && inviteCode ? (
-          <JoinConnecting
-            inviteCode={inviteCode}
-            profile={profile}
-            onError={setError}
-          />
-        ) : (
+        ) : isJoining ? (
           <>
             <div className="join-page__loader" aria-hidden="true" />
             <h1 className="join-page__title">Подключение...</h1>
             <p className="join-page__message">Присоединяемся к игре</p>
           </>
-        )}
+        ) : null}
       </div>
     </div>
   );

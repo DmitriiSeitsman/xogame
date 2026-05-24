@@ -33,6 +33,15 @@
   color: var(--color-text-primary);
 }
 
+.game-page__waiting .invite-box {
+  margin-top: 8px;
+  box-shadow: none;
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  padding: 0;
+}
+
 .game-page__waiting {
   width: 100%;
   max-width: 420px;

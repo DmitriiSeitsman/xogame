@@ -402,7 +402,7 @@ export function GamePage() {
       : [];
 
   const opponentLabel =
-    remoteGame.mode === "friend"
+    remoteGame.mode === "friend" && (isPlaying || isFinished)
       ? getOpponentProfileLabel(remoteGame, playerToken)
       : null;
 
@@ -432,8 +432,17 @@ export function GamePage() {
         </p>
       )}
 
-      {isWaitingFriend && remoteGame.invite_code && (
-        <InviteBox inviteCode={remoteGame.invite_code} />
+      {isWaitingFriend && (
+        <div className="game-page__waiting">
+          <div className="game-page__waiting-loader" aria-hidden="true" />
+          <p className="game-page__waiting-title">Ждём друга…</p>
+          <p className="game-page__waiting-subtitle">
+            Поделитесь ссылкой или кодом приглашения
+          </p>
+          {remoteGame.invite_code && (
+            <InviteBox inviteCode={remoteGame.invite_code} />
+          )}
+        </div>
       )}
 
       {isWaitingRandom && (

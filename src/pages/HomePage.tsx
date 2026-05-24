@@ -19,6 +19,8 @@ import {
 import { getOrCreatePlayerToken } from "../utils/playerToken";
 import "./HomePage.css";
 
+type ProfileDialogIntent = "host" | "join" | null;
+
 export function HomePage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<GameMode>("computer");
@@ -30,15 +32,47 @@ export function HomePage() {
     loadPlayerProfile,
   );
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [dialogIntent, setDialogIntent] = useState<ProfileDialogIntent>(null);
+  const [modeBeforeFriendDialog, setModeBeforeFriendDialog] =
+    useState<GameMode | null>(null);
   const [pendingJoinCode, setPendingJoinCode] = useState<string | null>(null);
+
+  const startFriendGame = async (profile: PlayerProfile) => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const playerToken = getOrCreatePlayerToken();
+      const game = await createFriendGame({
+        playerToken,
+        boardSize,
+        playerName: profile.name,
+        playerAge: profile.age,
+      });
+      navigate(`/game/${game.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Не удалось начать игру");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleModeChange = (newMode: GameMode) => {
     if (newMode === "friend") {
+      setModeBeforeFriendDialog(mode);
+      setMode("friend");
+      setDialogIntent("host");
       setProfileDialogOpen(true);
       return;
     }
 
     setMode(newMode);
+  };
+
+  const openHostProfileDialog = () => {
+    setDialogIntent("host");
+    setMode("friend");
+    setProfileDialogOpen(true);
   };
 
   const handleProfileConfirm = (profile: PlayerProfile) => {
@@ -47,47 +81,55 @@ export function HomePage() {
     setProfileDialogOpen(false);
 
     if (pendingJoinCode) {
-      navigate(`/join/${pendingJoinCode}`);
+      const code = pendingJoinCode;
       setPendingJoinCode(null);
+      setDialogIntent(null);
+      setModeBeforeFriendDialog(null);
+      navigate(`/join/${code}`);
+      return;
+    }
+
+    if (dialogIntent === "host") {
+      setDialogIntent(null);
+      setModeBeforeFriendDialog(null);
+      void startFriendGame(profile);
       return;
     }
 
     setMode("friend");
+    setDialogIntent(null);
+    setModeBeforeFriendDialog(null);
   };
 
   const handleProfileCancel = () => {
     setProfileDialogOpen(false);
     setPendingJoinCode(null);
+
+    if (dialogIntent === "host" && modeBeforeFriendDialog !== null) {
+      setMode(modeBeforeFriendDialog);
+    }
+
+    setDialogIntent(null);
+    setModeBeforeFriendDialog(null);
   };
 
   const handleStart = async () => {
     setError(null);
+
+    if (mode === "computer") {
+      navigate(`/game/local?size=${boardSize}`);
+      return;
+    }
+
+    const playerToken = getOrCreatePlayerToken();
+
+    if (mode === "friend") {
+      openHostProfileDialog();
+      return;
+    }
+
     setLoading(true);
-
     try {
-      if (mode === "computer") {
-        navigate(`/game/local?size=${boardSize}`);
-        return;
-      }
-
-      const playerToken = getOrCreatePlayerToken();
-
-      if (mode === "friend") {
-        if (!playerProfile.name.trim()) {
-          setProfileDialogOpen(true);
-          return;
-        }
-
-        const game = await createFriendGame({
-          playerToken,
-          boardSize,
-          playerName: playerProfile.name,
-          playerAge: playerProfile.age,
-        });
-        navigate(`/game/${game.id}`);
-        return;
-      }
-
       const game = await findOrCreateRandomGame({ playerToken, boardSize });
       navigate(`/game/${game.id}`);
     } catch (err) {
@@ -105,14 +147,9 @@ export function HomePage() {
     }
 
     setError(null);
-
-    if (!playerProfile.name.trim()) {
-      setPendingJoinCode(code);
-      setProfileDialogOpen(true);
-      return;
-    }
-
-    navigate(`/join/${code}`);
+    setPendingJoinCode(code);
+    setDialogIntent("join");
+    setProfileDialogOpen(true);
   };
 
   return (
@@ -127,6 +164,16 @@ export function HomePage() {
       <PlayerProfileDialog
         open={profileDialogOpen}
         initialProfile={playerProfile}
+        title={
+          dialogIntent === "join"
+            ? "Как вас представить сопернику?"
+            : "Как вас представить другу?"
+        }
+        description={
+          dialogIntent === "join"
+            ? "Укажите имя и, если хотите, возраст — создатель игры увидит их на экране."
+            : "Укажите имя и, если хотите, возраст. После этого мы создадим игру и покажем ссылку для друга."
+        }
         onConfirm={handleProfileConfirm}
         onCancel={handleProfileCancel}
       />
@@ -158,14 +205,20 @@ export function HomePage() {
             Играть бесплатно без регистрации
           </h2>
 
-          <button
-            type="button"
-            className="btn btn--primary home-page__start"
-            onClick={handleStart}
-            disabled={loading}
-          >
-            {loading ? "Загрузка..." : "Начать игру"}
-          </button>
+          {mode !== "friend" && (
+            <button
+              type="button"
+              className="btn btn--primary home-page__start"
+              onClick={handleStart}
+              disabled={loading}
+            >
+              {loading ? "Загрузка..." : "Начать игру"}
+            </button>
+          )}
+
+          {mode === "friend" && loading && (
+            <p className="home-page__waiting-hint">Создаём игру…</p>
+          )}
 
           {error && <p className="home-page__error">{error}</p>}
         </section>
@@ -180,6 +233,7 @@ export function HomePage() {
               value={inviteInput}
               onChange={(event) => setInviteInput(event.target.value.toUpperCase())}
               maxLength={5}
+              disabled={loading}
               aria-label="Код приглашения"
             />
             <button
