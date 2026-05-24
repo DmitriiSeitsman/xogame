@@ -1,0 +1,80 @@
+.seo-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.seo-page__content {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px 0 24px;
+}
+
+.seo-page__card {
+  padding: 28px 24px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+}
+
+.seo-page__title {
+  margin: 0 0 16px;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.seo-page__intro {
+  margin: 0 0 20px;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+  font-size: 1rem;
+}
+
+.seo-page__section {
+  margin-top: 24px;
+}
+
+.seo-page__section h2 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.seo-page__section p,
+.seo-page__section li {
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+
+.seo-page__section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.seo-page__section li + li {
+  margin-top: 6px;
+}
+
+.seo-page__actions {
+  margin-top: 28px;
+}
+
+@media (max-width: 480px) {
+  .seo-page {
+    padding: 12px;
+  }
+
+  .seo-page__card {
+    padding: 22px 18px;
+  }
+}

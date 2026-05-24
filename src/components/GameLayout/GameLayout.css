@@ -1,0 +1,30 @@
+.game-page {
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.game-content {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 4px 0;
+  overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .game-page {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .game-content {
+    gap: 12px;
+  }
+}

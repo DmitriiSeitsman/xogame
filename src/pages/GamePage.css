@@ -1,0 +1,55 @@
+.game-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  animation: fade-in-up var(--duration-normal) var(--ease-out) both;
+}
+
+.game-page__error {
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: 600;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.game-page__waiting {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface-strong);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+  animation: fade-in-up var(--duration-normal) var(--ease-out) both;
+}
+
+.game-page__waiting-title {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.game-page__waiting-subtitle {
+  margin: 0 0 20px;
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+}
+
+.game-page__waiting-loader {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 20px;
+  border: 3px solid rgba(100, 116, 139, 0.2);
+  border-top-color: var(--color-primary-start);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.game-page__waiting .btn {
+  min-width: 140px;
+}

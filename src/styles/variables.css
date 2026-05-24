@@ -1,0 +1,55 @@
+:root {
+  --color-bg-start: #fff7ed;
+  --color-bg-middle: #fdf2f8;
+  --color-bg-end: #eff6ff;
+
+  --color-surface: rgba(255, 255, 255, 0.72);
+  --color-surface-strong: rgba(255, 255, 255, 0.9);
+
+  --color-border: rgba(15, 23, 42, 0.08);
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+
+  --color-x-start: #fb7185;
+  --color-x-end: #a855f7;
+
+  --color-o-start: #38bdf8;
+  --color-o-end: #14b8a6;
+
+  --color-primary-start: #f97316;
+  --color-primary-end: #ec4899;
+
+  --color-success: #14b8a6;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+  --shadow-cell: 0 10px 24px rgba(15, 23, 42, 0.1);
+  --shadow-board: 0 20px 50px rgba(15, 23, 42, 0.14);
+
+  --radius-page: 28px;
+  --radius-card: 24px;
+  --radius-cell: 22px;
+  --radius-sm: 14px;
+  --radius-md: 18px;
+  --radius-lg: var(--radius-card);
+
+  --font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 180ms;
+  --duration-normal: 240ms;
+
+  /* Legacy aliases */
+  --color-bg: var(--color-bg-start);
+  --color-text: var(--color-text-primary);
+  --color-muted: var(--color-text-secondary);
+  --color-primary: var(--color-primary-start);
+  --color-primary-soft: rgba(249, 115, 22, 0.12);
+  --color-primary-dark: #c2410c;
+  --color-x: var(--color-x-start);
+  --color-o: var(--color-o-start);
+  --color-board-bg: rgba(255, 255, 255, 0.55);
+  --color-cell-bg: rgba(255, 255, 255, 0.88);
+  --color-cell-hover: rgba(255, 255, 255, 1);
+}

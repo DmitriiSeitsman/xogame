@@ -1,0 +1,22 @@
+{
+  "name": "Крестики-нолики онлайн",
+  "short_name": "Крестики-нолики",
+  "description": "Онлайн игра крестики-нолики с компьютером, другом или случайным игроком.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff7ed",
+  "theme_color": "#fff7ed",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
