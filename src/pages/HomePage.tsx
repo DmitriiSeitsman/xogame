@@ -29,6 +29,11 @@ import {
   type PlayerProfile,
 } from "../utils/playerProfile";
 import { getOrCreatePlayerToken } from "../utils/playerToken";
+import {
+  trackGameStartComputer,
+  trackGameStartFriendHost,
+  trackGameStartRandom,
+} from "../utils/yandexMetrikaEvents";
 import "./HomePage.css";
 
 type ProfileDialogIntent = "host" | "join" | "random" | null;
@@ -65,6 +70,7 @@ export function HomePage() {
         playerAge: profile.age,
         symbolTheme,
       });
+      trackGameStartFriendHost({ boardSize, symbolTheme });
       navigate(`/game/${game.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Не удалось начать игру");
@@ -85,6 +91,7 @@ export function HomePage() {
         playerName: profile.name,
         playerAge: profile.age,
       });
+      trackGameStartRandom({ boardSize });
       navigate(`/game/${game.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Не удалось начать игру");
@@ -139,6 +146,11 @@ export function HomePage() {
 
     if (mode === "computer") {
       saveComputerDifficulty(computerDifficulty);
+      trackGameStartComputer({
+        boardSize,
+        difficulty: computerDifficulty,
+        symbolTheme,
+      });
       navigate(
         `/game/local?size=${boardSize}&difficulty=${computerDifficulty}`,
       );

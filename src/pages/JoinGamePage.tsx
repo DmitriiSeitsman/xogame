@@ -9,6 +9,7 @@ import {
   type PlayerProfile,
 } from "../utils/playerProfile";
 import { getOrCreatePlayerToken } from "../utils/playerToken";
+import { trackGameJoinFriend } from "../utils/yandexMetrikaEvents";
 import "./JoinGamePage.css";
 
 export function JoinGamePage() {
@@ -38,6 +39,7 @@ export function JoinGamePage() {
         playerAge: playerProfile.age,
       });
 
+      trackGameJoinFriend({ boardSize: game.board_size });
       navigate(`/game/${game.id}`, { replace: true });
     } catch (err) {
       setError(
