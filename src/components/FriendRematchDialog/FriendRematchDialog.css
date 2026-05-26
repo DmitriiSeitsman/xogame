@@ -5,7 +5,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding:
+    max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .friend-rematch-dialog__backdrop {
@@ -25,12 +33,33 @@
   position: relative;
   width: 100%;
   max-width: 420px;
+  max-height: min(90dvh, calc(100dvh - 32px));
+  margin: auto;
+  flex-shrink: 0;
   padding: 24px;
   border-radius: var(--radius-card);
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-soft);
   animation: fade-in-up var(--duration-normal) var(--ease-out) both;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .friend-rematch-dialog__panel {
+    max-height: min(88dvh, calc(100dvh - 24px));
+    padding: 20px 18px;
+  }
+
+  .friend-rematch-dialog__actions {
+    flex-direction: column-reverse;
+  }
+
+  .friend-rematch-dialog__actions .btn {
+    width: 100%;
+  }
 }
 
 .friend-rematch-dialog__title {

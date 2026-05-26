@@ -49,8 +49,6 @@ export function HomePage() {
   );
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [dialogIntent, setDialogIntent] = useState<ProfileDialogIntent>(null);
-  const [modeBeforeFriendDialog, setModeBeforeFriendDialog] =
-    useState<GameMode | null>(null);
   const [pendingJoinCode, setPendingJoinCode] = useState<string | null>(null);
   const queueCounts = useMatchmakingQueueCounts();
 
@@ -101,21 +99,7 @@ export function HomePage() {
   };
 
   const handleModeChange = (newMode: GameMode) => {
-    if (newMode === "friend") {
-      setModeBeforeFriendDialog(mode);
-      setMode("friend");
-      setDialogIntent("host");
-      setProfileDialogOpen(true);
-      return;
-    }
-
     setMode(newMode);
-  };
-
-  const openHostProfileDialog = () => {
-    setDialogIntent("host");
-    setMode("friend");
-    setProfileDialogOpen(true);
   };
 
   const handleProfileConfirm = (profile: PlayerProfile) => {
@@ -127,14 +111,12 @@ export function HomePage() {
       const code = pendingJoinCode;
       setPendingJoinCode(null);
       setDialogIntent(null);
-      setModeBeforeFriendDialog(null);
       navigate(`/join/${code}`);
       return;
     }
 
     if (dialogIntent === "host") {
       setDialogIntent(null);
-      setModeBeforeFriendDialog(null);
       void startFriendGame(profile);
       return;
     }
@@ -144,22 +126,12 @@ export function HomePage() {
       void startRandomGame(profile);
       return;
     }
-
-    setMode("friend");
-    setDialogIntent(null);
-    setModeBeforeFriendDialog(null);
   };
 
   const handleProfileCancel = () => {
     setProfileDialogOpen(false);
     setPendingJoinCode(null);
-
-    if (dialogIntent === "host" && modeBeforeFriendDialog !== null) {
-      setMode(modeBeforeFriendDialog);
-    }
-
     setDialogIntent(null);
-    setModeBeforeFriendDialog(null);
   };
 
   const handleStart = () => {
@@ -174,7 +146,8 @@ export function HomePage() {
     }
 
     if (mode === "friend") {
-      openHostProfileDialog();
+      setDialogIntent("host");
+      setProfileDialogOpen(true);
       return;
     }
 
@@ -268,20 +241,20 @@ export function HomePage() {
             Играть бесплатно без регистрации
           </h2>
 
-          {mode !== "friend" && (
-            <button
-              type="button"
-              className="btn btn--primary home-page__start"
-              onClick={handleStart}
-              disabled={loading}
-            >
-              {loading ? "Загрузка..." : "Начать игру"}
-            </button>
-          )}
-
-          {mode === "friend" && loading && (
-            <p className="home-page__waiting-hint">Создаём игру…</p>
-          )}
+          <button
+            type="button"
+            className="btn btn--primary home-page__start"
+            onClick={handleStart}
+            disabled={loading || profileDialogOpen}
+          >
+            {loading
+              ? mode === "friend"
+                ? "Создаём игру…"
+                : "Загрузка..."
+              : mode === "friend"
+                ? "Создать игру"
+                : "Начать игру"}
+          </button>
 
           {error && <p className="home-page__error">{error}</p>}
         </section>

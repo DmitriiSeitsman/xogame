@@ -1,4 +1,5 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import type { PlayerProfile } from "../../utils/playerProfile";
 import "./PlayerProfileDialog.css";
 
@@ -19,11 +20,24 @@ export function PlayerProfileDialog({
   onConfirm,
   onCancel,
 }: PlayerProfileDialogProps) {
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   if (!open) {
     return null;
   }
 
-  return (
+  return createPortal(
     <PlayerProfileDialogForm
       key={`${initialProfile.name}-${initialProfile.age ?? ""}`}
       title={title}
@@ -31,7 +45,8 @@ export function PlayerProfileDialog({
       initialProfile={initialProfile}
       onConfirm={onConfirm}
       onCancel={onCancel}
-    />
+    />,
+    document.body,
   );
 }
 

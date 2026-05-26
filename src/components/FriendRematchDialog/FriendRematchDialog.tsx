@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import "./FriendRematchDialog.css";
 
 type FriendRematchDialogProps = {
@@ -23,11 +25,24 @@ export function FriendRematchDialog({
   loading = false,
   closeOnBackdrop = false,
 }: FriendRematchDialogProps) {
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   if (!open) {
     return null;
   }
 
-  return (
+  return createPortal(
     <div className="friend-rematch-dialog" role="presentation">
       {closeOnBackdrop ? (
         <button
@@ -72,6 +87,7 @@ export function FriendRematchDialog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
