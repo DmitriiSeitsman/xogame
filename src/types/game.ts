@@ -20,6 +20,8 @@ export type Cell = "" | "X" | "O";
 
 export type Winner = "X" | "O" | "draw" | null;
 
+export type RematchStatus = "offered" | "declined";
+
 export type Game = {
   id: string;
   mode: GameMode;
@@ -36,6 +38,7 @@ export type Game = {
   current_turn: PlayerSymbol;
   board: Cell[];
   winner: Winner;
+  rematch_status: RematchStatus | null;
   created_at: string;
   updated_at: string;
 };

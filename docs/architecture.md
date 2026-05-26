@@ -32,6 +32,16 @@ Flow:
 
 All moves go through `make_move` RPC.
 
+After a friend game ends (`status = finished`):
+
+1. The **host** (player who created the game, `player_x_token`) sees a dialog: play again?
+2. If the host confirms, `offer_friend_rematch` sets `rematch_status = offered`.
+3. The **guest** (`player_o_token`) sees an invitation with the host’s display name and can accept or decline.
+4. Accept → `accept_friend_rematch` resets the same game row (`playing`, empty board, same invite code and players).
+5. Decline or host “No” → `decline_friend_rematch`, then return to home.
+
+SQL: `docs/database/006_friend_rematch.sql`.
+
 ### 3. Random matchmaking
 
 Flow:

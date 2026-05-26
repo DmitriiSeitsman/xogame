@@ -6,6 +6,7 @@ import { DifficultySelector } from "../components/DifficultySelector/DifficultyS
 import { ModeSelector } from "../components/ModeSelector/ModeSelector";
 import { PlayerProfileDialog } from "../components/PlayerProfileDialog/PlayerProfileDialog";
 import { Seo } from "../components/Seo/Seo";
+import { SymbolThemeSelector } from "../components/SymbolThemeSelector/SymbolThemeSelector";
 import {
   createFriendGame,
   joinRandomMatchmaking,
@@ -13,10 +14,15 @@ import {
 import { useMatchmakingQueueCounts } from "../hooks/useMatchmakingQueueCounts";
 import { HOME_JSON_LD, SITE_URL } from "../constants/seo";
 import type { BoardSize, ComputerDifficulty, GameMode } from "../types/game";
+import type { SymbolTheme } from "../types/gameTheme";
 import {
   loadComputerDifficulty,
   saveComputerDifficulty,
 } from "../utils/computerDifficulty";
+import {
+  getSavedSymbolTheme,
+  saveSymbolTheme,
+} from "../utils/symbolTheme";
 import {
   loadPlayerProfile,
   savePlayerProfile,
@@ -34,6 +40,7 @@ export function HomePage() {
   const [computerDifficulty, setComputerDifficulty] = useState<ComputerDifficulty>(
     loadComputerDifficulty,
   );
+  const [symbolTheme, setSymbolTheme] = useState<SymbolTheme>(getSavedSymbolTheme);
   const [inviteInput, setInviteInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,6 +92,11 @@ export function HomePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleThemeChange = (nextTheme: SymbolTheme) => {
+    setSymbolTheme(nextTheme);
+    saveSymbolTheme(nextTheme);
   };
 
   const handleModeChange = (newMode: GameMode) => {
@@ -235,6 +247,11 @@ export function HomePage() {
           <BoardSizeSelector
             value={boardSize}
             onChange={setBoardSize}
+            disabled={loading}
+          />
+          <SymbolThemeSelector
+            value={symbolTheme}
+            onChange={handleThemeChange}
             disabled={loading}
           />
 

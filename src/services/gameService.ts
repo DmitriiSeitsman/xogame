@@ -38,6 +38,7 @@ function mapGame(row: Record<string, unknown>): Game {
     current_turn: row.current_turn as Game["current_turn"],
     board: row.board as Game["board"],
     winner: (row.winner as Game["winner"]) ?? null,
+    rematch_status: (row.rematch_status as Game["rematch_status"]) ?? null,
     created_at: row.created_at as string,
     updated_at: row.updated_at as string,
   };
@@ -150,6 +151,54 @@ export async function cancelRandomSearch(params: {
   gameId: string;
 }): Promise<Game> {
   const { data, error } = await supabase.rpc("cancel_random_search", {
+    p_player_token: params.playerToken,
+    p_game_id: params.gameId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return mapGame(data as Record<string, unknown>);
+}
+
+export async function offerFriendRematch(params: {
+  playerToken: string;
+  gameId: string;
+}): Promise<Game> {
+  const { data, error } = await supabase.rpc("offer_friend_rematch", {
+    p_player_token: params.playerToken,
+    p_game_id: params.gameId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return mapGame(data as Record<string, unknown>);
+}
+
+export async function acceptFriendRematch(params: {
+  playerToken: string;
+  gameId: string;
+}): Promise<Game> {
+  const { data, error } = await supabase.rpc("accept_friend_rematch", {
+    p_player_token: params.playerToken,
+    p_game_id: params.gameId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return mapGame(data as Record<string, unknown>);
+}
+
+export async function declineFriendRematch(params: {
+  playerToken: string;
+  gameId: string;
+}): Promise<Game> {
+  const { data, error } = await supabase.rpc("decline_friend_rematch", {
     p_player_token: params.playerToken,
     p_game_id: params.gameId,
   });

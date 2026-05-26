@@ -1,0 +1,103 @@
+.symbol-theme-selector {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+.symbol-theme-selector__header {
+  display: grid;
+  gap: 4px;
+}
+
+.symbol-theme-selector__header h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+}
+
+.symbol-theme-selector__header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.symbol-theme-selector__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.symbol-theme-option {
+  min-height: 86px;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  color: var(--color-text-primary);
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.symbol-theme-option:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+.symbol-theme-option--selected {
+  border-color: rgba(236, 72, 153, 0.38);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(253, 242, 248, 0.86)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 16px 34px rgba(236, 72, 153, 0.14),
+    0 0 0 4px rgba(236, 72, 153, 0.08);
+}
+
+.symbol-theme-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.symbol-theme-option__preview--icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 52px;
+  line-height: 0;
+}
+
+.symbol-theme-option__preview--icons .symbol-theme-option__icon,
+.symbol-theme-option__preview--icons .symbol-svg,
+.symbol-theme-option__preview--icons .symbol-svg-wrap {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+}
+
+.symbol-theme-option__preview--icons .symbol-theme-option__icon--unicorn,
+.symbol-theme-option__preview--icons .unicorn-icon {
+  width: 50px;
+  height: 50px;
+  transform: scale(1.12);
+  transform-origin: center;
+}
+
+.symbol-theme-option__title {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 480px) {
+  .symbol-theme-selector__options {
+    grid-template-columns: 1fr;
+  }
+}

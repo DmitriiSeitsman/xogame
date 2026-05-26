@@ -1,22 +1,117 @@
 .game-symbol {
-  width: 68%;
-  height: 68%;
+  width: 74%;
+  height: 74%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: symbol-pop 220ms cubic-bezier(0.2, 0.95, 0.25, 1.2) both;
+  transform-origin: center;
+}
+
+.game-symbol--magic {
+  width: 78%;
+  height: 78%;
+}
+
+.game-symbol--classic {
+  width: 72%;
+  height: 72%;
+}
+
+.symbol-svg,
+.symbol-svg-wrap {
+  width: 100%;
+  height: 100%;
   display: block;
-  animation: scale-in 220ms var(--ease-out) both;
+}
+
+.symbol-svg-wrap {
+  line-height: 0;
+}
+
+.symbol-svg-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.symbol-svg {
+  overflow: visible;
+}
+
+.unicorn-icon {
+  transform: scale(1.18);
+  transform-origin: center;
+  filter:
+    drop-shadow(0 6px 8px rgba(168, 85, 247, 0.18))
+    drop-shadow(0 2px 3px rgba(236, 72, 153, 0.14));
+}
+
+.heart-icon {
+  transform: scale(1.02);
+  transform-origin: center;
+}
+
+.classic-x-icon,
+.classic-o-icon {
+  transform-origin: center;
 }
 
 .game-symbol--winning {
   animation:
-    scale-in 220ms var(--ease-out) both,
-    symbol-pulse 1.6s ease-in-out infinite;
+    symbol-pop 220ms cubic-bezier(0.2, 0.95, 0.25, 1.2) both,
+    symbol-winning-pulse 950ms ease-in-out infinite;
 }
 
-@keyframes symbol-pulse {
+.symbol-svg--winning,
+.symbol-svg-wrap--winning {
+  filter:
+    drop-shadow(0 0 10px rgba(250, 204, 21, 0.42))
+    drop-shadow(0 7px 12px rgba(236, 72, 153, 0.18));
+}
+
+@keyframes symbol-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.68) rotate(-3deg);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.08) rotate(1deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes symbol-winning-pulse {
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
-    transform: scale(1.06);
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 640px) {
+  .game-symbol {
+    width: 78%;
+    height: 78%;
+  }
+
+  .game-symbol--magic {
+    width: 82%;
+    height: 82%;
+  }
+
+  .unicorn-icon {
+    transform: scale(1.22);
   }
 }

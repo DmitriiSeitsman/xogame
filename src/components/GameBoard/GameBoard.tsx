@@ -1,4 +1,5 @@
 import type { BoardSize, Cell } from "../../types/game";
+import type { SymbolTheme } from "../../types/gameTheme";
 import { GameCell } from "../GameCell/GameCell";
 import "./GameBoard.css";
 
@@ -7,6 +8,7 @@ type GameBoardProps = {
   boardSize: BoardSize;
   disabled?: boolean;
   winningCells?: number[];
+  symbolTheme?: SymbolTheme;
   onCellClick: (index: number) => void;
 };
 
@@ -15,6 +17,7 @@ export function GameBoard({
   boardSize,
   disabled = false,
   winningCells = [],
+  symbolTheme = "classic",
   onCellClick,
 }: GameBoardProps) {
   const winningSet = new Set(winningCells);
@@ -36,6 +39,7 @@ export function GameBoard({
           value={cell}
           disabled={disabled || cell !== ""}
           isWinning={winningSet.has(index)}
+          symbolTheme={symbolTheme}
           onClick={() => onCellClick(index)}
         />
       ))}

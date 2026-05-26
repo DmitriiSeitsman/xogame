@@ -1,4 +1,5 @@
 import type { Cell } from "../../types/game";
+import type { SymbolTheme } from "../../types/gameTheme";
 import { GameSymbol } from "../GameSymbol/GameSymbol";
 import "./GameCell.css";
 
@@ -7,6 +8,7 @@ type GameCellProps = {
   value: Cell;
   disabled?: boolean;
   isWinning?: boolean;
+  symbolTheme?: SymbolTheme;
   onClick: () => void;
 };
 
@@ -23,6 +25,7 @@ export function GameCell({
   value,
   disabled = false,
   isWinning = false,
+  symbolTheme = "classic",
   onClick,
 }: GameCellProps) {
   const isOccupied = value !== "";
@@ -44,7 +47,13 @@ export function GameCell({
       aria-label={getAriaLabel(index, value)}
       aria-disabled={!isInteractive}
     >
-      {value && <GameSymbol symbol={value} isWinning={isWinning} />}
+      {value !== "" && (
+        <GameSymbol
+          symbol={value}
+          theme={symbolTheme}
+          isWinning={isWinning}
+        />
+      )}
     </button>
   );
 }

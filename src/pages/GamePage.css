@@ -1,3 +1,11 @@
+.game-page__rematch-hint {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
 .game-page__actions {
   display: flex;
   flex-wrap: wrap;

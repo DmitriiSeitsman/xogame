@@ -3,16 +3,20 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { GameBoard } from "../components/GameBoard/GameBoard";
 import { GameLayout } from "../components/GameLayout/GameLayout";
 import { GameStatus } from "../components/GameStatus/GameStatus";
+import { FriendRematchDialog } from "../components/FriendRematchDialog/FriendRematchDialog";
 import { InviteBox } from "../components/InviteBox/InviteBox";
 import { Seo } from "../components/Seo/Seo";
 import { getComputerMove } from "../services/computerPlayerService";
 import type { ComputerMoveRequest } from "../services/computerPlayerService";
 import {
+  acceptFriendRematch,
   cancelRandomSearch,
+  declineFriendRematch,
   getGameById,
   heartbeatRandomMatchmaking,
   leaveRandomMatchmaking,
   makeMove,
+  offerFriendRematch,
   subscribeToGame,
 } from "../services/gameService";
 import type {
@@ -23,6 +27,7 @@ import type {
   LocalGameState,
   PlayerSymbol,
 } from "../types/game";
+import type { SymbolTheme } from "../types/gameTheme";
 import {
   calculateWinner,
   createEmptyBoard,
@@ -40,6 +45,12 @@ import {
 import type { ComputerMoveWorkerResponse } from "../workers/computerMove.worker";
 import { getOpponentProfileLabel } from "../utils/opponent";
 import { getOrCreatePlayerToken } from "../utils/playerToken";
+import {
+  getHostProfileLabel,
+  isFriendGameGuest,
+  isFriendGameHost,
+} from "../utils/rematch";
+import { getSavedSymbolTheme } from "../utils/symbolTheme";
 import { getTurnMessage, getWinnerMessage } from "../utils/winner";
 import "./GamePage.css";
 
@@ -95,6 +106,7 @@ export function GamePage() {
   const [loading, setLoading] = useState(!isLocal);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [symbolTheme] = useState<SymbolTheme>(() => getSavedSymbolTheme());
 
   const playerToken = useMemo(() => getOrCreatePlayerToken(), []);
   const isWaitingRandomRef = useRef(false);
@@ -421,6 +433,80 @@ export function GamePage() {
     }
   };
 
+  const handleHostRematchYes = async () => {
+    if (!gameId || !remoteGame) return;
+
+    setActionLoading(true);
+    setError(null);
+
+    try {
+      const game = await offerFriendRematch({ playerToken, gameId });
+      setRemoteGame(game);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Не удалось предложить реванш",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleHostRematchNo = async () => {
+    if (!gameId) {
+      navigate("/");
+      return;
+    }
+
+    setActionLoading(true);
+    setError(null);
+
+    try {
+      await declineFriendRematch({ playerToken, gameId });
+    } catch {
+      // Still leave the finished game
+    } finally {
+      setActionLoading(false);
+      navigate("/");
+    }
+  };
+
+  const handleGuestRematchAccept = async () => {
+    if (!gameId || !remoteGame) return;
+
+    setActionLoading(true);
+    setError(null);
+
+    try {
+      const game = await acceptFriendRematch({ playerToken, gameId });
+      setRemoteGame(game);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Не удалось начать новую партию",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleGuestRematchDecline = async () => {
+    if (!gameId) {
+      navigate("/");
+      return;
+    }
+
+    setActionLoading(true);
+    setError(null);
+
+    try {
+      await declineFriendRematch({ playerToken, gameId });
+    } catch {
+      // Still leave
+    } finally {
+      setActionLoading(false);
+      navigate("/");
+    }
+  };
+
   const handleCancelSearch = async () => {
     if (!remoteGame || !gameId) return;
 
@@ -520,6 +606,7 @@ export function GamePage() {
           }
           variant={isFinished ? "success" : botThinking ? "muted" : "default"}
           symbol={botThinking ? "O" : statusSymbol}
+          symbolTheme={symbolTheme}
           showLoader={botThinking}
         />
         {botThinking && (
@@ -544,6 +631,7 @@ export function GamePage() {
           boardSize={localGame.boardSize}
           disabled={isFinished || botThinking}
           winningCells={winningCells}
+          symbolTheme={symbolTheme}
           onCellClick={handleLocalMove}
         />
         {isFinished && (
@@ -643,6 +731,27 @@ export function GamePage() {
     actionLoading ||
     playerSymbol !== remoteGame.current_turn;
 
+  const isFriendFinished =
+    remoteGame.mode === "friend" &&
+    isFinished &&
+    remoteGame.player_o_token != null;
+
+  const isHost = isFriendGameHost(remoteGame, playerToken);
+  const isGuest = isFriendGameGuest(remoteGame, playerToken);
+  const hostProfileLabel = getHostProfileLabel(remoteGame);
+
+  const showHostRematchDialog =
+    isFriendFinished && isHost && remoteGame.rematch_status == null;
+
+  const showGuestRematchDialog =
+    isFriendFinished && isGuest && remoteGame.rematch_status === "offered";
+
+  const showRematchWaiting =
+    isFriendFinished && isHost && remoteGame.rematch_status === "offered";
+
+  const showRematchDeclined =
+    isFriendFinished && remoteGame.rematch_status === "declined";
+
   return (
     <GameLayout>
       <Seo
@@ -655,6 +764,7 @@ export function GamePage() {
         subtitle={statusSubtitle}
         variant={statusVariant}
         symbol={statusSymbol}
+        symbolTheme={symbolTheme}
         showLoader={showLoader}
       />
 
@@ -701,19 +811,53 @@ export function GamePage() {
           boardSize={remoteGame.board_size}
           disabled={boardDisabled || isFinished}
           winningCells={winningCells}
+          symbolTheme={symbolTheme}
           onCellClick={handleRemoteMove}
         />
       )}
 
       {error && <p className="game-page__error">{error}</p>}
 
-      {isFinished && (
-        <div className="game-page__actions">
-          <Link to="/" className="btn btn--primary">
-            На главную
-          </Link>
-        </div>
-      )}
+      <FriendRematchDialog
+        open={showHostRematchDialog}
+        title="Хотите сыграть ещё раз?"
+        primaryLabel="Да"
+        secondaryLabel="Нет"
+        onPrimary={() => void handleHostRematchYes()}
+        onSecondary={() => void handleHostRematchNo()}
+        loading={actionLoading}
+      />
+
+      <FriendRematchDialog
+        open={showGuestRematchDialog}
+        title={`Игрок ${hostProfileLabel} предлагает сыграть ещё раз`}
+        primaryLabel="Играть"
+        secondaryLabel="Отмена"
+        onPrimary={() => void handleGuestRematchAccept()}
+        onSecondary={() => void handleGuestRematchDecline()}
+        loading={actionLoading}
+      />
+
+      {isFinished &&
+        !(showHostRematchDialog || showGuestRematchDialog) && (
+          <div className="game-page__actions">
+            {showRematchWaiting && (
+              <p className="game-page__rematch-hint" role="status">
+                Ждём ответа друга…
+              </p>
+            )}
+            {showRematchDeclined && (
+              <p className="game-page__rematch-hint" role="status">
+                {isHost
+                  ? "Друг отказался от реванша"
+                  : "Реванш отменён"}
+              </p>
+            )}
+            <Link to="/" className="btn btn--primary">
+              На главную
+            </Link>
+          </div>
+        )}
     </GameLayout>
   );
 }
