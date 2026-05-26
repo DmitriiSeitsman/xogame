@@ -65,6 +65,7 @@ export function HomePage() {
         boardSize,
         playerName: profile.name,
         playerAge: profile.age,
+        symbolTheme,
       });
       navigate(`/game/${game.id}`);
     } catch (err) {

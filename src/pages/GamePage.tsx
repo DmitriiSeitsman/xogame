@@ -106,9 +106,21 @@ export function GamePage() {
   const [loading, setLoading] = useState(!isLocal);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [symbolTheme] = useState<SymbolTheme>(() => getSavedSymbolTheme());
+  const [localSymbolTheme] = useState<SymbolTheme>(() => getSavedSymbolTheme());
 
   const playerToken = useMemo(() => getOrCreatePlayerToken(), []);
+
+  const boardSymbolTheme = useMemo((): SymbolTheme => {
+    if (isLocal) {
+      return localSymbolTheme;
+    }
+
+    if (remoteGame?.symbol_theme) {
+      return remoteGame.symbol_theme;
+    }
+
+    return localSymbolTheme;
+  }, [isLocal, localSymbolTheme, remoteGame?.symbol_theme]);
   const isWaitingRandomRef = useRef(false);
   const gameIdRef = useRef<string | undefined>(gameId);
   const playerTokenRef = useRef(playerToken);
@@ -606,7 +618,7 @@ export function GamePage() {
           }
           variant={isFinished ? "success" : botThinking ? "muted" : "default"}
           symbol={botThinking ? "O" : statusSymbol}
-          symbolTheme={symbolTheme}
+          symbolTheme={boardSymbolTheme}
           showLoader={botThinking}
         />
         {botThinking && (
@@ -631,7 +643,7 @@ export function GamePage() {
           boardSize={localGame.boardSize}
           disabled={isFinished || botThinking}
           winningCells={winningCells}
-          symbolTheme={symbolTheme}
+          symbolTheme={boardSymbolTheme}
           onCellClick={handleLocalMove}
         />
         {isFinished && (
@@ -764,7 +776,7 @@ export function GamePage() {
         subtitle={statusSubtitle}
         variant={statusVariant}
         symbol={statusSymbol}
-        symbolTheme={symbolTheme}
+        symbolTheme={boardSymbolTheme}
         showLoader={showLoader}
       />
 
@@ -811,7 +823,7 @@ export function GamePage() {
           boardSize={remoteGame.board_size}
           disabled={boardDisabled || isFinished}
           winningCells={winningCells}
-          symbolTheme={symbolTheme}
+          symbolTheme={boardSymbolTheme}
           onCellClick={handleRemoteMove}
         />
       )}

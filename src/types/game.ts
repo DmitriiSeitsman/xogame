@@ -1,3 +1,5 @@
+import type { SymbolTheme } from "./gameTheme";
+
 export type ComputerDifficulty = "easy" | "medium" | "hard";
 
 export const COMPUTER_DIFFICULTIES: ComputerDifficulty[] = [
@@ -39,6 +41,7 @@ export type Game = {
   board: Cell[];
   winner: Winner;
   rematch_status: RematchStatus | null;
+  symbol_theme: SymbolTheme | null;
   created_at: string;
   updated_at: string;
 };

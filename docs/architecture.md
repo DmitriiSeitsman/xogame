@@ -22,8 +22,8 @@ Runs entirely on the client. The human plays as **X**, the computer as **O**. Bo
 Flow:
 
 1. Player A selects "С другом" and clicks Start.
-2. Frontend calls `create_friend_game` RPC.
-3. Supabase creates a `waiting` game with a 5-character invite code.
+2. Frontend calls `create_friend_game` RPC (includes host `symbol_theme` from home page).
+3. Supabase creates a `waiting` game with a 5-character invite code and stored theme.
 4. Player A sees `InviteBox` with link `/join/:inviteCode` and the code.
 5. Player B opens the link or enters the code on the home page.
 6. Frontend calls `join_friend_game` RPC.
@@ -41,6 +41,8 @@ After a friend game ends (`status = finished`):
 5. Decline or host “No” → `decline_friend_rematch`, then return to home.
 
 SQL: `docs/database/006_friend_rematch.sql`.
+
+Symbol theme for friend games is stored on `games.symbol_theme` (`007_game_symbol_theme.sql`) so both players see the same visuals.
 
 ### 3. Random matchmaking
 

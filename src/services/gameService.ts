@@ -1,4 +1,5 @@
 import type { BoardSize, Game } from "../types/game";
+import type { SymbolTheme } from "../types/gameTheme";
 import { supabase } from "./supabaseClient";
 
 const BOARD_SIZES: BoardSize[] = [3, 4, 5, 6];
@@ -39,6 +40,7 @@ function mapGame(row: Record<string, unknown>): Game {
     board: row.board as Game["board"],
     winner: (row.winner as Game["winner"]) ?? null,
     rematch_status: (row.rematch_status as Game["rematch_status"]) ?? null,
+    symbol_theme: (row.symbol_theme as SymbolTheme | null) ?? null,
     created_at: row.created_at as string,
     updated_at: row.updated_at as string,
   };
@@ -49,12 +51,14 @@ export async function createFriendGame(params: {
   boardSize: BoardSize;
   playerName: string;
   playerAge?: number | null;
+  symbolTheme?: SymbolTheme;
 }): Promise<Game> {
   const { data, error } = await supabase.rpc("create_friend_game", {
     p_player_token: params.playerToken,
     p_board_size: params.boardSize,
     p_player_name: params.playerName,
     p_player_age: params.playerAge ?? null,
+    p_symbol_theme: params.symbolTheme ?? "classic",
   });
 
   if (error) {
