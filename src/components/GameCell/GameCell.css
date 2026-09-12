@@ -20,7 +20,7 @@
 
 .game-cell:hover:not(:disabled):not(.game-cell--filled) {
   transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+  box-shadow: 0 10px 22px rgba(168, 85, 247, 0.16), 0 3px 8px rgba(236, 72, 153, 0.08);
   background: var(--color-cell-hover);
 }
 

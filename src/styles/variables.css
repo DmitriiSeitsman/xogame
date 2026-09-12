@@ -23,9 +23,12 @@
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
 
-  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
-  --shadow-cell: 0 10px 24px rgba(15, 23, 42, 0.1);
-  --shadow-board: 0 20px 50px rgba(15, 23, 42, 0.14);
+  /* Soft, warm-tinted shadows (pink/purple instead of flat slate) so cards
+     and the board read as a gentle glow floating on the pastel background
+     instead of a dark, muddy smudge. */
+  --shadow-soft: 0 14px 32px rgba(236, 72, 153, 0.12), 0 4px 10px rgba(249, 115, 22, 0.06);
+  --shadow-cell: 0 8px 18px rgba(168, 85, 247, 0.10), 0 2px 6px rgba(56, 189, 248, 0.06);
+  --shadow-board: 0 14px 30px rgba(236, 72, 153, 0.14), 0 3px 10px rgba(168, 85, 247, 0.08);
 
   --radius-page: 28px;
   --radius-card: 24px;
