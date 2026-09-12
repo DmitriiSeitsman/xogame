@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://xn----itbjbgccgrkqnn.xn--p1ai/sitemap.xml
+Sitemap: https://xo-game.online/sitemap.xml

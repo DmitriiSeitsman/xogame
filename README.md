@@ -1,12 +1,14 @@
 # Крестики-нолики (XOGame)
 
-Современная веб-игра «Крестики-нолики» на React + Vite + TypeScript + Supabase.
+Современная веб-игра «Крестики-нолики» на React + Vite + TypeScript. Бэкенд — свой Vapor (Swift) API + WebSocket поверх Postgres, см. репозиторий [XOGameBackend](https://github.com/DmitriiSeitsman/XOGameBackend).
+
+Прод: **https://xo-game.online**
 
 ## Режимы игры
 
-- **С компьютером** — локальная игра без Supabase
+- **С компьютером** — локальная игра, без обращений к бэкенду
 - **С другом** — создание игры по коду/ссылке приглашения
-- **Случайный игрок** — matchmaking через Supabase RPC
+- **Случайный игрок** — matchmaking через свой API
 
 ## Размеры поля
 
@@ -30,9 +32,16 @@ cp .env.example .env
 ```
 
 ```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_API_BASE_URL=https://api.xo-game.online
+VITE_WS_URL=wss://api.xo-game.online/ws/game
 VITE_ADS_ENABLED=false
+```
+
+Для локальной разработки против бэкенда, поднятого локально:
+
+```env
+VITE_API_BASE_URL=http://localhost:8092
+VITE_WS_URL=ws://localhost:8092/ws/game
 ```
 
 ## Запуск
@@ -47,40 +56,23 @@ npm run dev
 npm run build
 ```
 
-## Supabase: SQL миграции
+## Бэкенд и база данных
 
-Файлы находятся в `docs/database/`:
+Вся игровая логика (создание игр, ходы, matchmaking, реванши) живёт в Postgres-функциях, а не в этом репозитории. SQL-файлы в `docs/database/` — это **историческая справка** о том, как схема была устроена изначально на Supabase; актуальная миграция, применяемая при деплое, лежит в [XOGameBackend](https://github.com/DmitriiSeitsman/XOGameBackend) (`Sources/XOGameBackend/Migrations/CreateGameSchema.swift`) и содержит финальное состояние всех этих функций.
 
-1. `001_create_games.sql` — таблица `games`, индексы, trigger `updated_at`, базовая RLS policy
-2. `002_create_rpc_functions.sql` — RPC функции и helpers
-3. `003_realtime_and_rls_notes.md` — заметки по Realtime и безопасности
-4. `004_add_player_profiles.sql` — имена и возраст игроков (если БД создана до этого обновления)
-5. `005_matchmaking_queue.sql` — очередь matchmaking с heartbeat и счётчиками по размеру поля
+Эндпоинты API, которые вызывает фронтенд:
 
-Выполните SQL в Supabase SQL Editor в указанном порядке.
-
-## RPC функции
-
-| Функция | Назначение |
+| Endpoint | Назначение |
 |---------|------------|
-| `create_friend_game` | Создать игру с другом |
-| `join_friend_game` | Подключиться по invite code |
-| `join_random_matchmaking` | Встать в очередь / найти соперника |
-| `heartbeat_random_matchmaking` | Поддержать presence в очереди |
-| `leave_random_matchmaking` | Выйти из очереди |
-| `get_matchmaking_queue_counts` | Счётчики поиска по размеру поля |
-| `cancel_random_search` | Отменить поиск (алиас для leave) |
-| `make_move` | Сделать ход |
-
-## Realtime
-
-Включите Realtime для таблицы `games`:
-
-```sql
-alter publication supabase_realtime add table public.games;
-```
-
-Подробнее: `docs/database/003_realtime_and_rls_notes.md`
+| `POST /games/friend` | Создать игру с другом |
+| `POST /games/friend/join` | Подключиться по invite code |
+| `POST /games/random/join` | Встать в очередь / найти соперника |
+| `POST /games/random/heartbeat` | Поддержать presence в очереди |
+| `POST /games/random/leave` | Выйти из очереди (алиас: cancel) |
+| `GET /games/random/queue-counts` | Счётчики поиска по размеру поля |
+| `POST /games/:gameID/move` | Сделать ход |
+| `POST /games/:gameID/rematch/offer\|accept\|decline` | Реванш в игре с другом |
+| `GET /ws/game` | WebSocket-подписка на обновления игры |
 
 ## Структура проекта
 
@@ -89,18 +81,19 @@ src/
   app/           — App и router
   pages/         — HomePage, JoinGamePage, GamePage
   components/    — UI компоненты
-  services/      — Supabase и game service
+  services/      — apiClient, realtimeClient, gameService
   utils/         — game engine, player token, invite helpers
   types/         — TypeScript типы
   styles/        — global CSS
 docs/
-  database/      — SQL миграции
+  database/      — исторические SQL миграции (Supabase-эпоха)
   architecture.md
+  deploy.md      — деплой фронтенда (GitHub Pages)
 ```
 
 ## Идентификация игрока
 
-Регистрации нет. Игрок получает анонимный `playerToken` через `crypto.randomUUID()` и хранит его в `localStorage` (`xogame_player_token`).
+Регистрации нет. Игрок получает анонимный `playerToken` через `crypto.randomUUID()` и хранит его в `localStorage` (`xogame_player_token`). Токен передаётся бэкенду как bearer-токен/query-параметр и является единственным «удостоверением» — так же, как раньше был anon-ключ Supabase для RPC.
 
 ## Реклама
 
@@ -109,5 +102,5 @@ docs/
 ## Документация
 
 - [Архитектура](docs/architecture.md)
-- [Realtime и RLS](docs/database/003_realtime_and_rls_notes.md)
-# xogame
+- [Деплой фронтенда](docs/deploy.md)
+- [Деплой бэкенда](https://github.com/DmitriiSeitsman/XOGameBackend/blob/main/Docs/DEPLOYMENT.md)

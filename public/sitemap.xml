@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Punycode domain used for maximum crawler compatibility. Cyrillic: https://крестик-нолик.рф -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://xn----itbjbgccgrkqnn.xn--p1ai/</loc>
+    <loc>https://xo-game.online/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://xn----itbjbgccgrkqnn.xn--p1ai/rules</loc>
+    <loc>https://xo-game.online/rules</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xn----itbjbgccgrkqnn.xn--p1ai/about</loc>
+    <loc>https://xo-game.online/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://xn----itbjbgccgrkqnn.xn--p1ai/contacts</loc>
+    <loc>https://xo-game.online/contacts</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

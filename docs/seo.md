@@ -10,11 +10,11 @@
 
 ## Домен
 
-- Кириллический (IDN): `https://крестик-нолик.рф`
-- Punycode (для sitemap/robots): `https://xn----itbjbgccgrkqnn.xn--p1ai`
+- `https://xo-game.online`
 
-В UI, Open Graph и canonical используется кириллический домен.  
-В `sitemap.xml` и `robots.txt` — punycode для совместимости с краулерами.
+Домен латинский (ASCII), поэтому отдельного punycode-варианта для sitemap/robots больше не требуется — везде (UI, Open Graph, canonical, `sitemap.xml`, `robots.txt`) используется один и тот же `xo-game.online`.
+
+> До миграции сайт был на кириллическом IDN-домене `крестик-нолик.рф` (punycode `xn----itbjbgccgrkqnn.xn--p1ai`). Домен сменили из-за проблем с индексацией и открытием сайта; редиректа со старого домена нет, он просто оставлен.
 
 ## Индексация
 
@@ -64,6 +64,8 @@ npm run preview
 - `http://localhost:4173/sitemap.xml`
 - `http://localhost:4173/site.webmanifest`
 - meta-теги в `<head>` главной страницы
+
+После деплоя на новом домене стоит заново отправить `xo-game.online` в Google Search Console / Яндекс.Вебмастер — старый домен `крестик-нолик.рф` там был отдельным сайтом и его индексация теперь не актуальна.
 
 ## Будущие улучшения
 

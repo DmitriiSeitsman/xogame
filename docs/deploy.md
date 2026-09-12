@@ -1,40 +1,50 @@
-# Деплой на GitHub Pages
+# Деплой
+
+Проект теперь состоит из двух независимо деплоящихся частей:
+
+- **Фронтенд** — статический SPA на GitHub Pages (этот файл)
+- **Бэкенд** — Vapor/Swift API + WebSocket на своём сервере (`195.209.215.87`), репозиторий [XOGameBackend](https://github.com/DmitriiSeitsman/XOGameBackend). Инструкция по деплою бэкенда — `Docs/DEPLOYMENT.md` в том репозитории, здесь она не дублируется.
+
+## Фронтенд: GitHub Pages
 
 Репозиторий: [DmitriiSeitsman/xogame](https://github.com/DmitriiSeitsman/xogame)
 
-Публичный URL: **https://крестик-нолик.рф**  
-Punycode: `https://xn----itbjbgccgrkqnn.xn--p1ai`
+Публичный URL: **https://xo-game.online**
+
+> Ранее сайт жил на `крестик-нолик.рф` (кириллический IDN-домен). Из-за проблем с индексацией и открытием сайта в некоторых браузерах/клиентах домен сменили на `xo-game.online` без редиректа со старого домена — просто отказались от него.
 
 GitHub Pages также публикует проект из ветки `main`, но основной домен — кастомный.
 
-## Как это устроено
+### Как это устроено
 
 | Файл | Назначение |
 |------|------------|
 | `.github/workflows/deploy.yml` | Сборка и деплой через GitHub Actions |
-| `public/CNAME` | Кастомный домен `крестик-нолик.рф` |
+| `public/CNAME` | Кастомный домен `xo-game.online` |
 | `public/.nojekyll` | Отключает Jekyll на GitHub Pages |
 | `vite.config.ts` → `base: "/"` | Корень сайта на кастомном домене |
 | `npm run build` | Копирует `index.html` → `404.html` для SPA-роутинга |
 
-## Однократная настройка GitHub
+### Однократная настройка GitHub
 
-### 1. Secrets (Settings → Secrets and variables → Actions)
+#### 1. Secrets (Settings → Secrets and variables → Actions)
 
 | Secret | Значение |
 |--------|----------|
-| `VITE_SUPABASE_URL` | `https://ukscmtyscksoqhiasnze.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | ваш publishable key |
+| `VITE_API_BASE_URL` | `https://api.xo-game.online` |
+| `VITE_WS_URL` | `wss://api.xo-game.online/ws/game` |
 
-### 2. GitHub Pages (Settings → Pages)
+Старые `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` больше не используются — Supabase из проекта убран, вся логика теперь на своём бэкенде.
+
+#### 2. GitHub Pages (Settings → Pages)
 
 - **Source:** GitHub Actions
-- **Custom domain:** `крестик-нолик.рф`
+- **Custom domain:** `xo-game.online`
 - Включить **Enforce HTTPS** (после выпуска сертификата)
 
-### 3. DNS у регистратора домена
+#### 3. DNS у регистратора домена `xo-game.online`
 
-Для apex-домена `крестик-нолик.рф`:
+Для apex-домена:
 
 ```
 A    @    185.199.108.153
@@ -51,7 +61,13 @@ CNAME    www    dmitriiseitsman.github.io
 
 Точные записи GitHub покажет в Settings → Pages после добавления домена.
 
-## Деплой
+Отдельно нужна DNS-запись для бэкенда (на своём сервере, не GitHub Pages):
+
+```
+A    api    195.209.215.87
+```
+
+## Деплой фронтенда
 
 ```bash
 git add .
@@ -75,15 +91,15 @@ npm run preview
 ## Важно
 
 - **Не коммитьте `.env`** — секреты только в GitHub Actions Secrets
-- Invite-ссылки строятся от `window.location.origin` — на проде будут с доменом `крестик-нолик.рф`
+- Invite-ссылки строятся от `window.location.origin` — на проде будут с доменом `xo-game.online`
 - URL `dmitriiseitsman.github.io/xogame/` может не открывать assets корректно — используйте кастомный домен
-- Supabase: в SQL Editor должны быть выполнены миграции из `docs/database/`
+- Бэкенд (Postgres + миграции) деплоится и мигрируется отдельно — см. `Docs/DEPLOYMENT.md` в `XOGameBackend`
 
 ## Проверка после деплоя
 
-- [ ] https://крестик-нолик.рф/ — главная
-- [ ] https://крестик-нолик.рф/rules — правила (прямая ссылка)
-- [ ] https://крестик-нолик.рф/about — об игре
+- [ ] https://xo-game.online/ — главная
+- [ ] https://xo-game.online/rules — правила (прямая ссылка)
+- [ ] https://xo-game.online/about — об игре
 - [ ] Режим «С компьютером»
-- [ ] Мультиплеер через Supabase
+- [ ] Мультиплеер через свой бэкенд (`api.xo-game.online`)
 - [ ] `/robots.txt`, `/sitemap.xml`

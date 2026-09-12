@@ -1,6 +1,8 @@
 import type { BoardSize, Game } from "../types/game";
 import type { SymbolTheme } from "../types/gameTheme";
-import { supabase } from "./supabaseClient";
+import { apiGet, apiPost } from "./apiClient";
+
+export { subscribeToGame } from "./realtimeClient";
 
 const BOARD_SIZES: BoardSize[] = [3, 4, 5, 6];
 
@@ -20,6 +22,10 @@ function parseQueueCounts(payload: unknown): Record<BoardSize, number> {
   }, { 3: 0, 4: 0, 5: 0, 6: 0 });
 }
 
+// The backend's GameDTO is encoded with the exact same snake_case field
+// names this Game type already expects (see XOGameBackend's GameDTO.swift),
+// so this is mostly a pass-through — kept mainly as a defensive boundary in
+// case the API ever returns extra/unexpected fields.
 function mapGame(row: Record<string, unknown>): Game {
   return {
     id: row.id as string,
@@ -53,19 +59,14 @@ export async function createFriendGame(params: {
   playerAge?: number | null;
   symbolTheme?: SymbolTheme;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("create_friend_game", {
-    p_player_token: params.playerToken,
-    p_board_size: params.boardSize,
-    p_player_name: params.playerName,
-    p_player_age: params.playerAge ?? null,
-    p_symbol_theme: params.symbolTheme ?? "classic",
+  const data = await apiPost<Record<string, unknown>>("/games/friend", {
+    playerToken: params.playerToken,
+    boardSize: params.boardSize,
+    playerName: params.playerName,
+    playerAge: params.playerAge ?? null,
+    symbolTheme: params.symbolTheme ?? "classic",
   });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  return mapGame(data);
 }
 
 export async function joinFriendGame(params: {
@@ -74,29 +75,19 @@ export async function joinFriendGame(params: {
   playerName: string;
   playerAge?: number | null;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("join_friend_game", {
-    p_player_token: params.playerToken,
-    p_invite_code: params.inviteCode.toUpperCase(),
-    p_player_name: params.playerName,
-    p_player_age: params.playerAge ?? null,
+  const data = await apiPost<Record<string, unknown>>("/games/friend/join", {
+    playerToken: params.playerToken,
+    inviteCode: params.inviteCode.toUpperCase(),
+    playerName: params.playerName,
+    playerAge: params.playerAge ?? null,
   });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  return mapGame(data);
 }
 
 export async function getMatchmakingQueueCounts(): Promise<
   Record<BoardSize, number>
 > {
-  const { data, error } = await supabase.rpc("get_matchmaking_queue_counts");
-
-  if (error) {
-    throw error;
-  }
-
+  const data = await apiGet<unknown>("/games/random/queue-counts");
   return parseQueueCounts(data);
 }
 
@@ -106,112 +97,79 @@ export async function joinRandomMatchmaking(params: {
   playerName: string;
   playerAge?: number | null;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("join_random_matchmaking", {
-    p_player_token: params.playerToken,
-    p_board_size: params.boardSize,
-    p_player_name: params.playerName,
-    p_player_age: params.playerAge ?? null,
+  const data = await apiPost<Record<string, unknown>>("/games/random/join", {
+    playerToken: params.playerToken,
+    boardSize: params.boardSize,
+    playerName: params.playerName,
+    playerAge: params.playerAge ?? null,
   });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  return mapGame(data);
 }
 
 export async function heartbeatRandomMatchmaking(params: {
   playerToken: string;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("heartbeat_random_matchmaking", {
-    p_player_token: params.playerToken,
+  const data = await apiPost<Record<string, unknown>>("/games/random/heartbeat", {
+    playerToken: params.playerToken,
   });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  return mapGame(data);
 }
 
 export async function leaveRandomMatchmaking(params: {
   playerToken: string;
   gameId: string;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("leave_random_matchmaking", {
-    p_player_token: params.playerToken,
-    p_game_id: params.gameId,
+  const data = await apiPost<Record<string, unknown>>("/games/random/leave", {
+    playerToken: params.playerToken,
+    gameId: params.gameId,
   });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  return mapGame(data);
 }
 
 export async function cancelRandomSearch(params: {
   playerToken: string;
   gameId: string;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("cancel_random_search", {
-    p_player_token: params.playerToken,
-    p_game_id: params.gameId,
+  // The backend consolidates cancel/leave into the same function (they were
+  // already the same thing as of xogame's 005_matchmaking_queue.sql).
+  const data = await apiPost<Record<string, unknown>>("/games/random/leave", {
+    playerToken: params.playerToken,
+    gameId: params.gameId,
   });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  return mapGame(data);
 }
 
 export async function offerFriendRematch(params: {
   playerToken: string;
   gameId: string;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("offer_friend_rematch", {
-    p_player_token: params.playerToken,
-    p_game_id: params.gameId,
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  const data = await apiPost<Record<string, unknown>>(
+    `/games/${params.gameId}/rematch/offer`,
+    { playerToken: params.playerToken },
+  );
+  return mapGame(data);
 }
 
 export async function acceptFriendRematch(params: {
   playerToken: string;
   gameId: string;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("accept_friend_rematch", {
-    p_player_token: params.playerToken,
-    p_game_id: params.gameId,
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  const data = await apiPost<Record<string, unknown>>(
+    `/games/${params.gameId}/rematch/accept`,
+    { playerToken: params.playerToken },
+  );
+  return mapGame(data);
 }
 
 export async function declineFriendRematch(params: {
   playerToken: string;
   gameId: string;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("decline_friend_rematch", {
-    p_player_token: params.playerToken,
-    p_game_id: params.gameId,
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  const data = await apiPost<Record<string, unknown>>(
+    `/games/${params.gameId}/rematch/decline`,
+    { playerToken: params.playerToken },
+  );
+  return mapGame(data);
 }
 
 export async function makeMove(params: {
@@ -219,54 +177,14 @@ export async function makeMove(params: {
   gameId: string;
   cellIndex: number;
 }): Promise<Game> {
-  const { data, error } = await supabase.rpc("make_move", {
-    p_player_token: params.playerToken,
-    p_game_id: params.gameId,
-    p_cell_index: params.cellIndex,
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
+  const data = await apiPost<Record<string, unknown>>(
+    `/games/${params.gameId}/move`,
+    { playerToken: params.playerToken, cellIndex: params.cellIndex },
+  );
+  return mapGame(data);
 }
 
 export async function getGameById(gameId: string): Promise<Game> {
-  const { data, error } = await supabase
-    .from("games")
-    .select("*")
-    .eq("id", gameId)
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  return mapGame(data as Record<string, unknown>);
-}
-
-export function subscribeToGame(params: {
-  gameId: string;
-  onUpdate: (game: Game) => void;
-}): () => void {
-  const channel = supabase
-    .channel(`game:${params.gameId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "UPDATE",
-        schema: "public",
-        table: "games",
-        filter: `id=eq.${params.gameId}`,
-      },
-      (payload) => {
-        params.onUpdate(mapGame(payload.new as Record<string, unknown>));
-      },
-    )
-    .subscribe();
-
-  return () => {
-    void supabase.removeChannel(channel);
-  };
+  const data = await apiGet<Record<string, unknown>>(`/games/${gameId}`);
+  return mapGame(data);
 }

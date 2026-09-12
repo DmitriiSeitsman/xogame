@@ -1,5 +1,7 @@
 # Realtime and RLS Notes
 
+> **Historical note:** this describes the original Supabase-based setup (RLS policies, `supabase_realtime` publication). The project has since migrated to a self-hosted Vapor API + WebSocket backend (see [XOGameBackend](https://github.com/DmitriiSeitsman/XOGameBackend)); there is no Supabase project, RLS, or `anon`/`authenticated` roles anymore — the equivalent authorization check now lives in `RealtimeSubscriptionAuthorizer` in that repo. Kept here as a record of the original design.
+
 ## Security model (MVP)
 
 For the MVP, reading from `public.games` is allowed for `anon` and `authenticated` roles via a permissive SELECT policy. This keeps the frontend simple while Realtime subscriptions work out of the box.

@@ -1,10 +1,12 @@
-/** Production site URL (Cyrillic IDN). */
-export const SITE_URL = "https://крестик-нолик.рф";
+/** Production site URL. */
+export const SITE_URL = "https://xo-game.online";
 
-/** Punycode version for sitemap.xml and technical files. */
-export const SITE_URL_PUNYCODE = "https://xn----itbjbgccgrkqnn.xn--p1ai";
+/** Kept for backward compat with anything that still imports the punycode
+ * constant name — now just equals SITE_URL since xo-game.online is already
+ * plain ASCII (no IDN punycode encoding needed). */
+export const SITE_URL_PUNYCODE = SITE_URL;
 
-export const SITE_NAME = "Крестик-нолик.рф";
+export const SITE_NAME = "XO Game";
 
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
