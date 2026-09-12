@@ -1,0 +1,74 @@
+.fairy-mascot {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  width: 56px;
+  height: 56px;
+  z-index: 40;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 10px rgba(249, 115, 22, 0.25));
+  animation: fairy-mascot-idle 3.2s ease-in-out infinite;
+}
+
+.fairy-mascot__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform-origin: 50% 60%;
+}
+
+.fairy-mascot__eye {
+  animation: fairy-mascot-blink 4.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes fairy-mascot-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+
+@keyframes fairy-mascot-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.1);
+  }
+}
+
+.fairy-mascot--celebrating {
+  animation: fairy-mascot-celebrate 0.5s ease-in-out infinite;
+}
+
+@keyframes fairy-mascot-celebrate {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-10deg) scale(1);
+  }
+  50% {
+    transform: translateY(-16px) rotate(10deg) scale(1.12);
+  }
+}
+
+@media (max-width: 480px) {
+  .fairy-mascot {
+    width: 44px;
+    height: 44px;
+    right: 10px;
+    bottom: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fairy-mascot,
+  .fairy-mascot__eye {
+    animation: none;
+  }
+}

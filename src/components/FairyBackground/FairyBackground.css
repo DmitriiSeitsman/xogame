@@ -1,0 +1,51 @@
+.fairy-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fairy-background__sparkle {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  filter: drop-shadow(0 2px 6px rgba(15, 23, 42, 0.08));
+  animation: fairy-twinkle 5s ease-in-out infinite both;
+}
+
+@keyframes fairy-twinkle {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.85) rotate(-6deg);
+  }
+  20% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateY(-8px) scale(1) rotate(4deg);
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.85) rotate(-6deg);
+  }
+}
+
+/* Keep decorations light on small screens so they never crowd the board. */
+@media (max-width: 480px) {
+  .fairy-background__sparkle:nth-child(3),
+  .fairy-background__sparkle:nth-child(6) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fairy-background__sparkle {
+    animation: none;
+    opacity: 0.4;
+  }
+}

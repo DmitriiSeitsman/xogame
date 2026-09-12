@@ -77,6 +77,20 @@
   display: block;
   user-select: none;
   pointer-events: none;
+  /* Paper-cutout / sticker look: a solid white outline (stacked unblurred
+     drop-shadows in a ring, since box-shadow can'''t follow PNG alpha)
+     plus a soft warm shadow underneath so the icon reads as a little
+     sticker sitting on the card rather than a flat image. */
+  filter:
+    drop-shadow(1.4px 0 0 #fff)
+    drop-shadow(-1.4px 0 0 #fff)
+    drop-shadow(0 1.4px 0 #fff)
+    drop-shadow(0 -1.4px 0 #fff)
+    drop-shadow(1px 1px 0 #fff)
+    drop-shadow(-1px -1px 0 #fff)
+    drop-shadow(1px -1px 0 #fff)
+    drop-shadow(-1px 1px 0 #fff)
+    drop-shadow(0 3px 4px rgba(15, 23, 42, 0.16));
 }
 
 .mode-selector__text {
@@ -87,6 +101,7 @@
 }
 
 .mode-selector__name {
+  font-family: var(--font-family-display);
   font-weight: 700;
   font-size: 1rem;
 }

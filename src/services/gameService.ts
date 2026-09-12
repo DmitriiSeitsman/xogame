@@ -3,6 +3,7 @@ import type { SymbolTheme } from "../types/gameTheme";
 import { apiGet, apiPost } from "./apiClient";
 
 export { subscribeToGame } from "./realtimeClient";
+export type { ChatMessage, GameRealtimeHandle } from "./realtimeClient";
 
 const BOARD_SIZES: BoardSize[] = [3, 4, 5, 6];
 

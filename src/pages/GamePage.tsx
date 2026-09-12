@@ -4,8 +4,12 @@ import { GameBoard } from "../components/GameBoard/GameBoard";
 import { GameLayout } from "../components/GameLayout/GameLayout";
 import { GameStatus } from "../components/GameStatus/GameStatus";
 import { FriendRematchDialog } from "../components/FriendRematchDialog/FriendRematchDialog";
+import { GameChat } from "../components/GameChat/GameChat";
 import { InviteBox } from "../components/InviteBox/InviteBox";
 import { Seo } from "../components/Seo/Seo";
+import { WinCelebration } from "../components/WinCelebration/WinCelebration";
+import { useCelebrationKey } from "../hooks/useCelebrationKey";
+import { emitCelebration } from "../utils/celebrationBus";
 import { getComputerMove } from "../services/computerPlayerService";
 import type { ComputerMoveRequest } from "../services/computerPlayerService";
 import {
@@ -19,6 +23,7 @@ import {
   offerFriendRematch,
   subscribeToGame,
 } from "../services/gameService";
+import type { ChatMessage, GameRealtimeHandle } from "../services/gameService";
 import type {
   BoardSize,
   Cell,
@@ -107,6 +112,8 @@ export function GamePage() {
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [localSymbolTheme] = useState<SymbolTheme>(() => getSavedSymbolTheme());
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const realtimeHandleRef = useRef<GameRealtimeHandle | null>(null);
 
   const playerToken = useMemo(() => getOrCreatePlayerToken(), []);
 
@@ -121,6 +128,24 @@ export function GamePage() {
 
     return localSymbolTheme;
   }, [isLocal, localSymbolTheme, remoteGame?.symbol_theme]);
+  const isLocalWin =
+    isLocal &&
+    localGame.status === "finished" &&
+    localGame.winner != null &&
+    localGame.winner !== "draw";
+  const isRemoteWin =
+    !isLocal &&
+    remoteGame?.status === "finished" &&
+    remoteGame?.winner != null &&
+    remoteGame?.winner !== "draw";
+  const celebrationKey = useCelebrationKey(isLocalWin || isRemoteWin);
+
+  useEffect(() => {
+    if (celebrationKey !== null) {
+      emitCelebration();
+    }
+  }, [celebrationKey]);
+
   const isWaitingRandomRef = useRef(false);
   const gameIdRef = useRef<string | undefined>(gameId);
   const playerTokenRef = useRef(playerToken);
@@ -146,8 +171,8 @@ export function GamePage() {
       return;
     }
 
-    let unsubscribe: (() => void) | undefined;
     let cancelled = false;
+    setChatMessages([]);
 
     const load = async () => {
       try {
@@ -157,12 +182,16 @@ export function GamePage() {
         setRemoteGame(game);
         setLoading(false);
 
-        unsubscribe = subscribeToGame({
+        const handle = subscribeToGame({
           gameId,
           onUpdate: (updatedGame) => {
             setRemoteGame(updatedGame);
           },
+          onChatMessage: (chatMessage) => {
+            setChatMessages((prev) => [...prev, chatMessage]);
+          },
         });
+        realtimeHandleRef.current = handle;
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : "Игра не найдена");
@@ -175,7 +204,8 @@ export function GamePage() {
 
     return () => {
       cancelled = true;
-      unsubscribe?.();
+      realtimeHandleRef.current?.close();
+      realtimeHandleRef.current = null;
     };
   }, [gameId, isLocal]);
 
@@ -544,6 +574,10 @@ export function GamePage() {
     setLocalGame(createLocalGame(localGame.boardSize, localGame.difficulty));
   };
 
+  const handleSendChatMessage = (text: string) => {
+    realtimeHandleRef.current?.sendChatMessage(text);
+  };
+
   if (loading) {
     return (
       <GameLayout>
@@ -621,6 +655,7 @@ export function GamePage() {
           symbolTheme={boardSymbolTheme}
           showLoader={botThinking}
         />
+        {celebrationKey !== null && <WinCelebration key={celebrationKey} />}
         {botThinking && (
           <div
             className="game-page__bot-thinking"
@@ -779,6 +814,7 @@ export function GamePage() {
         symbolTheme={boardSymbolTheme}
         showLoader={showLoader}
       />
+      {celebrationKey !== null && <WinCelebration key={celebrationKey} />}
 
       {opponentLabel && (
         <p className="game-page__opponent">
@@ -829,6 +865,14 @@ export function GamePage() {
       )}
 
       {error && <p className="game-page__error">{error}</p>}
+
+      {(isPlaying || isFinished) && (
+        <GameChat
+          messages={chatMessages}
+          myToken={playerToken}
+          onSend={handleSendChatMessage}
+        />
+      )}
 
       <FriendRematchDialog
         open={showHostRematchDialog}

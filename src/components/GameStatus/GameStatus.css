@@ -34,6 +34,7 @@
 
 .game-status__title {
   margin: 0;
+  font-family: var(--font-family-display);
   font-size: clamp(1rem, 3.5vw, 1.15rem);
   font-weight: 700;
   color: var(--color-text-primary);

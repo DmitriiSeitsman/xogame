@@ -17,23 +17,44 @@ const WS_URL: string =
 const PING_INTERVAL_MS = 20_000;
 const MAX_BACKOFF_MS = 30_000;
 const SEEN_EVENT_IDS_LIMIT = 50;
+const MAX_CHAT_MESSAGE_LENGTH = 300;
+
+export type ChatMessage = {
+  senderToken: string;
+  text: string;
+  sentAt: string;
+};
 
 type ServerMessage = {
   type: string;
   eventID?: string;
   gameID?: string;
   payload?: { game?: Game };
+  chat?: ChatMessage;
+};
+
+export type GameRealtimeHandle = {
+  /** Tears down the socket and stops reconnecting. */
+  close: () => void;
+  /** Sends a chat message over the same socket, if it's currently open.
+   * Silently no-ops when disconnected — chat is best-effort, same as the
+   * rest of this realtime layer. */
+  sendChatMessage: (text: string) => void;
 };
 
 export function subscribeToGame(params: {
   gameId: string;
   onUpdate: (game: Game) => void;
+  /** Called for every `chat.message` event for this game (both the sender's
+   * own echoed messages and the opponent's). Optional — omit if the caller
+   * doesn't want chat. */
+  onChatMessage?: (message: ChatMessage) => void;
   /** Called once after a fresh (re)connection succeeds — a good hook for
    * refetching the game via REST in case something was missed while the
    * socket was down. Optional; realtime is best-effort, not the source of
    * truth. */
   onReconnected?: () => void;
-}): () => void {
+}): GameRealtimeHandle {
   const playerToken = getOrCreatePlayerToken();
   const seenEventIds: string[] = [];
 
@@ -94,13 +115,16 @@ export function subscribeToGame(params: {
         return;
       }
 
-      if (message.type !== "game.updated" || !message.payload?.game) {
+      if (message.type === "game.updated" && message.payload?.game) {
+        if (rememberEventId(message.eventID)) return;
+        params.onUpdate(message.payload.game);
         return;
       }
-      if (rememberEventId(message.eventID)) {
-        return;
+
+      if (message.type === "chat.message" && message.chat) {
+        if (rememberEventId(message.eventID)) return;
+        params.onChatMessage?.(message.chat);
       }
-      params.onUpdate(message.payload.game);
     });
 
     socket.addEventListener("close", () => {
@@ -116,10 +140,22 @@ export function subscribeToGame(params: {
 
   connect();
 
-  return () => {
+  const sendChatMessage = (text: string) => {
+    const trimmed = text.trim().slice(0, MAX_CHAT_MESSAGE_LENGTH);
+    if (!trimmed || !socket || socket.readyState !== WebSocket.OPEN) {
+      return;
+    }
+    socket.send(
+      JSON.stringify({ type: "chat.send", gameID: params.gameId, text: trimmed }),
+    );
+  };
+
+  const close = () => {
     closedByCaller = true;
     clearTimers();
     socket?.close();
     socket = null;
   };
+
+  return { close, sendChatMessage };
 }

@@ -38,6 +38,9 @@
   --radius-lg: var(--radius-card);
 
   --font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  /* Rounded, playful display font (full Cyrillic support) for headings and
+     other short, prominent titles — body text stays on --font-family. */
+  --font-family-display: "Comfortaa", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 180ms;
