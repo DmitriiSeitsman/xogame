@@ -227,6 +227,12 @@ export function GamePage() {
           gameId,
           onUpdate: (updatedGame) => {
             setRemoteGame(updatedGame);
+            // Matchmaking clears the waiting player's queue row the moment a
+            // pair is made, so their last heartbeat can fail right as the
+            // game starts. That error must not follow them onto the board.
+            if (updatedGame.status !== "waiting") {
+              setError(null);
+            }
           },
           onChatMessage: (chatMessage) => {
             setChatMessages((prev) => [...prev, chatMessage]);
