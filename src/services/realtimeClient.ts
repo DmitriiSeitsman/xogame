@@ -25,12 +25,22 @@ export type ChatMessage = {
   sentAt: string;
 };
 
+/** `playerToken` is always the *other* participant — the server never
+ * reports a connection's own presence back to itself. */
+export type PresenceEvent = {
+  playerToken: string;
+  online: boolean;
+};
+
+export type ConnectionState = "connecting" | "open" | "closed";
+
 type ServerMessage = {
   type: string;
   eventID?: string;
   gameID?: string;
   payload?: { game?: Game };
   chat?: ChatMessage;
+  presence?: PresenceEvent;
 };
 
 export type GameRealtimeHandle = {
@@ -49,6 +59,14 @@ export function subscribeToGame(params: {
    * own echoed messages and the opponent's). Optional — omit if the caller
    * doesn't want chat. */
   onChatMessage?: (message: ChatMessage) => void;
+  /** Called whenever the opponent's connection to this game goes on/offline.
+   * Optional — omit if the caller doesn't want a presence indicator. */
+  onPresenceChange?: (presence: PresenceEvent) => void;
+  /** Called whenever *this* socket's own connection state changes. Only
+   * fires "connecting"/"closed" after the very first successful connect,
+   * so a slow initial page load doesn't flash a "reconnecting" state.
+   * Optional — omit if the caller doesn't want a connectivity indicator. */
+  onConnectionStateChange?: (state: ConnectionState) => void;
   /** Called once after a fresh (re)connection succeeds — a good hook for
    * refetching the game via REST in case something was missed while the
    * socket was down. Optional; realtime is best-effort, not the source of
@@ -90,6 +108,10 @@ export function subscribeToGame(params: {
   function connect() {
     if (closedByCaller) return;
 
+    if (hasConnectedBefore) {
+      params.onConnectionStateChange?.("connecting");
+    }
+
     const url = `${WS_URL}?token=${encodeURIComponent(playerToken)}`;
     socket = new WebSocket(url);
 
@@ -100,6 +122,8 @@ export function subscribeToGame(params: {
       pingTimer = window.setInterval(() => {
         socket?.send(JSON.stringify({ type: "ping" }));
       }, PING_INTERVAL_MS);
+
+      params.onConnectionStateChange?.("open");
 
       if (hasConnectedBefore) {
         params.onReconnected?.();
@@ -124,12 +148,21 @@ export function subscribeToGame(params: {
       if (message.type === "chat.message" && message.chat) {
         if (rememberEventId(message.eventID)) return;
         params.onChatMessage?.(message.chat);
+        return;
+      }
+
+      if (message.type === "presence.changed" && message.presence) {
+        if (rememberEventId(message.eventID)) return;
+        params.onPresenceChange?.(message.presence);
       }
     });
 
     socket.addEventListener("close", () => {
       if (pingTimer !== undefined) window.clearInterval(pingTimer);
       if (closedByCaller) return;
+      if (hasConnectedBefore) {
+        params.onConnectionStateChange?.("closed");
+      }
       scheduleReconnect();
     });
 

@@ -1,0 +1,63 @@
+.connection-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+  animation: fade-in-up var(--duration-fast) var(--ease-out) both;
+}
+
+.connection-overlay__panel {
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  padding: 24px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  box-sizing: border-box;
+}
+
+.connection-overlay__spinner {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  border: 3px solid rgba(56, 189, 248, 0.25);
+  border-top-color: var(--color-primary-start, #fb7185);
+  animation: connection-overlay-spin 0.8s linear infinite;
+}
+
+.connection-overlay__title {
+  margin: 0 0 6px;
+  font-family: var(--font-family-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.connection-overlay__subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connection-overlay__spinner {
+    animation: none;
+  }
+}
+
+@keyframes connection-overlay-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -7,6 +7,10 @@ const MAX_MESSAGE_LENGTH = 300;
 type GameChatProps = {
   messages: ChatMessage[];
   myToken: string;
+  /** Label shown above my own bubbles, e.g. "Дмитрий, 40 лет". Omitted if empty. */
+  myLabel?: string | null;
+  /** Label shown above the opponent's bubbles. Omitted if empty. */
+  opponentLabel?: string | null;
   onSend: (text: string) => void;
 };
 
@@ -23,7 +27,7 @@ function formatTime(iso: string): string {
  * Messages live only in memory for the current page session: nothing is
  * persisted, so a refresh clears the history (kept simple on purpose).
  */
-export function GameChat({ messages, myToken, onSend }: GameChatProps) {
+export function GameChat({ messages, myToken, myLabel, opponentLabel, onSend }: GameChatProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [unreadCount, setUnreadCount] = useState(0);
@@ -75,14 +79,28 @@ export function GameChat({ messages, myToken, onSend }: GameChatProps) {
               </p>
             )}
             {messages.map((message, index) => {
-              const isMine = message.senderToken === myToken;
+              const isMine =
+                message.senderToken.toLowerCase() === myToken.toLowerCase();
+              const label = isMine ? myLabel : opponentLabel;
+              const previousIsMine =
+                index > 0 &&
+                messages[index - 1].senderToken.toLowerCase() ===
+                  message.senderToken.toLowerCase();
+
               return (
                 <div
                   key={index}
-                  className={`game-chat__bubble${isMine ? " game-chat__bubble--mine" : ""}`}
+                  className={`game-chat__group${isMine ? " game-chat__group--mine" : ""}`}
                 >
-                  <span className="game-chat__text">{message.text}</span>
-                  <span className="game-chat__time">{formatTime(message.sentAt)}</span>
+                  {label && !previousIsMine && (
+                    <span className="game-chat__sender">{label}</span>
+                  )}
+                  <div
+                    className={`game-chat__bubble${isMine ? " game-chat__bubble--mine" : ""}`}
+                  >
+                    <span className="game-chat__text">{message.text}</span>
+                    <span className="game-chat__time">{formatTime(message.sentAt)}</span>
+                  </div>
                 </div>
               );
             })}

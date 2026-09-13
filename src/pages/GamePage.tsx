@@ -6,6 +6,8 @@ import { GameStatus } from "../components/GameStatus/GameStatus";
 import { FriendRematchDialog } from "../components/FriendRematchDialog/FriendRematchDialog";
 import { GameChat } from "../components/GameChat/GameChat";
 import { InviteBox } from "../components/InviteBox/InviteBox";
+import { OpponentPresenceNotice } from "../components/OpponentPresenceNotice/OpponentPresenceNotice";
+import { ConnectionOverlay } from "../components/ConnectionOverlay/ConnectionOverlay";
 import { Seo } from "../components/Seo/Seo";
 import { WinCelebration } from "../components/WinCelebration/WinCelebration";
 import { useCelebrationKey } from "../hooks/useCelebrationKey";
@@ -23,7 +25,12 @@ import {
   offerFriendRematch,
   subscribeToGame,
 } from "../services/gameService";
-import type { ChatMessage, GameRealtimeHandle } from "../services/gameService";
+import type {
+  ChatMessage,
+  ConnectionState,
+  GameRealtimeHandle,
+  PresenceEvent,
+} from "../services/gameService";
 import type {
   BoardSize,
   Cell,
@@ -49,6 +56,7 @@ import {
 } from "../utils/computerDifficulty";
 import type { ComputerMoveWorkerResponse } from "../workers/computerMove.worker";
 import { getOpponentProfileLabel } from "../utils/opponent";
+import { formatPlayerProfile } from "../utils/playerProfile";
 import { getOrCreatePlayerToken } from "../utils/playerToken";
 import {
   getHostProfileLabel,
@@ -113,6 +121,8 @@ export function GamePage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [localSymbolTheme] = useState<SymbolTheme>(() => getSavedSymbolTheme());
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [opponentOnline, setOpponentOnline] = useState<boolean | null>(null);
+  const [connectionState, setConnectionState] = useState<ConnectionState>("open");
   const realtimeHandleRef = useRef<GameRealtimeHandle | null>(null);
 
   const playerToken = useMemo(() => getOrCreatePlayerToken(), []);
@@ -173,6 +183,8 @@ export function GamePage() {
 
     let cancelled = false;
     setChatMessages([]);
+    setOpponentOnline(null);
+    setConnectionState("open");
 
     const load = async () => {
       try {
@@ -189,6 +201,21 @@ export function GamePage() {
           },
           onChatMessage: (chatMessage) => {
             setChatMessages((prev) => [...prev, chatMessage]);
+          },
+          onPresenceChange: (presence: PresenceEvent) => {
+            setOpponentOnline(presence.online);
+          },
+          onConnectionStateChange: (state) => {
+            setConnectionState(state);
+          },
+          onReconnected: () => {
+            // Realtime is best-effort — resync via REST in case a move or
+            // chat message was missed while our own socket was down.
+            void getGameById(gameId)
+              .then((freshGame) => {
+                if (!cancelled) setRemoteGame(freshGame);
+              })
+              .catch(() => undefined);
           },
         });
         realtimeHandleRef.current = handle;
@@ -578,6 +605,10 @@ export function GamePage() {
     realtimeHandleRef.current?.sendChatMessage(text);
   };
 
+  const handleLeaveGame = () => {
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <GameLayout>
@@ -773,6 +804,19 @@ export function GamePage() {
       ? getOpponentProfileLabel(remoteGame, playerToken)
       : null;
 
+  const myChatLabel =
+    playerSymbol === "X"
+      ? formatPlayerProfile(remoteGame.player_x_name ?? "", remoteGame.player_x_age)
+      : playerSymbol === "O"
+        ? formatPlayerProfile(remoteGame.player_o_name ?? "", remoteGame.player_o_age)
+        : "";
+
+  // Presence only matters once there's an actual opponent to lose — a
+  // friend game still waiting for a second player, or one that's already
+  // finished, has nothing meaningful to show here.
+  const showPresenceNotice =
+    isPlaying && remoteGame.player_o_token != null;
+
   const boardDisabled =
     !isPlaying ||
     actionLoading ||
@@ -815,6 +859,14 @@ export function GamePage() {
         showLoader={showLoader}
       />
       {celebrationKey !== null && <WinCelebration key={celebrationKey} />}
+      <ConnectionOverlay visible={connectionState !== "open"} />
+      {showPresenceNotice && (
+        <OpponentPresenceNotice
+          online={opponentOnline}
+          opponentLabel={opponentLabel}
+          onLeave={handleLeaveGame}
+        />
+      )}
 
       {opponentLabel && (
         <p className="game-page__opponent">
@@ -870,6 +922,8 @@ export function GamePage() {
         <GameChat
           messages={chatMessages}
           myToken={playerToken}
+          myLabel={myChatLabel}
+          opponentLabel={opponentLabel}
           onSend={handleSendChatMessage}
         />
       )}

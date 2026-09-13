@@ -104,9 +104,27 @@
   padding: 12px;
 }
 
-.game-chat__bubble {
+.game-chat__group {
   align-self: flex-start;
   max-width: 82%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.game-chat__group--mine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.game-chat__sender {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  padding: 0 4px;
+}
+
+.game-chat__bubble {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -117,7 +135,6 @@
 }
 
 .game-chat__bubble--mine {
-  align-self: flex-end;
   border-radius: 16px 16px 4px 16px;
   background: linear-gradient(145deg, rgba(251, 113, 133, 0.16), rgba(168, 85, 247, 0.16));
 }
