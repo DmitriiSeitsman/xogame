@@ -324,8 +324,14 @@
 /* Between the mobile burger and a roomy desktop bar there is a band where a
    single row holds four links plus both switchers only by crushing them.
    There the bar splits: switchers on top (language left, theme right), the
-   menu on its own row below. */
-@media (min-width: 768px) and (max-width: 899px) {
+   menu on its own row below.
+
+   The upper bound is 1023px rather than something tighter because iOS
+   Safari's "Request Desktop Website" lays the page out at 980px before
+   scaling it down — squarely inside this band, and the case this exists
+   for. Without an explicit rule the row still wraps, but in DOM order:
+   menu on top and both switchers below on the left. */
+@media (min-width: 768px) and (max-width: 1023px) {
   .site-header__nav--desktop {
     row-gap: 8px;
   }
