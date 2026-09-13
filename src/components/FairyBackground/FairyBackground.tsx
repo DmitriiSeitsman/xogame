@@ -13,6 +13,8 @@ type Sparkle = {
 // Fixed, scattered sparkles/stars for a soft fairy-tale atmosphere. Kept near
 // the edges so they never sit on top of the game board or main content, are
 // pointer-events: none, and respect prefers-reduced-motion (see CSS).
+// Every one carries its own delay and duration: shared timing would make the
+// whole field pulse as one, which reads as a glitch rather than as magic.
 const SPARKLES: Sparkle[] = [
   { top: "8%", left: "6%", size: 22, color: "#FDBA74", delay: "0s", duration: "5.5s" },
   { top: "18%", right: "8%", size: 16, color: "#F472B6", delay: "1.1s", duration: "4.5s" },
@@ -20,6 +22,14 @@ const SPARKLES: Sparkle[] = [
   { top: "62%", right: "5%", size: 20, color: "#A855F7", delay: "0.6s", duration: "5s" },
   { top: "78%", left: "9%", size: 12, color: "#14B8A6", delay: "2.6s", duration: "4.8s" },
   { top: "88%", right: "12%", size: 16, color: "#FB7185", delay: "1.8s", duration: "5.8s" },
+  // Second pass: offset from the first in position, timing and size, so the
+  // two sets never twinkle in step and the corners don't pair up.
+  { top: "4%", right: "20%", size: 13, color: "#A855F7", delay: "3.2s", duration: "6.4s" },
+  { top: "28%", left: "13%", size: 18, color: "#FB7185", delay: "1.5s", duration: "5.2s" },
+  { top: "46%", right: "13%", size: 11, color: "#FDBA74", delay: "3.8s", duration: "4.6s" },
+  { top: "56%", left: "7%", size: 15, color: "#F472B6", delay: "0.3s", duration: "6.2s" },
+  { top: "71%", right: "18%", size: 13, color: "#38BDF8", delay: "2.2s", duration: "5.4s" },
+  { top: "93%", left: "17%", size: 17, color: "#14B8A6", delay: "4.1s", duration: "5.1s" },
 ];
 
 function SparkleIcon({ size, color }: { size: number; color: string }) {

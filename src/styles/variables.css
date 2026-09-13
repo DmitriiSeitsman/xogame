@@ -1,14 +1,21 @@
 :root {
-  --color-bg-start: #fff7ed;
-  --color-bg-middle: #fdf2f8;
-  --color-bg-end: #eff6ff;
+  /* Lavender haze drifting into blue. Chosen over the previous cream/pink
+     because the warm glow below used to wash the top half in pink, which
+     fought both the pink-to-purple X and the orange-to-pink button; this
+     also puts the light theme in the same family as the dark one, so the
+     two read as one design in two states rather than two sites. */
+  --color-bg-start: #fbf7ff;
+  --color-bg-middle: #f4f1fd;
+  --color-bg-end: #eef4ff;
 
   --color-surface: rgba(255, 255, 255, 0.72);
   --color-surface-strong: rgba(255, 255, 255, 0.9);
 
   --color-border: rgba(15, 23, 42, 0.08);
   --color-text-primary: #1e293b;
-  --color-text-secondary: #64748b;
+  /* Was #64748b, which measured 4.4:1 against the page background — just
+     under the 4.5:1 AA floor for body text. This clears it at 4.85:1. */
+  --color-text-secondary: #5c6b82;
 
   --color-x-start: #fb7185;
   --color-x-end: #a855f7;
@@ -59,8 +66,8 @@
 
   /* The two blurred colour blobs behind the page (global.css body::before
      and ::after). */
-  --color-glow-warm: rgba(251, 113, 133, 0.25);
-  --color-glow-cool: rgba(56, 189, 248, 0.22);
+  --color-glow-warm: rgba(168, 85, 247, 0.13);
+  --color-glow-cool: rgba(96, 165, 250, 0.13);
 
   /* Shadow under the primary button — pink on light, plain depth on dark. */
   --shadow-primary: 0 10px 24px rgba(236, 72, 153, 0.28);

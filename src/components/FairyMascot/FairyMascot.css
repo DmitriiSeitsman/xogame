@@ -1,13 +1,17 @@
 .fairy-mascot {
   position: fixed;
   right: 14px;
-  bottom: 14px;
-  width: 56px;
-  height: 56px;
+  /* --fairy-mascot-lift is however much of the footer is currently on
+     screen; the component keeps it up to date on scroll, so the mascot
+     steps above the footer instead of landing on its text. */
+  bottom: calc(14px + var(--fairy-mascot-lift, 0px));
+  width: 84px;
+  height: 84px;
   z-index: 40;
   pointer-events: none;
   filter: drop-shadow(0 6px 10px rgba(249, 115, 22, 0.25));
   animation: fairy-mascot-idle 3.2s ease-in-out infinite;
+  transition: bottom 160ms var(--ease-out);
 }
 
 .fairy-mascot__svg {
@@ -59,10 +63,10 @@
 
 @media (max-width: 480px) {
   .fairy-mascot {
-    width: 44px;
-    height: 44px;
+    width: 66px;
+    height: 66px;
     right: 10px;
-    bottom: 10px;
+    bottom: calc(10px + var(--fairy-mascot-lift, 0px));
   }
 }
 
@@ -70,5 +74,9 @@
   .fairy-mascot,
   .fairy-mascot__eye {
     animation: none;
+  }
+
+  .fairy-mascot {
+    transition: none;
   }
 }

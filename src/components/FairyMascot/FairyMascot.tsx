@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { onCelebration } from "../../utils/celebrationBus";
 import "./FairyMascot.css";
 
@@ -12,6 +12,7 @@ const CELEBRATE_DURATION_MS = 2600;
  */
 export function FairyMascot() {
   const [celebrating, setCelebrating] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const unsubscribe = onCelebration(() => {
@@ -24,8 +25,51 @@ export function FairyMascot() {
     return unsubscribe;
   }, []);
 
+  /**
+   * The mascot is fixed to the bottom-right corner, so on a scrolled-to-the-
+   * end page it used to sit on top of the footer text. Instead of parking it
+   * permanently higher — which would leave it floating oddly the rest of the
+   * time — it rides up by exactly however much of the footer is on screen.
+   *
+   * Written straight to a custom property through a ref rather than through
+   * state: this runs on every scroll frame, and re-rendering for it would be
+   * wasteful. The footer is display:none on mobile game screens, which
+   * reports a zero-height rect — treated as "no footer", or the mascot would
+   * shoot to the top of the screen.
+   */
+  useEffect(() => {
+    const element = ref.current;
+    const footer = document.querySelector(".site-footer");
+    if (!element || !footer) return;
+
+    let frame = 0;
+
+    const measure = () => {
+      frame = 0;
+      const rect = footer.getBoundingClientRect();
+      const lift =
+        rect.height === 0 ? 0 : Math.max(0, window.innerHeight - rect.top);
+      element.style.setProperty("--fairy-mascot-lift", `${Math.round(lift)}px`);
+    };
+
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
+
   return (
     <div
+      ref={ref}
       className={`fairy-mascot${celebrating ? " fairy-mascot--celebrating" : ""}`}
       aria-hidden="true"
     >

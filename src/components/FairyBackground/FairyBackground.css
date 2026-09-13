@@ -35,10 +35,14 @@
   }
 }
 
-/* Keep decorations light on small screens so they never crowd the board. */
+/* Keep decorations light on small screens so they never crowd the board:
+   a third of them step aside, leaving eight — still twice what the phone
+   used to show. */
 @media (max-width: 480px) {
   .fairy-background__sparkle:nth-child(3),
-  .fairy-background__sparkle:nth-child(6) {
+  .fairy-background__sparkle:nth-child(6),
+  .fairy-background__sparkle:nth-child(9),
+  .fairy-background__sparkle:nth-child(11) {
     display: none;
   }
 }
