@@ -45,16 +45,16 @@
 .game-cell--x.game-cell--filled {
   background: linear-gradient(
     145deg,
-    rgba(251, 113, 133, 0.08),
-    rgba(168, 85, 247, 0.1)
+    var(--color-tint-x),
+    var(--color-tint-x-end)
   );
 }
 
 .game-cell--o.game-cell--filled {
   background: linear-gradient(
     145deg,
-    rgba(56, 189, 248, 0.08),
-    rgba(20, 184, 166, 0.1)
+    var(--color-tint-o),
+    var(--color-tint-o-end)
   );
 }
 

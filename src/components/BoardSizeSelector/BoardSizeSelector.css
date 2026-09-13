@@ -17,7 +17,7 @@
   gap: 8px;
   padding: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
 }
 
@@ -55,8 +55,8 @@
     var(--color-primary-start),
     var(--color-primary-end)
   );
-  color: #fff;
-  box-shadow: 0 6px 16px rgba(236, 72, 153, 0.28);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-primary);
 }
 
 .board-size-selector__option:disabled {

@@ -23,6 +23,49 @@
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
 
+  /* Text that sits ON the primary gradient. White works on the light
+     theme's saturated orange; the dark theme's softer apricot needs dark
+     text instead, which is why this is a token and not a literal. */
+  --color-on-primary: #ffffff;
+
+  /* Surfaces that were hardcoded as translucent white in components:
+     selector chips, inputs, queue counters, the mobile menu sheet. */
+  --color-surface-soft: rgba(255, 255, 255, 0.5);
+  --color-surface-softer: rgba(255, 255, 255, 0.45);
+  --color-field-bg: rgba(255, 255, 255, 0.85);
+  --color-sheet-link-bg: rgba(255, 255, 255, 0.55);
+
+  /* Neutral fills: loader/progress tracks, the sheet grab handle, and the
+     small secondary chips (e.g. "Выйти" in the presence banner). */
+  --color-track: rgba(100, 116, 139, 0.22);
+  --color-chip-bg: rgba(15, 23, 42, 0.06);
+  --color-chip-bg-hover: rgba(15, 23, 42, 0.1);
+
+  /* Scrim behind modal dialogs. */
+  --color-scrim: rgba(15, 23, 42, 0.35);
+  --color-scrim-strong: rgba(15, 23, 42, 0.45);
+
+  /* Tints: winning cells and chat bubbles. Alphas are deliberately higher
+     in the dark theme — a 8% tint that reads fine on white vanishes on a
+     dark ground. */
+  --color-tint-x: rgba(251, 113, 133, 0.08);
+  --color-tint-x-end: rgba(168, 85, 247, 0.1);
+  --color-tint-o: rgba(56, 189, 248, 0.08);
+  --color-tint-o-end: rgba(20, 184, 166, 0.1);
+  --color-bubble-mine: rgba(251, 113, 133, 0.16);
+  --color-bubble-mine-end: rgba(168, 85, 247, 0.16);
+  --color-bubble-theirs: rgba(56, 189, 248, 0.14);
+  --color-bubble-theirs-end: rgba(20, 184, 166, 0.14);
+
+  /* The two blurred colour blobs behind the page (global.css body::before
+     and ::after). */
+  --color-glow-warm: rgba(251, 113, 133, 0.25);
+  --color-glow-cool: rgba(56, 189, 248, 0.22);
+
+  /* Shadow under the primary button — pink on light, plain depth on dark. */
+  --shadow-primary: 0 10px 24px rgba(236, 72, 153, 0.28);
+  --shadow-primary-hover: 0 14px 28px rgba(236, 72, 153, 0.36);
+
   /* Soft, warm-tinted shadows (pink/purple instead of flat slate) so cards
      and the board read as a gentle glow floating on the pastel background
      instead of a dark, muddy smudge. */
@@ -61,6 +104,90 @@
   --color-board-bg: rgba(255, 255, 255, 0.55);
   --color-cell-bg: rgba(255, 255, 255, 0.88);
   --color-cell-hover: rgba(255, 255, 255, 1);
+}
+
+
+/* ---------------------------------------------------------------------------
+   Dark theme.
+
+   The theme is resolved and stamped onto <html data-theme> by the inline
+   script in index.html before first paint, so there is no flash and no
+   duplicated `prefers-color-scheme` block here: "system" simply resolves to
+   one of these two values at load time (see src/utils/theme.ts).
+
+   Colours are lighter and less saturated than their light-theme
+   counterparts rather than the same hues on a dark ground: simultaneous
+   contrast makes a saturated colour read considerably harsher against dark,
+   which is what makes dark themes tiring to look at.
+   --------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+  --color-bg-start: #1b1526;
+  --color-bg-middle: #181524;
+  --color-bg-end: #141d28;
+
+  --color-surface: rgba(255, 255, 255, 0.055);
+  --color-surface-strong: #211d31;
+
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-text-primary: #e9e5f2;
+  --color-text-secondary: #a8a2bd;
+
+  --color-x-start: #ff8fa3;
+  --color-x-end: #c4a0fb;
+
+  --color-o-start: #7dd3fc;
+  --color-o-end: #5eead4;
+
+  --color-primary-start: #fb923c;
+  --color-primary-end: #f472b6;
+
+  --color-success: #5eead4;
+  --color-warning: #fbbf24;
+  --color-danger: #fb8a8a;
+
+  --color-on-primary: #2a1006;
+
+  --color-surface-soft: rgba(255, 255, 255, 0.05);
+  --color-surface-softer: rgba(255, 255, 255, 0.04);
+  --color-field-bg: rgba(255, 255, 255, 0.06);
+  --color-sheet-link-bg: rgba(255, 255, 255, 0.05);
+
+  --color-track: rgba(255, 255, 255, 0.14);
+  --color-chip-bg: rgba(255, 255, 255, 0.08);
+  --color-chip-bg-hover: rgba(255, 255, 255, 0.14);
+
+  --color-scrim: rgba(8, 6, 14, 0.6);
+  --color-scrim-strong: rgba(8, 6, 14, 0.7);
+
+  --color-tint-x: rgba(255, 143, 163, 0.16);
+  --color-tint-x-end: rgba(196, 160, 251, 0.18);
+  --color-tint-o: rgba(125, 211, 252, 0.16);
+  --color-tint-o-end: rgba(94, 234, 212, 0.18);
+  --color-bubble-mine: rgba(255, 143, 163, 0.2);
+  --color-bubble-mine-end: rgba(196, 160, 251, 0.2);
+  --color-bubble-theirs: rgba(125, 211, 252, 0.18);
+  --color-bubble-theirs-end: rgba(94, 234, 212, 0.18);
+
+  --color-glow-warm: rgba(168, 85, 247, 0.16);
+  --color-glow-cool: rgba(56, 189, 248, 0.12);
+
+  /* A shadow cast by something dark onto something dark is invisible, so
+     depth comes from a dense black shadow plus a light top edge, and the
+     board keeps its "fairy-tale" feel through a soft coloured glow. */
+  --shadow-soft: 0 16px 34px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-cell: 0 8px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-board: 0 18px 38px rgba(0, 0, 0, 0.5),
+    0 0 32px rgba(168, 85, 247, 0.09);
+  --shadow-primary: 0 10px 24px rgba(0, 0, 0, 0.45);
+  --shadow-primary-hover: 0 14px 30px rgba(0, 0, 0, 0.55);
+
+  --color-board-bg: rgba(255, 255, 255, 0.04);
+  --color-cell-bg: rgba(255, 255, 255, 0.05);
+  --color-cell-hover: rgba(255, 255, 255, 0.09);
+  --color-primary-soft: rgba(251, 146, 60, 0.16);
+  --color-primary-dark: #fdba74;
 }
 
 @media (min-width: 1024px) {

@@ -40,7 +40,7 @@ body::before {
   height: 420px;
   top: -120px;
   right: -80px;
-  background: rgba(251, 113, 133, 0.25);
+  background: var(--color-glow-warm);
 }
 
 body::after {
@@ -48,7 +48,7 @@ body::after {
   height: 380px;
   bottom: -100px;
   left: -60px;
-  background: rgba(56, 189, 248, 0.22);
+  background: var(--color-glow-cool);
 }
 
 button,
@@ -150,12 +150,12 @@ a {
     var(--color-primary-start),
     var(--color-primary-end)
   );
-  color: #fff;
-  box-shadow: 0 10px 24px rgba(236, 72, 153, 0.28);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-primary);
 }
 
 .btn--primary:hover:not(:disabled) {
-  box-shadow: 0 14px 28px rgba(236, 72, 153, 0.36);
+  box-shadow: var(--shadow-primary-hover);
 }
 
 .btn--secondary {

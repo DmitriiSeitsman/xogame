@@ -91,7 +91,6 @@ function buildHead(route, language, page) {
     <meta name="robots" content="index, follow" />
     <meta name="author" content="${escapeHtml(seo.siteName)}" />
     <meta name="language" content="${language}" />
-    <meta name="theme-color" content="#fff7ed" />
 
     <link rel="canonical" href="${canonical}" />
     ${alternates}

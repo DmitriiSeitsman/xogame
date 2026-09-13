@@ -148,9 +148,16 @@
  * pinned right. */
 .language-switcher--mobile-bar {
   display: none;
+  order: -2;
+  align-self: center;
+}
+
+/* Sits between the language switcher and the burger; the auto margin on
+   this one pushes both left and keeps the burger pinned right. */
+.theme-toggle--mobile-bar {
   order: -1;
   margin-right: auto;
-  align-self: center;
+  margin-left: 6px;
 }
 
 .site-header__backdrop {
@@ -160,7 +167,7 @@
   border: none;
   padding: 0;
   margin: 0;
-  background: rgba(15, 23, 42, 0.42);
+  background: var(--color-scrim);
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-normal) var(--ease-out);
@@ -182,7 +189,7 @@
   backdrop-filter: blur(16px);
   border: 1px solid var(--color-border);
   border-bottom: none;
-  box-shadow: 0 -10px 28px rgba(236, 72, 153, 0.14);
+  box-shadow: var(--shadow-soft);
   transform: translateY(100%);
   transition: transform var(--duration-normal) var(--ease-out);
   pointer-events: auto;
@@ -193,7 +200,7 @@
   height: 4px;
   margin: 4px auto 8px;
   border-radius: 999px;
-  background: rgba(100, 116, 139, 0.35);
+  background: var(--color-track);
 }
 
 .site-header__sheet-title {
@@ -217,7 +224,7 @@
   width: 100%;
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--color-sheet-link-bg);
   border: 1px solid rgba(249, 115, 22, 0.08);
   font-size: 1rem;
   font-weight: 700;

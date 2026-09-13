@@ -3,6 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#fff7ed" />
+
+    <!-- Resolves the theme before first paint: without this the page paints
+         light and then snaps to dark once React mounts, which is worst
+         exactly for the people who chose dark. Stays in sync with
+         src/utils/theme.ts — same storage key, same fallback to the OS. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("xogame_theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = theme;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) {
+            meta.setAttribute("content", theme === "dark" ? "#181524" : "#fff7ed");
+          }
+        } catch (error) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
 
     <!-- Comfortaa: rounded, playful display font with full Cyrillic support,
          used for headings/titles to give the site a softer, fairy-tale feel. -->
@@ -34,7 +61,6 @@
     <meta name="robots" content="index, follow" />
     <meta name="author" content="XO Game" />
     <meta name="language" content="ru" />
-    <meta name="theme-color" content="#fff7ed" />
 
     <link rel="canonical" href="https://xo-game.online/" />
     <link rel="alternate" hreflang="ru" href="https://xo-game.online/" />

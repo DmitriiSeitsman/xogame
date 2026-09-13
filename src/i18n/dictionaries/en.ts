@@ -22,6 +22,12 @@ export const en: Dictionary = {
     languageSwitcher: "Interface language",
   },
 
+  theme: {
+    label: "Colour theme",
+    light: "Light",
+    dark: "Dark",
+  },
+
   common: {
     close: "Close",
     cancel: "Cancel",

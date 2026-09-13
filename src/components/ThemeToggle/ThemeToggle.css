@@ -1,0 +1,88 @@
+.theme-toggle {
+  display: flex;
+  flex-shrink: 0;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--color-chip-bg);
+}
+
+.theme-toggle__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.theme-toggle__option svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* The written label only appears in the mobile sheet, where there's room
+   for it and no tooltip to fall back on. */
+.theme-toggle__label {
+  display: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.theme-toggle__option:hover {
+  color: var(--color-primary-start);
+}
+
+.theme-toggle__option--active {
+  background: var(--color-surface-strong);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-cell);
+}
+
+.theme-toggle__option:focus-visible {
+  outline: 3px solid var(--color-primary-soft);
+  outline-offset: 2px;
+}
+
+.theme-toggle--header {
+  align-self: center;
+  margin-left: 4px;
+}
+
+.theme-toggle--mobile-bar {
+  display: none;
+  align-self: center;
+}
+
+.theme-toggle--sheet {
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.theme-toggle--sheet .theme-toggle__option {
+  flex: 1;
+  width: auto;
+  height: auto;
+  padding: 12px 8px;
+}
+
+.theme-toggle--sheet .theme-toggle__label {
+  display: inline;
+}
+
+@media (max-width: 767px) {
+  .theme-toggle--mobile-bar {
+    display: flex;
+    pointer-events: auto;
+  }
+}

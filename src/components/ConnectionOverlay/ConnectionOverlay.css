@@ -7,7 +7,7 @@
   justify-content: center;
   padding: 16px;
   box-sizing: border-box;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--color-scrim-strong);
   backdrop-filter: blur(6px);
   animation: fade-in-up var(--duration-fast) var(--ease-out) both;
 }
@@ -30,7 +30,7 @@
   height: 30px;
   margin-bottom: 12px;
   border-radius: 50%;
-  border: 3px solid rgba(56, 189, 248, 0.25);
+  border: 3px solid var(--color-track);
   border-top-color: var(--color-primary-start, #fb7185);
   animation: connection-overlay-spin 0.8s linear infinite;
 }

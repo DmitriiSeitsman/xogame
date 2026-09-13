@@ -23,6 +23,12 @@ export const ru = {
     languageSwitcher: "Язык интерфейса",
   },
 
+  theme: {
+    label: "Тема оформления",
+    light: "Светлая",
+    dark: "Тёмная",
+  },
+
   common: {
     close: "Закрыть",
     cancel: "Отмена",

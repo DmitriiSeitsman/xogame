@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher";
+import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
 import type { Dictionary } from "../../i18n/dictionaries/ru";
 import { stripLanguagePrefix } from "../../i18n/language";
 import { useI18n } from "../../i18n/useI18n";
@@ -127,9 +128,11 @@ export function SiteHeader() {
         >
           {renderNavLinks("site-header__link")}
           <LanguageSwitcher className="language-switcher--header" />
+          <ThemeToggle className="theme-toggle--header" />
         </nav>
 
         <LanguageSwitcher className="language-switcher--mobile-bar" />
+        <ThemeToggle className="theme-toggle--mobile-bar" />
       </div>
 
       <div
@@ -160,6 +163,7 @@ export function SiteHeader() {
             className="language-switcher--sheet"
             onNavigate={closeMenu}
           />
+          <ThemeToggle className="theme-toggle--sheet" />
         </nav>
       </div>
     </header>

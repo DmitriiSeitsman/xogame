@@ -31,7 +31,7 @@
   min-height: 86px;
   border: 1px solid var(--color-border);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--color-surface-soft);
   box-shadow: 0 8px 18px rgba(168, 85, 247, 0.10);
   color: var(--color-text-primary);
   display: grid;
@@ -53,8 +53,8 @@
 .symbol-theme-option--selected {
   border-color: rgba(236, 72, 153, 0.38);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(253, 242, 248, 0.86)),
-    rgba(255, 255, 255, 0.72);
+    linear-gradient(135deg, var(--color-tint-x), var(--color-tint-x-end)),
+    var(--color-surface-strong);
   box-shadow:
     0 16px 34px rgba(236, 72, 153, 0.14),
     0 0 0 4px rgba(236, 72, 153, 0.08);
