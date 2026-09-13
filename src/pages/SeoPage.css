@@ -66,8 +66,85 @@
   margin-top: 6px;
 }
 
+.seo-page__ordered {
+  margin: 0;
+  padding-left: 1.35rem;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+
+.seo-page__ordered li + li {
+  margin-top: 6px;
+}
+
+.seo-page__note {
+  margin: 12px 0 0;
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+  opacity: 0.9;
+}
+
+/* Collapsed by default: the answers are indexable either way (they're in
+   the markup, not behind JS), but an accordion keeps a five-question FAQ
+   from burying the article it belongs to. */
+.seo-page__faq {
+  margin-top: 4px;
+}
+
+.seo-page__faq-item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.seo-page__faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 2px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  list-style: none;
+}
+
+.seo-page__faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.seo-page__faq-item summary::after {
+  content: "+";
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.seo-page__faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.seo-page__faq-item p {
+  margin: 0 2px 14px;
+  font-size: 0.95rem;
+}
+
 .seo-page__actions {
   margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.seo-page__inline-link {
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.seo-page__inline-link:hover {
+  color: var(--color-text-primary);
 }
 
 .seo-page__contact-actions {

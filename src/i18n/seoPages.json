@@ -35,6 +35,66 @@
         "intro": "Tic tac toe is a game where players take turns placing their mark on the board. The first to line up the required number of marks in a row — horizontally, vertically or diagonally — wins. On a 3×3 board you need 3 marks in a row; on 4×4, 5×5 and 6×6 boards you need 4 in a row. You can play against the computer, with a friend over an invite link, or against a random player online."
       }
     },
+    "/strategy": {
+      "ru": {
+        "title": "Как выиграть в крестики-нолики — стратегия, вилки и первый ход",
+        "description": "Как выигрывать в крестики-нолики: самый сильный первый ход, вилка, порядок приоритетов и тактика на полях 4×4, 5×5 и 6×6. Сразу можно проверить онлайн.",
+        "keywords": "как выиграть в крестики нолики, стратегия крестики нолики, беспроигрышная стратегия крестики нолики, вилка крестики нолики, как всегда выигрывать в крестики нолики, тактика крестики нолики 4х4",
+        "h1": "Как выиграть в крестики-нолики",
+        "intro": "Короткий ответ: на поле 3×3 выиграть у внимательного соперника нельзя — при точной игре обеих сторон партия всегда заканчивается ничьей. Побеждают за счёт чужих ошибок, а чтобы не ошибаться самому, достаточно знать четыре вещи: силу первого хода, что такое вилка, в каком порядке выбирать клетки и чем отличаются большие поля.",
+        "faq": [
+          {
+            "q": "Можно ли всегда выигрывать в крестики-нолики?",
+            "a": "Нет. Поле 3×3 просчитано полностью: если оба игрока не ошибаются, партия заканчивается ничьей. Выигрыш возможен только тогда, когда соперник ошибся, поэтому цель сильной игры — не проигрывать самому и наказывать за промахи."
+          },
+          {
+            "q": "Какой первый ход самый сильный?",
+            "a": "Центр: через него проходят четыре линии из восьми, через угол — три, а через боковую клетку — всего две. Если центр уже занят соперником, лучший ответ — угол."
+          },
+          {
+            "q": "Что такое вилка в крестиках-ноликах?",
+            "a": "Это ход, который создаёт сразу две угрозы собрать ряд. Закрыть обе одним ходом нельзя, поэтому следующим ходом вы выигрываете. Почти любая победа в крестики-нолики выглядит именно так."
+          },
+          {
+            "q": "Как ответить, если соперник занял центр?",
+            "a": "Ходить в угол. Ответ в боковую клетку проигрывает: он даёт сопернику построить вилку. Дальше держитесь правила «сначала свой ряд, потом блок чужого»."
+          },
+          {
+            "q": "Как выиграть на поле 4×4, 5×5 или 6×6?",
+            "a": "На больших полях нужно собрать четыре знака в ряд, и главный инструмент — открытая тройка: три своих знака подряд со свободными клетками с обеих сторон. Одним ходом её не закрыть, так что она почти равна победе. Чужие тройки нужно рубить, пока они не стали открытыми."
+          }
+        ]
+      },
+      "en": {
+        "title": "How to Win at Tic Tac Toe — Strategy, Forks and the First Move",
+        "description": "How to win at tic tac toe: the strongest opening move, the fork, a move-priority checklist and tactics for 4×4, 5×5 and 6×6 boards. Try them online for free.",
+        "keywords": "how to win at tic tac toe, tic tac toe strategy, tic tac toe fork, never lose at tic tac toe, tic tac toe tips, 4x4 tic tac toe strategy",
+        "h1": "How to Win at Tic Tac Toe",
+        "intro": "The short answer: on a 3×3 board you cannot beat an attentive opponent — with perfect play from both sides the game always ends in a draw. Wins come from mistakes, and to avoid making them yourself you only need four things: the value of the first move, what a fork is, the order in which to claim squares, and how bigger boards differ.",
+        "faq": [
+          {
+            "q": "Can you always win at tic tac toe?",
+            "a": "No. The 3×3 board is solved: if neither player errs, the game ends in a draw. A win is only possible after the opponent makes a mistake, so the goal of strong play is to never lose and to punish slips."
+          },
+          {
+            "q": "What is the strongest first move?",
+            "a": "The centre: four of the eight winning lines run through it, against three through a corner and only two through an edge square. If the opponent takes the centre first, the best reply is a corner."
+          },
+          {
+            "q": "What is a fork in tic tac toe?",
+            "a": "A move that creates two threats to complete a line at once. Your opponent cannot block both with one move, so you win on the next one. Nearly every win in tic tac toe looks exactly like this."
+          },
+          {
+            "q": "How do I reply if my opponent takes the centre?",
+            "a": "Play a corner. Answering on an edge loses: it lets the opponent build a fork. After that, stick to the rule \"complete your own line first, block theirs second\"."
+          },
+          {
+            "q": "How do I win on a 4×4, 5×5 or 6×6 board?",
+            "a": "Bigger boards need four in a row, and the key shape is an open three: three of your marks in a row with an empty square at both ends. It cannot be blocked in one move, so it is as good as a win — and the opponent's threes must be cut before they become open."
+          }
+        ]
+      }
+    },
     "/about": {
       "ru": {
         "title": "Об игре Крестики-нолики онлайн",

@@ -5,6 +5,7 @@ import { GamePage } from "../pages/GamePage";
 import { HomePage } from "../pages/HomePage";
 import { JoinGamePage } from "../pages/JoinGamePage";
 import { RulesPage } from "../pages/RulesPage";
+import { StrategyPage } from "../pages/StrategyPage";
 import { ContactsPage } from "../pages/ContactsPage";
 
 /**
@@ -16,6 +17,7 @@ import { ContactsPage } from "../pages/ContactsPage";
 const pageRoutes: RouteObject[] = [
   { index: true, element: <HomePage /> },
   { path: "rules", element: <RulesPage /> },
+  { path: "strategy", element: <StrategyPage /> },
   { path: "about", element: <AboutPage /> },
   { path: "contacts", element: <ContactsPage /> },
   { path: "join/:inviteCode", element: <JoinGamePage /> },

@@ -8,12 +8,21 @@ export const SITE_NAME: string = seoPages.siteName;
 
 export const DEFAULT_OG_IMAGE: string = seoPages.ogImage;
 
+export type FaqEntry = { q: string; a: string };
+
 export type PageSeo = {
   title: string;
   description: string;
   keywords: string;
   h1: string;
   intro: string;
+  /**
+   * Question/answer pairs for pages that carry an FAQ. They live here rather
+   * than in the dictionaries because scripts/prerender.mjs has to read the
+   * same copy to emit FAQPage markup into the static HTML, and it can't
+   * import a .ts dictionary.
+   */
+  faq?: FaqEntry[];
 };
 
 /** Language-agnostic routes that exist in both languages and get indexed. */

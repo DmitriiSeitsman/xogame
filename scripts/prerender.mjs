@@ -69,21 +69,69 @@ function buildHead(route, language, page) {
     `<link rel="alternate" hreflang="x-default" href="${absoluteUrl(route, "ru")}" />`,
   ].join("\n    ");
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: seo.pages["/"][language].h1,
-    url: absoluteUrl("/", language),
-    applicationCategory: "GameApplication",
-    operatingSystem: "Any",
-    inLanguage: language,
-    description: seo.pages["/"][language].description,
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: PRICE_CURRENCY[language],
+  const documents = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: seo.pages["/"][language].h1,
+      url: absoluteUrl("/", language),
+      applicationCategory: "GameApplication",
+      operatingSystem: "Any",
+      inLanguage: language,
+      description: seo.pages["/"][language].description,
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: PRICE_CURRENCY[language],
+      },
     },
-  };
+  ];
+
+  // Breadcrumbs only make sense below the home page, where there is an
+  // actual trail to describe.
+  if (route !== "/") {
+    documents.push({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: seo.pages["/"][language].h1,
+          item: absoluteUrl("/", language),
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: page.h1,
+          item: canonical,
+        },
+      ],
+    });
+  }
+
+  // FAQ answers have to be in the served HTML, not added by React after
+  // mount, for the rich result to be picked up reliably — Yandex in
+  // particular does not wait around for JS.
+  if (Array.isArray(page.faq) && page.faq.length > 0) {
+    documents.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: page.faq.map((entry) => ({
+        "@type": "Question",
+        name: entry.q,
+        acceptedAnswer: { "@type": "Answer", text: entry.a },
+      })),
+    });
+  }
+
+  const jsonLdBlocks = documents
+    .map(
+      (document) => `<script type="application/ld+json">
+${JSON.stringify(document, null, 2)}
+    </script>`,
+    )
+    .join("\n    ");
 
   return `<title>${escapeHtml(page.title)}</title>
     <meta name="description" content="${escapeHtml(page.description)}" />
@@ -111,9 +159,7 @@ function buildHead(route, language, page) {
     <meta name="twitter:description" content="${escapeHtml(page.description)}" />
     <meta name="twitter:image" content="${seo.ogImage}" />
 
-    <script type="application/ld+json">
-${JSON.stringify(jsonLd, null, 2)}
-    </script>`;
+    ${jsonLdBlocks}`;
 }
 
 /**
@@ -134,9 +180,20 @@ function buildRootContent(route, language, page) {
 
   const otherLanguage = language === "ru" ? "en" : "ru";
 
+  const faq = Array.isArray(page.faq)
+    ? page.faq
+        .map(
+          (entry) =>
+            `<h2>${escapeHtml(entry.q)}</h2>
+        <p>${escapeHtml(entry.a)}</p>`,
+        )
+        .join("\n        ")
+    : "";
+
   return `<div id="prerender-seo">
       <h1>${escapeHtml(page.h1)}</h1>
       <p>${escapeHtml(page.intro)}</p>
+      ${faq}
       <nav>
         <ul>
         ${navLinks}
@@ -202,4 +259,59 @@ const fallback = readFileSync(join(distDir, "index.html"), "utf8").replace(
 );
 writeFileSync(join(distDir, "404.html"), fallback, "utf8");
 
-console.log(`prerender: wrote ${written} pages + 404.html fallback`);
+/**
+ * sitemap.xml is generated from the same seoPages.json the pages come
+ * from, so a new route can never be added to the site and forgotten in the
+ * sitemap (which is exactly what a hand-maintained file invites). It
+ * overwrites the placeholder copied out of public/.
+ */
+const SITEMAP_HINTS = {
+  "/": { changefreq: "weekly", priority: "1.0" },
+  "/strategy": { changefreq: "monthly", priority: "0.8" },
+  "/rules": { changefreq: "monthly", priority: "0.7" },
+  "/about": { changefreq: "monthly", priority: "0.6" },
+  "/contacts": { changefreq: "yearly", priority: "0.4" },
+};
+
+const lastmod = new Date().toISOString().slice(0, 10);
+
+const sitemapEntries = [];
+
+for (const route of Object.keys(seo.pages)) {
+  const hint = SITEMAP_HINTS[route] ?? { changefreq: "monthly", priority: "0.5" };
+
+  for (const language of LANGUAGES) {
+    const alternates = [
+      ...LANGUAGES.map(
+        (lang) =>
+          `    <xhtml:link rel="alternate" hreflang="${lang}" href="${absoluteUrl(route, lang)}" />`,
+      ),
+      `    <xhtml:link rel="alternate" hreflang="x-default" href="${absoluteUrl(route, "ru")}" />`,
+    ].join("\n");
+
+    sitemapEntries.push(
+      `  <url>
+    <loc>${absoluteUrl(route, language)}</loc>
+${alternates}
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${hint.changefreq}</changefreq>
+    <priority>${hint.priority}</priority>
+  </url>`,
+    );
+  }
+}
+
+writeFileSync(
+  join(distDir, "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${sitemapEntries.join("\n")}
+</urlset>
+`,
+  "utf8",
+);
+
+console.log(
+  `prerender: wrote ${written} pages + 404.html fallback + sitemap.xml (${sitemapEntries.length} urls)`,
+);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AdSlot } from "../components/AdSlot/AdSlot";
 import { BoardSizeSelector } from "../components/BoardSizeSelector/BoardSizeSelector";
 import { DifficultySelector } from "../components/DifficultySelector/DifficultySelector";
@@ -293,9 +293,37 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="home-page__seo">
-          <h2 className="home-page__seo-title">{t.home.seoHeading}</h2>
-          <p className="home-page__seo-text">{t.home.seoText}</p>
+        <section className="home-page__seo" aria-label={t.home.linksLabel}>
+          <p className="home-page__teaser">{t.home.teaser}</p>
+          <div className="home-page__links">
+            <Link to={path("/strategy")} className="home-page__link-card">
+              <span className="home-page__link-icon home-page__link-icon--x" aria-hidden="true">
+                ✕
+              </span>
+              <span className="home-page__link-copy">
+                <b>{t.home.linkStrategyTitle}</b>
+                <small>{t.home.linkStrategyText}</small>
+              </span>
+            </Link>
+            <Link to={path("/rules")} className="home-page__link-card">
+              <span className="home-page__link-icon" aria-hidden="true">
+                ◯
+              </span>
+              <span className="home-page__link-copy">
+                <b>{t.home.linkRulesTitle}</b>
+                <small>{t.home.linkRulesText}</small>
+              </span>
+            </Link>
+            <Link to={path("/about")} className="home-page__link-card">
+              <span className="home-page__link-icon home-page__link-icon--x" aria-hidden="true">
+                ✕
+              </span>
+              <span className="home-page__link-copy">
+                <b>{t.home.linkAboutTitle}</b>
+                <small>{t.home.linkAboutText}</small>
+              </span>
+            </Link>
+          </div>
         </section>
       </main>
 

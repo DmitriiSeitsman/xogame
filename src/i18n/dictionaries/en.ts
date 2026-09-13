@@ -13,6 +13,7 @@ export const en: Dictionary = {
   nav: {
     home: "Home",
     rules: "Rules",
+    strategy: "How to win",
     about: "About",
     contacts: "Contact",
     menu: "Menu",
@@ -54,9 +55,15 @@ export const en: Dictionary = {
     join: "Join",
     errorEnterInviteCode: "Enter an invite code",
     errorStartFailed: "Couldn't start the game",
-    seoHeading: "Play tic tac toe online",
-    seoText:
-      "Tic tac toe (also known as noughts and crosses, or Xs and Os) is a simple classic for kids and grown-ups alike. Play it free in your browser with no sign-up: against the computer, with a friend over a shared link, or against a random player online. Pick a 3×3, 4×4, 5×5 or 6×6 board and start a match.",
+    teaser:
+      "Play tic tac toe online for free, with no sign-up, on a phone or a desktop: 3×3, 4×4, 5×5 and 6×6 boards, against the computer, with a friend over a link, or against a random opponent.",
+    linksLabel: "Useful pages",
+    linkStrategyTitle: "How to win",
+    linkStrategyText: "Strategy, forks, and why 3×3 is always a draw",
+    linkRulesTitle: "Rules of the game",
+    linkRulesText: "Winning conditions on 3×3, 4×4, 5×5 and 6×6 boards",
+    linkAboutTitle: "About the game",
+    linkAboutText: "What the site does and which devices it runs on",
   },
 
   profileDialog: {
@@ -254,6 +261,40 @@ export const en: Dictionary = {
     modeRandom: "Random player",
     modeRandomText: "find an opponent online through matchmaking",
     startGame: "Start game",
+  },
+
+  strategy: {
+    heading: "How to Win at Tic Tac Toe",
+    intro:
+      "The short answer: on a 3×3 board you cannot beat an attentive opponent — with perfect play from both sides the game always ends in a draw. Wins come from mistakes, and to avoid making them yourself you only need four things: the value of the first move, what a fork is, the order in which to claim squares, and how bigger boards differ.",
+    firstMoveHeading: "The first move: centre, corner, edge",
+    firstMoveText:
+      "Four of the eight winning lines run through the centre, three through a corner and only two through an edge square. That makes the centre the strongest opening, a corner the runner-up, and an edge a move that usually hands over the initiative. If the opponent takes the centre first, reply in a corner — answering on an edge loses.",
+    forkHeading: "The fork is the whole game",
+    forkText:
+      "A fork is a move that leaves you with two ways to complete a line at once. The opponent blocks one, you finish the other. Virtually every win looks like this, so the game comes down to building your own forks and denying theirs.",
+    priorityHeading: "Move priority, in order",
+    priority: [
+      "You can complete a line — complete it and win",
+      "The opponent is one move from a line — block it",
+      "You can create a fork — create it",
+      "The opponent can create a fork — take that square, or make a threat they must answer",
+      "The centre is free — take the centre",
+      "The opponent holds a corner — take the opposite corner",
+      "Any corner is free — take a corner",
+      "Only an edge square is left",
+    ],
+    priorityNote:
+      "That list is the complete strategy for a 3×3 board: a player who works down it never loses a game.",
+    bigBoardsHeading: "4×4, 5×5 and 6×6: four in a row",
+    bigBoardsText:
+      "Bigger boards go to whoever first lines up four marks — horizontally, vertically or diagonally. The key shape is the open three: three of your marks in a row with an empty square at each end. It cannot be blocked in a single move, so it is nearly always a win. Hence two rules: build your threes so both ends stay free, and cut the opponent's before they open up.",
+    botHeading: "How to beat the computer",
+    botText:
+      "On easy the bot plays loosely and an ordinary fork punishes it. On hard it never errs on a 3×3 board, so a draw is the best result available; if you want to play for a win, pick a bigger board, where there is far more room for double threats.",
+    faqHeading: "Frequently asked questions",
+    rulesLink: "Rules of the game",
+    startGame: "Try it in a game",
   },
 
   about: {
