@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Крестики-нолики онлайн — играть бесплатно с другом или компьютером</title>
-
     <!-- Comfortaa: rounded, playful display font with full Cyrillic support,
          used for headings/titles to give the site a softer, fairy-tale feel. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,6 +12,17 @@
       href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+    <link rel="manifest" href="/site.webmanifest?v=2" />
+
+    <!-- Everything from the page title down to the end of the JSON-LD block
+         below is swapped per route and per language by scripts/prerender.mjs
+         at build time. Keep it contiguous, and keep language-neutral tags
+         above it, or the prerender will drop them. -->
+    <title>Крестики-нолики онлайн — играть бесплатно с другом или компьютером</title>
     <meta
       name="description"
       content="Играй в крестики-нолики онлайн бесплатно: с компьютером, другом по ссылке или случайным игроком. Поля 3×3, 4×4, 5×5 и 6×6. Без регистрации."
@@ -28,6 +37,9 @@
     <meta name="theme-color" content="#fff7ed" />
 
     <link rel="canonical" href="https://xo-game.online/" />
+    <link rel="alternate" hreflang="ru" href="https://xo-game.online/" />
+    <link rel="alternate" hreflang="en" href="https://xo-game.online/en" />
+    <link rel="alternate" hreflang="x-default" href="https://xo-game.online/" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ru_RU" />
@@ -59,11 +71,6 @@
       content="Играй с компьютером, другом по ссылке или случайным игроком. Без регистрации."
     />
     <meta name="twitter:image" content="https://xo-game.online/og-image.png" />
-
-    <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
-    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
-    <link rel="manifest" href="/site.webmanifest?v=2" />
 
     <script type="application/ld+json">
       {

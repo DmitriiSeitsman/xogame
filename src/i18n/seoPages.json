@@ -1,0 +1,71 @@
+{
+  "siteUrl": "https://xo-game.online",
+  "siteName": "XO Game",
+  "ogImage": "https://xo-game.online/og-image.png",
+  "pages": {
+    "/": {
+      "ru": {
+        "title": "Крестики-нолики онлайн — играть бесплатно с другом или компьютером",
+        "description": "Играй в крестики-нолики онлайн бесплатно: с компьютером, другом по ссылке или случайным игроком. Поля 3×3, 4×4, 5×5 и 6×6. Без регистрации.",
+        "keywords": "крестики нолики, крестики-нолики онлайн, играть в крестики нолики, крестики нолики с другом, крестики нолики против компьютера, игра крестики нолики",
+        "h1": "Крестики-нолики онлайн",
+        "intro": "Играй бесплатно с компьютером, другом по ссылке или случайным соперником. Крестики-нолики — простая и знакомая игра для детей и взрослых. На сайте можно играть бесплатно без регистрации: против компьютера, с другом по ссылке или со случайным игроком онлайн. Выберите поле 3×3, 4×4, 5×5 или 6×6 и начните партию."
+      },
+      "en": {
+        "title": "Tic Tac Toe Online — Play Free with a Friend or the Computer",
+        "description": "Play tic tac toe online for free: against the computer, a friend over a link, or a random player. Boards from 3×3 to 6×6. No sign-up required.",
+        "keywords": "tic tac toe, tic tac toe online, play tic tac toe, noughts and crosses, xs and os, tic tac toe with friends, 2 player tic tac toe, free tic tac toe game",
+        "h1": "Tic Tac Toe Online",
+        "intro": "Play for free against the computer, a friend by link, or a random opponent. Tic tac toe (also known as noughts and crosses, or Xs and Os) is a simple classic for kids and grown-ups alike. Play it free in your browser with no sign-up: against the computer, with a friend over a shared link, or against a random player online. Pick a 3×3, 4×4, 5×5 or 6×6 board and start a match."
+      }
+    },
+    "/rules": {
+      "ru": {
+        "title": "Правила игры в крестики-нолики — поля 3×3, 4×4, 5×5 и 6×6",
+        "description": "Узнай правила игры в крестики-нолики онлайн: как победить на полях 3×3, 4×4, 5×5 и 6×6, как играть с другом, компьютером или случайным игроком.",
+        "keywords": "правила крестики нолики, как играть в крестики нолики, крестики нолики 4х4, крестики нолики 5х5, условия победы крестики нолики",
+        "h1": "Правила игры в крестики-нолики",
+        "intro": "Крестики-нолики — игра, где игроки по очереди ставят свои символы на поле. Побеждает тот, кто первым соберёт нужное количество символов в ряд: по горизонтали, вертикали или диагонали. На поле 3×3 нужно собрать 3 символа в ряд, на полях 4×4, 5×5 и 6×6 — 4 символа в ряд. Играть можно с компьютером, с другом по ссылке-приглашению или со случайным игроком онлайн."
+      },
+      "en": {
+        "title": "Tic Tac Toe Rules — 3×3, 4×4, 5×5 and 6×6 Boards",
+        "description": "Learn the rules of tic tac toe online: how to win on 3×3, 4×4, 5×5 and 6×6 boards, and how to play against a friend, the computer or a random player.",
+        "keywords": "tic tac toe rules, how to play tic tac toe, noughts and crosses rules, 4x4 tic tac toe, 5x5 tic tac toe, how to win tic tac toe",
+        "h1": "Tic Tac Toe Rules",
+        "intro": "Tic tac toe is a game where players take turns placing their mark on the board. The first to line up the required number of marks in a row — horizontally, vertically or diagonally — wins. On a 3×3 board you need 3 marks in a row; on 4×4, 5×5 and 6×6 boards you need 4 in a row. You can play against the computer, with a friend over an invite link, or against a random player online."
+      }
+    },
+    "/about": {
+      "ru": {
+        "title": "Об игре Крестики-нолики онлайн",
+        "description": "Крестики-нолики онлайн — бесплатная браузерная игра без регистрации. Играйте с компьютером, другом по ссылке или случайным соперником.",
+        "keywords": "крестики нолики онлайн бесплатно, крестики нолики без регистрации, браузерная игра крестики нолики, крестики нолики для детей",
+        "h1": "Крестики-нолики онлайн",
+        "intro": "Крестики-нолики онлайн — бесплатная браузерная игра, в которую можно играть без регистрации. Не нужно создавать аккаунт или устанавливать приложение: откройте сайт в браузере и начните партию за несколько секунд. Игра понятна с первого хода, подходит для семейного досуга и коротких онлайн-партий с друзьями. Сайт адаптирован под телефон, планшет и компьютер. Доступны режимы с компьютером, с другом по ссылке и со случайным игроком, поля 3×3, 4×4, 5×5 и 6×6."
+      },
+      "en": {
+        "title": "About Tic Tac Toe Online — Free Browser Game",
+        "description": "Tic tac toe online is a free browser game with no sign-up. Play against the computer, a friend over a link, or a random opponent, on boards from 3×3 to 6×6.",
+        "keywords": "free tic tac toe online, tic tac toe no sign up, browser tic tac toe game, tic tac toe for kids, online noughts and crosses",
+        "h1": "Tic Tac Toe Online",
+        "intro": "Tic tac toe online is a free browser game you can play without signing up. There's no account to create and no app to install: open the site in your browser and start a match in seconds. The game makes sense from the very first move, which makes it good for family time and quick online matches with friends. The site adapts to phone, tablet and desktop. Modes include playing against the computer, with a friend over a link, and against a random player, on 3×3, 4×4, 5×5 and 6×6 boards."
+      }
+    },
+    "/contacts": {
+      "ru": {
+        "title": "Контакты — Крестики-нолики онлайн",
+        "description": "Связаться с разработчиком игры Крестики-нолики онлайн: Telegram или email.",
+        "keywords": "крестики нолики контакты, связаться с разработчиком",
+        "h1": "Контакты",
+        "intro": "Если у вас есть вопрос, предложение или вы нашли ошибку — напишите разработчику игры «Крестики-нолики онлайн». Выберите удобный способ связи: Telegram или электронная почта."
+      },
+      "en": {
+        "title": "Contact — Tic Tac Toe Online",
+        "description": "Get in touch with the developer of Tic Tac Toe Online via Telegram or email.",
+        "keywords": "tic tac toe contact, contact developer",
+        "h1": "Contact",
+        "intro": "Got a question, an idea, or spotted a bug? Drop the developer of Tic Tac Toe Online a line. Pick whichever suits you: Telegram or email."
+      }
+    }
+  }
+}

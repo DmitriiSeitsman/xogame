@@ -12,7 +12,8 @@ import {
   joinRandomMatchmaking,
 } from "../services/gameService";
 import { useMatchmakingQueueCounts } from "../hooks/useMatchmakingQueueCounts";
-import { HOME_JSON_LD, SITE_URL } from "../constants/seo";
+import { getPageSeo, getWebApplicationJsonLd } from "../constants/seo";
+import { useI18n } from "../i18n/useI18n";
 import type { BoardSize, ComputerDifficulty, GameMode } from "../types/game";
 import type { SymbolTheme } from "../types/gameTheme";
 import {
@@ -39,6 +40,8 @@ import "./HomePage.css";
 type ProfileDialogIntent = "host" | "join" | "random" | null;
 
 export function HomePage() {
+  const { t, lang, path } = useI18n();
+  const seo = getPageSeo("/", lang);
   const navigate = useNavigate();
   const [mode, setMode] = useState<GameMode>("computer");
   const [boardSize, setBoardSize] = useState<BoardSize>(3);
@@ -71,9 +74,9 @@ export function HomePage() {
         symbolTheme,
       });
       trackGameStartFriendHost({ boardSize, symbolTheme });
-      navigate(`/game/${game.id}`);
+      navigate(path(`/game/${game.id}`));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Не удалось начать игру");
+      setError(err instanceof Error ? err.message : t.home.errorStartFailed);
     } finally {
       setLoading(false);
     }
@@ -92,9 +95,9 @@ export function HomePage() {
         playerAge: profile.age,
       });
       trackGameStartRandom({ boardSize });
-      navigate(`/game/${game.id}`);
+      navigate(path(`/game/${game.id}`));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Не удалось начать игру");
+      setError(err instanceof Error ? err.message : t.home.errorStartFailed);
     } finally {
       setLoading(false);
     }
@@ -118,7 +121,7 @@ export function HomePage() {
       const code = pendingJoinCode;
       setPendingJoinCode(null);
       setDialogIntent(null);
-      navigate(`/join/${code}`);
+      navigate(path(`/join/${code}`));
       return;
     }
 
@@ -152,7 +155,7 @@ export function HomePage() {
         symbolTheme,
       });
       navigate(
-        `/game/local?size=${boardSize}&difficulty=${computerDifficulty}`,
+        path(`/game/local?size=${boardSize}&difficulty=${computerDifficulty}`),
       );
       return;
     }
@@ -172,7 +175,7 @@ export function HomePage() {
   const handleJoin = () => {
     const code = inviteInput.trim().toUpperCase();
     if (!code) {
-      setError("Введите код приглашения");
+      setError(t.home.errorEnterInviteCode);
       return;
     }
 
@@ -185,28 +188,28 @@ export function HomePage() {
   return (
     <div className="home-page page-enter">
       <Seo
-        title="Крестики-нолики онлайн — играть бесплатно с другом или компьютером"
-        description="Играй в крестики-нолики онлайн бесплатно: с компьютером, другом по ссылке или случайным игроком. Поля 3×3, 4×4, 5×5 и 6×6. Без регистрации."
-        canonical={`${SITE_URL}/`}
-        jsonLd={HOME_JSON_LD as Record<string, unknown>}
+        title={seo.title}
+        description={seo.description}
+        keywords={seo.keywords}
+        language={lang}
+        route="/"
+        jsonLd={getWebApplicationJsonLd(lang)}
       />
 
       <PlayerProfileDialog
         open={profileDialogOpen}
         initialProfile={playerProfile}
         title={
-          dialogIntent === "join"
-            ? "Как вас представить сопернику?"
-            : dialogIntent === "random"
-              ? "Как вас представить сопернику?"
-              : "Как вас представить другу?"
+          dialogIntent === "join" || dialogIntent === "random"
+            ? t.profileDialog.titleForOpponent
+            : t.profileDialog.titleForFriend
         }
         description={
           dialogIntent === "join"
-            ? "Укажите имя и, если хотите, возраст — создатель игры увидит их на экране."
+            ? t.profileDialog.descriptionJoin
             : dialogIntent === "random"
-              ? "Укажите имя и, если хотите, возраст — случайный соперник увидит их во время игры."
-              : "Укажите имя и, если хотите, возраст. После этого мы создадим игру и покажем ссылку для друга."
+              ? t.profileDialog.descriptionRandom
+              : t.profileDialog.descriptionHost
         }
         onConfirm={handleProfileConfirm}
         onCancel={handleProfileCancel}
@@ -216,14 +219,11 @@ export function HomePage() {
 
       <main className="home-page__content">
         <header className="home-page__header">
-          <h1 className="home-page__title">Крестики-нолики онлайн</h1>
-          <p className="home-page__subtitle">
-            Играй бесплатно с компьютером, другом по ссылке или случайным
-            соперником
-          </p>
+          <h1 className="home-page__title">{t.home.heading}</h1>
+          <p className="home-page__subtitle">{t.home.subtitle}</p>
         </header>
 
-        <section className="home-page__panel" aria-label="Настройки игры">
+        <section className="home-page__panel" aria-label={t.home.settingsLabel}>
           <ModeSelector
             value={mode}
             onChange={handleModeChange}
@@ -249,9 +249,7 @@ export function HomePage() {
             />
           )}
 
-          <h2 className="home-page__section-title">
-            Играть бесплатно без регистрации
-          </h2>
+          <h2 className="home-page__section-title">{t.home.sectionTitle}</h2>
 
           <button
             type="button"
@@ -261,18 +259,18 @@ export function HomePage() {
           >
             {loading
               ? mode === "friend"
-                ? "Создаём игру…"
-                : "Загрузка..."
+                ? t.home.creatingGame
+                : t.common.loading
               : mode === "friend"
-                ? "Создать игру"
-                : "Начать игру"}
+                ? t.home.createGame
+                : t.home.start}
           </button>
 
           {error && <p className="home-page__error">{error}</p>}
         </section>
 
-        <section className="home-page__join" aria-label="Присоединение по коду">
-          <p className="home-page__join-label">Есть код приглашения?</p>
+        <section className="home-page__join" aria-label={t.home.joinSectionLabel}>
+          <p className="home-page__join-label">{t.home.joinLabel}</p>
           <div className="home-page__join-row">
             <input
               type="text"
@@ -282,7 +280,7 @@ export function HomePage() {
               onChange={(event) => setInviteInput(event.target.value.toUpperCase())}
               maxLength={5}
               disabled={loading}
-              aria-label="Код приглашения"
+              aria-label={t.home.inviteCodeLabel}
             />
             <button
               type="button"
@@ -290,21 +288,14 @@ export function HomePage() {
               onClick={handleJoin}
               disabled={loading}
             >
-              Присоединиться
+              {t.home.join}
             </button>
           </div>
         </section>
 
         <section className="home-page__seo">
-          <h2 className="home-page__seo-title">
-            Играть в крестики-нолики онлайн
-          </h2>
-          <p className="home-page__seo-text">
-            Крестики-нолики — простая и знакомая игра для детей и взрослых. На
-            сайте можно играть бесплатно без регистрации: против компьютера, с
-            другом по ссылке или со случайным игроком онлайн. Выберите поле 3×3,
-            4×4, 5×5 или 6×6 и начните партию.
-          </p>
+          <h2 className="home-page__seo-title">{t.home.seoHeading}</h2>
+          <p className="home-page__seo-text">{t.home.seoText}</p>
         </section>
       </main>
 

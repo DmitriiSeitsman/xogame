@@ -1,34 +1,36 @@
 import { Seo } from "../components/Seo/Seo";
-import { SITE_URL } from "../constants/seo";
+import { getPageSeo } from "../constants/seo";
+import { useI18n } from "../i18n/useI18n";
 import "./SeoPage.css";
 
 const TELEGRAM_URL = "https://t.me/dseitsman";
 const DEVELOPER_EMAIL = "seytsman@gmail.com";
-const EMAIL_SUBJECT = "КРЕСТИКИ-НОЛИКИ";
-const MAILTO_LINK = `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(EMAIL_SUBJECT)}`;
 
 export function ContactsPage() {
+  const { t, lang } = useI18n();
+  const seo = getPageSeo("/contacts", lang);
+  const mailtoLink = `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(
+    t.contacts.emailSubject,
+  )}`;
+
   return (
     <div className="seo-page page-enter">
       <Seo
-        title="Контакты — Крестики-нолики онлайн"
-        description="Связаться с разработчиком игры Крестики-нолики онлайн: Telegram или email."
-        canonical={`${SITE_URL}/contacts`}
+        title={seo.title}
+        description={seo.description}
+        keywords={seo.keywords}
+        language={lang}
+        route="/contacts"
       />
 
       <main className="seo-page__content">
         <article className="seo-page__card">
-          <h1 className="seo-page__title">Контакты</h1>
-          <p className="seo-page__intro">
-            Если у вас есть вопрос, предложение или вы нашли ошибку — напишите
-            разработчику. Ответим, когда сможем.
-          </p>
+          <h1 className="seo-page__title">{t.contacts.heading}</h1>
+          <p className="seo-page__intro">{t.contacts.intro}</p>
 
           <section className="seo-page__section">
-            <h2>Связаться с разработчиком</h2>
-            <p>
-              Выберите удобный способ связи: Telegram или электронная почта.
-            </p>
+            <h2>{t.contacts.sectionHeading}</h2>
+            <p>{t.contacts.sectionText}</p>
 
             <div className="seo-page__contact-actions">
               <a
@@ -37,10 +39,10 @@ export function ContactsPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Написать в Telegram
+                {t.contacts.telegram}
               </a>
-              <a href={MAILTO_LINK} className="btn btn--secondary">
-                Написать на почту
+              <a href={mailtoLink} className="btn btn--secondary">
+                {t.contacts.email}
               </a>
             </div>
           </section>

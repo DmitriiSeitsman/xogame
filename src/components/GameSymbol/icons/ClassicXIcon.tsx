@@ -1,3 +1,5 @@
+import { useI18n } from "../../../i18n/useI18n";
+
 type ClassicXIconProps = {
   isWinning?: boolean;
   className?: string;
@@ -7,6 +9,8 @@ export function ClassicXIcon({
   isWinning = false,
   className = "",
 }: ClassicXIconProps) {
+  const { t } = useI18n();
+
   return (
     <svg
       className={[
@@ -19,7 +23,7 @@ export function ClassicXIcon({
         .join(" ")}
       viewBox="0 0 100 100"
       role="img"
-      aria-label="Крестик"
+      aria-label={t.symbols.cross}
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>

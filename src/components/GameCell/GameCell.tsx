@@ -1,3 +1,5 @@
+import type { Dictionary } from "../../i18n/dictionaries/ru";
+import { useI18n } from "../../i18n/useI18n";
 import type { Cell } from "../../types/game";
 import type { SymbolTheme } from "../../types/gameTheme";
 import { GameSymbol } from "../GameSymbol/GameSymbol";
@@ -12,12 +14,12 @@ type GameCellProps = {
   onClick: () => void;
 };
 
-function getAriaLabel(index: number, value: Cell): string {
+function getAriaLabel(t: Dictionary, index: number, value: Cell): string {
   const cellNumber = index + 1;
   if (value === "") {
-    return `Пустая клетка ${cellNumber}`;
+    return t.board.emptyCell(cellNumber);
   }
-  return `Клетка ${cellNumber} занята ${value}`;
+  return t.board.occupiedCell(cellNumber, value);
 }
 
 export function GameCell({
@@ -28,6 +30,7 @@ export function GameCell({
   symbolTheme = "classic",
   onClick,
 }: GameCellProps) {
+  const { t } = useI18n();
   const isOccupied = value !== "";
   const isInteractive = !disabled && !isOccupied;
 
@@ -44,7 +47,7 @@ export function GameCell({
         .join(" ")}
       disabled={disabled || isOccupied}
       onClick={onClick}
-      aria-label={getAriaLabel(index, value)}
+      aria-label={getAriaLabel(t, index, value)}
       aria-disabled={!isInteractive}
     >
       {value !== "" && (

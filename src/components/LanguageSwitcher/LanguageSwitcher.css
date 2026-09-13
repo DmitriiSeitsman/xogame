@@ -1,0 +1,51 @@
+.language-switcher {
+  display: flex;
+  flex-shrink: 0;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.language-switcher__option {
+  min-width: 34px;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.language-switcher__option:hover {
+  color: var(--color-primary-start);
+}
+
+.language-switcher__option--active {
+  background: var(--color-surface-strong);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-cell);
+}
+
+.language-switcher__option:focus-visible {
+  outline: 3px solid rgba(249, 115, 22, 0.3);
+  outline-offset: 2px;
+}
+
+/* In the mobile sheet the switcher sits on its own row, full width. */
+.language-switcher--sheet {
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.language-switcher--sheet .language-switcher__option {
+  flex: 1;
+  padding: 12px 8px;
+  font-size: 0.95rem;
+}

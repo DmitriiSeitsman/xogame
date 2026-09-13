@@ -1,5 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
+import type { Dictionary } from "../../i18n/dictionaries/ru";
+import { useI18n } from "../../i18n/useI18n";
 import type { PlayerProfile } from "../../utils/playerProfile";
 import "./PlayerProfileDialog.css";
 
@@ -14,12 +16,14 @@ type PlayerProfileDialogProps = {
 
 export function PlayerProfileDialog({
   open,
-  title = "Как вас представить другу?",
-  description = "Укажите имя и, если хотите, возраст. Друг увидит эти данные во время игры.",
+  title,
+  description,
   initialProfile = { name: "", age: null },
   onConfirm,
   onCancel,
 }: PlayerProfileDialogProps) {
+  const { t } = useI18n();
+
   useEffect(() => {
     if (!open) {
       return;
@@ -40,8 +44,9 @@ export function PlayerProfileDialog({
   return createPortal(
     <PlayerProfileDialogForm
       key={`${initialProfile.name}-${initialProfile.age ?? ""}`}
-      title={title}
-      description={description}
+      t={t}
+      title={title ?? t.profileDialog.titleForFriend}
+      description={description ?? t.profileDialog.descriptionDefault}
       initialProfile={initialProfile}
       onConfirm={onConfirm}
       onCancel={onCancel}
@@ -51,6 +56,7 @@ export function PlayerProfileDialog({
 }
 
 type PlayerProfileDialogFormProps = {
+  t: Dictionary;
   title: string;
   description: string;
   initialProfile: PlayerProfile;
@@ -59,6 +65,7 @@ type PlayerProfileDialogFormProps = {
 };
 
 function PlayerProfileDialogForm({
+  t,
   title,
   description,
   initialProfile,
@@ -77,12 +84,12 @@ function PlayerProfileDialogForm({
 
     const trimmedName = name.trim();
     if (!trimmedName) {
-      setError("Введите имя");
+      setError(t.profileDialog.errorNameRequired);
       return;
     }
 
     if (trimmedName.length > 32) {
-      setError("Имя слишком длинное (максимум 32 символа)");
+      setError(t.profileDialog.errorNameTooLong);
       return;
     }
 
@@ -92,7 +99,7 @@ function PlayerProfileDialogForm({
     if (trimmedAge) {
       const parsedAge = Number(trimmedAge);
       if (!Number.isInteger(parsedAge) || parsedAge < 1 || parsedAge > 120) {
-        setError("Возраст должен быть от 1 до 120");
+        setError(t.profileDialog.errorAgeRange);
         return;
       }
       age = parsedAge;
@@ -106,7 +113,7 @@ function PlayerProfileDialogForm({
       <button
         type="button"
         className="player-profile-dialog__backdrop"
-        aria-label="Закрыть"
+        aria-label={t.common.close}
         onClick={onCancel}
       />
       <div
@@ -122,13 +129,13 @@ function PlayerProfileDialogForm({
 
         <form className="player-profile-dialog__form" onSubmit={handleSubmit}>
           <label className="player-profile-dialog__field">
-            <span className="player-profile-dialog__label">Имя</span>
+            <span className="player-profile-dialog__label">{t.profileDialog.nameLabel}</span>
             <input
               type="text"
               className="player-profile-dialog__input"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Мария"
+              placeholder={t.profileDialog.namePlaceholder}
               maxLength={32}
               autoFocus
               autoComplete="nickname"
@@ -137,15 +144,17 @@ function PlayerProfileDialogForm({
 
           <label className="player-profile-dialog__field">
             <span className="player-profile-dialog__label">
-              Возраст{" "}
-              <span className="player-profile-dialog__optional">(необязательно)</span>
+              {t.profileDialog.ageLabel}{" "}
+              <span className="player-profile-dialog__optional">
+                {t.profileDialog.ageOptional}
+              </span>
             </span>
             <input
               type="number"
               className="player-profile-dialog__input"
               value={ageInput}
               onChange={(event) => setAgeInput(event.target.value)}
-              placeholder="12"
+              placeholder={t.profileDialog.agePlaceholder}
               min={1}
               max={120}
               inputMode="numeric"
@@ -160,10 +169,10 @@ function PlayerProfileDialogForm({
 
           <div className="player-profile-dialog__actions">
             <button type="button" className="btn btn--secondary" onClick={onCancel}>
-              Отмена
+              {t.common.cancel}
             </button>
             <button type="submit" className="btn btn--primary">
-              Продолжить
+              {t.profileDialog.submit}
             </button>
           </div>
         </form>

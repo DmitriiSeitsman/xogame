@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n/useI18n";
 import type { SymbolTheme } from "../../types/gameTheme";
 import { ClassicOIcon } from "../GameSymbol/icons/ClassicOIcon";
 import { ClassicXIcon } from "../GameSymbol/icons/ClassicXIcon";
@@ -16,11 +17,16 @@ export function SymbolThemeSelector({
   onChange,
   disabled = false,
 }: SymbolThemeSelectorProps) {
+  const { t } = useI18n();
+
   return (
-    <section className="symbol-theme-selector" aria-label="Выбор темы символов">
+    <section
+      className="symbol-theme-selector"
+      aria-label={t.symbolTheme.sectionLabel}
+    >
       <div className="symbol-theme-selector__header">
-        <h2>Тема символов</h2>
-        <p>Выберите классические значки или волшебную тему</p>
+        <h2>{t.symbolTheme.heading}</h2>
+        <p>{t.symbolTheme.hint}</p>
       </div>
 
       <div className="symbol-theme-selector__options">
@@ -42,7 +48,7 @@ export function SymbolThemeSelector({
             <ClassicXIcon className="symbol-theme-option__icon" />
             <ClassicOIcon className="symbol-theme-option__icon" />
           </span>
-          <span className="symbol-theme-option__title">Классика</span>
+          <span className="symbol-theme-option__title">{t.symbolTheme.classic}</span>
         </button>
 
         <button
@@ -63,7 +69,7 @@ export function SymbolThemeSelector({
             <UnicornIcon className="symbol-theme-option__icon symbol-theme-option__icon--unicorn" />
             <HeartIcon className="symbol-theme-option__icon" />
           </span>
-          <span className="symbol-theme-option__title">Волшебная</span>
+          <span className="symbol-theme-option__title">{t.symbolTheme.magic}</span>
         </button>
       </div>
     </section>

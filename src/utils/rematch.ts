@@ -1,3 +1,4 @@
+import type { Dictionary } from "../i18n/dictionaries/ru";
 import type { Game } from "../types/game";
 import { formatPlayerProfile } from "./playerProfile";
 
@@ -11,10 +12,10 @@ export function isFriendGameGuest(game: Game, playerToken: string): boolean {
   return game.player_o_token === playerToken;
 }
 
-export function getHostProfileLabel(game: Game): string {
+export function getHostProfileLabel(t: Dictionary, game: Game): string {
   if (!game.player_x_name) {
-    return "Игрок";
+    return t.common.player;
   }
 
-  return formatPlayerProfile(game.player_x_name, game.player_x_age);
+  return formatPlayerProfile(t, game.player_x_name, game.player_x_age);
 }

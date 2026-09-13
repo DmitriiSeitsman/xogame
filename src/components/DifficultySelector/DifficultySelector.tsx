@@ -1,6 +1,7 @@
 import type { ComputerDifficulty } from "../../types/game";
 import { COMPUTER_DIFFICULTIES } from "../../types/game";
-import { COMPUTER_DIFFICULTY_LABELS } from "../../utils/computerDifficulty";
+import { useI18n } from "../../i18n/useI18n";
+import { getComputerDifficultyLabel } from "../../utils/computerDifficulty";
 import "./DifficultySelector.css";
 
 type DifficultySelectorProps = {
@@ -14,10 +15,12 @@ export function DifficultySelector({
   onChange,
   disabled = false,
 }: DifficultySelectorProps) {
+  const { t } = useI18n();
+
   return (
     <div className="difficulty-selector">
       <h2 className="difficulty-selector__label" id="difficulty-label">
-        Сложность бота
+        {t.difficulty.label}
       </h2>
       <div
         className="difficulty-selector__options"
@@ -35,7 +38,7 @@ export function DifficultySelector({
             disabled={disabled}
             aria-pressed={value === difficulty}
           >
-            {COMPUTER_DIFFICULTY_LABELS[difficulty]}
+            {getComputerDifficultyLabel(t, difficulty)}
           </button>
         ))}
       </div>

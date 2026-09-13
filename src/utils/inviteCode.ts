@@ -1,24 +1,40 @@
-export function buildInviteLink(inviteCode: string): string {
-  return `${window.location.origin}/join/${inviteCode}`;
+import type { Dictionary } from "../i18n/dictionaries/ru";
+import { localizePath, type Language } from "../i18n/language";
+
+/** Invite links keep the sharer's language, so the friend who opens them
+ * lands on a page they can read (and on the URL that language is indexed
+ * under). */
+export function buildInviteLink(
+  inviteCode: string,
+  language: Language = "ru",
+): string {
+  return `${window.location.origin}${localizePath(`/join/${inviteCode}`, language)}`;
 }
 
-export async function copyInviteLink(inviteCode: string): Promise<void> {
-  await navigator.clipboard.writeText(buildInviteLink(inviteCode));
+export async function copyInviteLink(
+  inviteCode: string,
+  language: Language = "ru",
+): Promise<void> {
+  await navigator.clipboard.writeText(buildInviteLink(inviteCode, language));
 }
 
-export async function shareInviteLink(inviteCode: string): Promise<void> {
-  const url = buildInviteLink(inviteCode);
+export async function shareInviteLink(
+  t: Dictionary,
+  inviteCode: string,
+  language: Language = "ru",
+): Promise<void> {
+  const url = buildInviteLink(inviteCode, language);
 
   if (navigator.share) {
     await navigator.share({
-      title: "Крестики-нолики",
-      text: "Присоединяйся к игре!",
+      title: t.invite.shareTitle,
+      text: t.invite.shareText,
       url,
     });
     return;
   }
 
-  await copyInviteLink(inviteCode);
+  await copyInviteLink(inviteCode, language);
 }
 
 export async function copyInviteCode(inviteCode: string): Promise<void> {

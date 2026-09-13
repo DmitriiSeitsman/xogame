@@ -137,6 +137,22 @@
   display: none;
 }
 
+.language-switcher--header {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 6px;
+}
+
+/* Only shown in the top bar on mobile, where the desktop nav is hidden.
+ * order:-1 + margin-right:auto puts it on the left and leaves the burger
+ * pinned right. */
+.language-switcher--mobile-bar {
+  display: none;
+  order: -1;
+  margin-right: auto;
+  align-self: center;
+}
+
 .site-header__backdrop {
   position: fixed;
   inset: 0;
@@ -249,6 +265,11 @@
 
   .site-header__nav--desktop {
     display: none;
+  }
+
+  .language-switcher--mobile-bar {
+    display: flex;
+    pointer-events: auto;
   }
 
   .site-header__mobile-menu {

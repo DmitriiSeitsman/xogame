@@ -12,6 +12,7 @@ import { Seo } from "../components/Seo/Seo";
 import { WinCelebration } from "../components/WinCelebration/WinCelebration";
 import { useCelebrationKey } from "../hooks/useCelebrationKey";
 import { emitCelebration } from "../utils/celebrationBus";
+import { useI18n } from "../i18n/useI18n";
 import { getComputerMove } from "../services/computerPlayerService";
 import type { ComputerMoveRequest } from "../services/computerPlayerService";
 import {
@@ -50,7 +51,7 @@ import {
 } from "../utils/gameEngine";
 import { applyComputerMove } from "../utils/applyComputerMove";
 import {
-  COMPUTER_DIFFICULTY_LABELS,
+  getComputerDifficultyLabel,
   loadComputerDifficulty,
   parseComputerDifficultyParam,
 } from "../utils/computerDifficulty";
@@ -104,6 +105,7 @@ function getPlayerSymbol(game: Game, playerToken: string): PlayerSymbol | null {
 const RANDOM_HEARTBEAT_MS = 25_000;
 
 export function GamePage() {
+  const { t, lang, path: localePath } = useI18n();
   const { gameId } = useParams<{ gameId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -126,6 +128,16 @@ export function GamePage() {
   const realtimeHandleRef = useRef<GameRealtimeHandle | null>(null);
 
   const playerToken = useMemo(() => getOrCreatePlayerToken(), []);
+
+  // Effects below use the dictionary only for error fallbacks. Reading it
+  // through a ref keeps it out of their dependency lists, so switching
+  // language mid-game doesn't tear down the WebSocket subscription (which
+  // would also wipe the chat history and refetch the game for nothing).
+  const tRef = useRef(t);
+
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   const boardSymbolTheme = useMemo((): SymbolTheme => {
     if (isLocal) {
@@ -238,7 +250,7 @@ export function GamePage() {
         realtimeHandleRef.current = handle;
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Игра не найдена");
+          setError(err instanceof Error ? err.message : tRef.current.game.notFound);
           setLoading(false);
         }
       }
@@ -280,7 +292,9 @@ export function GamePage() {
       } catch (err) {
         if (!cancelled) {
           setError(
-            err instanceof Error ? err.message : "Поиск соперника прерван",
+            err instanceof Error
+              ? err.message
+              : tRef.current.game.errorSearchInterrupted,
           );
         }
       }
@@ -513,7 +527,7 @@ export function GamePage() {
       });
       setRemoteGame(updated);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Не удалось сделать ход");
+      setError(err instanceof Error ? err.message : t.game.errorMoveFailed);
     } finally {
       setActionLoading(false);
     }
@@ -530,7 +544,7 @@ export function GamePage() {
       setRemoteGame(game);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Не удалось предложить реванш",
+        err instanceof Error ? err.message : t.game.errorRematchOffer,
       );
     } finally {
       setActionLoading(false);
@@ -539,7 +553,7 @@ export function GamePage() {
 
   const handleHostRematchNo = async () => {
     if (!gameId) {
-      navigate("/");
+      navigate(localePath("/"));
       return;
     }
 
@@ -552,7 +566,7 @@ export function GamePage() {
       // Still leave the finished game
     } finally {
       setActionLoading(false);
-      navigate("/");
+      navigate(localePath("/"));
     }
   };
 
@@ -567,7 +581,7 @@ export function GamePage() {
       setRemoteGame(game);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Не удалось начать новую партию",
+        err instanceof Error ? err.message : t.game.errorRematchStart,
       );
     } finally {
       setActionLoading(false);
@@ -576,7 +590,7 @@ export function GamePage() {
 
   const handleGuestRematchDecline = async () => {
     if (!gameId) {
-      navigate("/");
+      navigate(localePath("/"));
       return;
     }
 
@@ -589,7 +603,7 @@ export function GamePage() {
       // Still leave
     } finally {
       setActionLoading(false);
-      navigate("/");
+      navigate(localePath("/"));
     }
   };
 
@@ -606,9 +620,9 @@ export function GamePage() {
     setActionLoading(true);
     try {
       await cancelRandomSearch({ playerToken, gameId });
-      navigate("/");
+      navigate(localePath("/"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Не удалось отменить поиск");
+      setError(err instanceof Error ? err.message : t.game.errorCancelSearch);
     } finally {
       setActionLoading(false);
     }
@@ -623,22 +637,19 @@ export function GamePage() {
   };
 
   const handleLeaveGame = () => {
-    navigate("/");
+    navigate(localePath("/"));
   };
 
   if (loading) {
     return (
       <GameLayout>
         <Seo
-          title="Игра — Крестики-нолики"
-          description="Игра в крестики-нолики онлайн"
+          title={`${t.game.heading} — ${t.home.heading}`}
+          description={t.home.subtitle}
+          language={lang}
           noIndex
         />
-        <GameStatus
-          title="Загрузка игры..."
-          variant="muted"
-          showLoader
-        />
+        <GameStatus title={t.game.loading} variant="muted" showLoader />
       </GameLayout>
     );
   }
@@ -647,13 +658,14 @@ export function GamePage() {
     return (
       <GameLayout>
         <Seo
-          title="Игра — Крестики-нолики"
-          description="Игра в крестики-нолики онлайн"
+          title={`${t.game.heading} — ${t.home.heading}`}
+          description={t.home.subtitle}
+          language={lang}
           noIndex
         />
-        <GameStatus title="Ошибка" subtitle={error} variant="warning" />
-        <Link to="/" className="btn btn--primary">
-          На главную
+        <GameStatus title={t.common.error} subtitle={error} variant="warning" />
+        <Link to={localePath("/")} className="btn btn--primary">
+          {t.common.goHome}
         </Link>
       </GameLayout>
     );
@@ -671,10 +683,10 @@ export function GamePage() {
         : [];
 
     const statusTitle = botThinking
-      ? "Бот думает"
+      ? t.game.botThinking
       : isFinished
-        ? getWinnerMessage(localGame.winner, "X")
-        : getTurnMessage(localGame.currentTurn, "X", false);
+        ? getWinnerMessage(t, localGame.winner, "X")
+        : getTurnMessage(t, localGame.currentTurn, "X", false);
 
     const statusSymbol: PlayerSymbol | null = isFinished
       ? localGame.winner === "draw"
@@ -685,18 +697,23 @@ export function GamePage() {
     return (
       <GameLayout>
         <Seo
-          title="Игра с компьютером — Крестики-нолики"
-          description="Игра в крестики-нолики онлайн против компьютера"
+          title={`${t.game.computerGame} — ${t.home.heading}`}
+          description={t.home.subtitle}
+          language={lang}
           noIndex
         />
         <GameStatus
-          title={statusTitle || "Игра с компьютером"}
+          title={statusTitle || t.game.computerGame}
           subtitle={
             botThinking
               ? botProgress > 0
-                ? `Анализ ходов: ${botProgress}%`
-                : "Подготовка к расчёту…"
-              : `Поле ${localGame.boardSize}×${localGame.boardSize} · победа: ${localGame.winLength} в ряд · бот: ${COMPUTER_DIFFICULTY_LABELS[localGame.difficulty]}`
+                ? t.game.botProgress(botProgress)
+                : t.game.botPreparing
+              : t.game.localSubtitle(
+                  localGame.boardSize,
+                  localGame.winLength,
+                  getComputerDifficultyLabel(t, localGame.difficulty),
+                )
           }
           variant={isFinished ? "success" : botThinking ? "muted" : "default"}
           symbol={botThinking ? "O" : statusSymbol}
@@ -711,7 +728,7 @@ export function GamePage() {
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={botProgress}
-            aria-label="Бот думает"
+            aria-label={t.game.botThinking}
           >
             <div className="game-page__bot-progress-track">
               <div
@@ -736,10 +753,10 @@ export function GamePage() {
               className="btn btn--primary"
               onClick={handleRestartLocal}
             >
-              Играть снова
+              {t.game.playAgain}
             </button>
-            <Link to="/" className="btn btn--secondary">
-              На главную
+            <Link to={localePath("/")} className="btn btn--secondary">
+              {t.common.goHome}
             </Link>
           </div>
         )}
@@ -751,11 +768,12 @@ export function GamePage() {
     return (
       <GameLayout>
         <Seo
-          title="Игра — Крестики-нолики"
-          description="Игра в крестики-нолики онлайн"
+          title={`${t.game.heading} — ${t.home.heading}`}
+          description={t.home.subtitle}
+          language={lang}
           noIndex
         />
-        <GameStatus title="Игра не найдена" variant="warning" />
+        <GameStatus title={t.game.notFound} variant="warning" />
       </GameLayout>
     );
   }
@@ -768,38 +786,44 @@ export function GamePage() {
   const isPlaying = remoteGame.status === "playing";
   const isFinished = remoteGame.status === "finished";
 
-  let statusTitle = "Игра";
+  let statusTitle: string = t.game.heading;
   let statusSubtitle: string | undefined;
   let statusVariant: "default" | "success" | "warning" | "muted" = "default";
   let statusSymbol: PlayerSymbol | null = null;
   let showLoader = false;
 
   if (isWaitingFriend) {
-    statusTitle = "Ждём друга…";
-    statusSubtitle = "Поделитесь ссылкой или кодом приглашения";
+    statusTitle = t.game.waitingFriendTitle;
+    statusSubtitle = t.game.waitingFriendSubtitle;
     statusVariant = "muted";
     showLoader = true;
   } else if (isWaitingRandom) {
-    statusTitle = "Ищем соперника…";
-    statusSubtitle = `Поле ${remoteGame.board_size}×${remoteGame.board_size}`;
+    statusTitle = t.game.waitingRandomTitle;
+    statusSubtitle = t.game.boardSubtitle(remoteGame.board_size);
     statusVariant = "muted";
     showLoader = true;
   } else if (isFinished) {
-    statusTitle = getWinnerMessage(remoteGame.winner, playerSymbol);
+    statusTitle = getWinnerMessage(t, remoteGame.winner, playerSymbol);
     statusSubtitle =
       remoteGame.winner === "draw"
-        ? "Ничья"
-        : `Победитель: ${remoteGame.winner}`;
+        ? t.game.draw
+        : remoteGame.winner
+          ? t.game.winnerIs(remoteGame.winner)
+          : undefined;
     statusVariant = "success";
     statusSymbol =
       remoteGame.winner === "draw" ? null : remoteGame.winner;
   } else if (isPlaying) {
     statusTitle = getTurnMessage(
+      t,
       remoteGame.current_turn,
       playerSymbol,
       false,
     );
-    statusSubtitle = `Поле ${remoteGame.board_size}×${remoteGame.board_size} · победа: ${remoteGame.win_length} в ряд`;
+    statusSubtitle = t.game.boardWinSubtitle(
+      remoteGame.board_size,
+      remoteGame.win_length,
+    );
     statusSymbol =
       playerSymbol && remoteGame.current_turn === playerSymbol
         ? playerSymbol
@@ -818,14 +842,22 @@ export function GamePage() {
   const opponentLabel =
     (remoteGame.mode === "friend" || remoteGame.mode === "random") &&
     (isPlaying || isFinished)
-      ? getOpponentProfileLabel(remoteGame, playerToken)
+      ? getOpponentProfileLabel(t, remoteGame, playerToken)
       : null;
 
   const myChatLabel =
     playerSymbol === "X"
-      ? formatPlayerProfile(remoteGame.player_x_name ?? "", remoteGame.player_x_age)
+      ? formatPlayerProfile(
+          t,
+          remoteGame.player_x_name ?? "",
+          remoteGame.player_x_age,
+        )
       : playerSymbol === "O"
-        ? formatPlayerProfile(remoteGame.player_o_name ?? "", remoteGame.player_o_age)
+        ? formatPlayerProfile(
+            t,
+            remoteGame.player_o_name ?? "",
+            remoteGame.player_o_age,
+          )
         : "";
 
   // Presence only matters once there's an actual opponent to lose — a
@@ -846,7 +878,7 @@ export function GamePage() {
 
   const isHost = isFriendGameHost(remoteGame, playerToken);
   const isGuest = isFriendGameGuest(remoteGame, playerToken);
-  const hostProfileLabel = getHostProfileLabel(remoteGame);
+  const hostProfileLabel = getHostProfileLabel(t, remoteGame);
 
   const showHostRematchDialog =
     isFriendFinished && isHost && remoteGame.rematch_status == null;
@@ -865,8 +897,9 @@ export function GamePage() {
       contentClassName={chatOpen ? "game-content--chat-open" : undefined}
     >
       <Seo
-        title="Игра — Крестики-нолики"
-        description="Игра в крестики-нолики онлайн"
+        title={`${t.game.heading} — ${t.home.heading}`}
+        description={t.home.subtitle}
+        language={lang}
         noIndex
       />
       <GameStatus
@@ -889,16 +922,18 @@ export function GamePage() {
 
       {opponentLabel && (
         <p className="game-page__opponent">
-          Соперник: <span>{opponentLabel}</span>
+          {t.game.opponentPrefix} <span>{opponentLabel}</span>
         </p>
       )}
 
       {isWaitingFriend && (
         <div className="game-page__waiting">
           <div className="game-page__waiting-loader" aria-hidden="true" />
-          <p className="game-page__waiting-title">Ждём друга…</p>
+          <p className="game-page__waiting-title">
+            {t.game.waitingFriendTitle}
+          </p>
           <p className="game-page__waiting-subtitle">
-            Поделитесь ссылкой или кодом приглашения
+            {t.game.waitingFriendSubtitle}
           </p>
           {remoteGame.invite_code && (
             <InviteBox inviteCode={remoteGame.invite_code} />
@@ -909,9 +944,11 @@ export function GamePage() {
       {isWaitingRandom && (
         <div className="game-page__waiting">
           <div className="game-page__waiting-loader" aria-hidden="true" />
-          <p className="game-page__waiting-title">Ищем соперника…</p>
+          <p className="game-page__waiting-title">
+            {t.game.waitingRandomTitle}
+          </p>
           <p className="game-page__waiting-subtitle">
-            Поле {remoteGame.board_size}×{remoteGame.board_size}
+            {t.game.boardSubtitle(remoteGame.board_size)}
           </p>
           <button
             type="button"
@@ -919,7 +956,7 @@ export function GamePage() {
             onClick={handleCancelSearch}
             disabled={actionLoading}
           >
-            Отменить
+            {t.game.cancelSearch}
           </button>
         </div>
       )}
@@ -950,9 +987,9 @@ export function GamePage() {
 
       <FriendRematchDialog
         open={showHostRematchDialog}
-        title="Хотите сыграть ещё раз?"
-        primaryLabel="Да"
-        secondaryLabel="Нет"
+        title={t.rematch.hostTitle}
+        primaryLabel={t.rematch.yes}
+        secondaryLabel={t.rematch.no}
         onPrimary={() => void handleHostRematchYes()}
         onSecondary={() => void handleHostRematchNo()}
         loading={actionLoading}
@@ -960,9 +997,9 @@ export function GamePage() {
 
       <FriendRematchDialog
         open={showGuestRematchDialog}
-        title={`Игрок ${hostProfileLabel} предлагает сыграть ещё раз`}
-        primaryLabel="Играть"
-        secondaryLabel="Отмена"
+        title={t.rematch.guestTitle(hostProfileLabel)}
+        primaryLabel={t.rematch.play}
+        secondaryLabel={t.common.cancel}
         onPrimary={() => void handleGuestRematchAccept()}
         onSecondary={() => void handleGuestRematchDecline()}
         loading={actionLoading}
@@ -973,18 +1010,16 @@ export function GamePage() {
           <div className="game-page__actions">
             {showRematchWaiting && (
               <p className="game-page__rematch-hint" role="status">
-                Ждём ответа друга…
+                {t.rematch.waitingForFriend}
               </p>
             )}
             {showRematchDeclined && (
               <p className="game-page__rematch-hint" role="status">
-                {isHost
-                  ? "Друг отказался от реванша"
-                  : "Реванш отменён"}
+                {isHost ? t.rematch.declinedByFriend : t.rematch.declined}
               </p>
             )}
-            <Link to="/" className="btn btn--primary">
-              На главную
+            <Link to={localePath("/")} className="btn btn--primary">
+              {t.common.goHome}
             </Link>
           </div>
         )}

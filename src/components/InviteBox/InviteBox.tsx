@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useI18n } from "../../i18n/useI18n";
 import {
   buildInviteLink,
   copyInviteCode,
@@ -12,6 +13,7 @@ type InviteBoxProps = {
 };
 
 export function InviteBox({ inviteCode }: InviteBoxProps) {
+  const { t, lang } = useI18n();
   const [message, setMessage] = useState<string | null>(null);
 
   const showMessage = (text: string) => {
@@ -20,44 +22,44 @@ export function InviteBox({ inviteCode }: InviteBoxProps) {
   };
 
   const handleCopyLink = async () => {
-    await copyInviteLink(inviteCode);
-    showMessage("Ссылка скопирована");
+    await copyInviteLink(inviteCode, lang);
+    showMessage(t.invite.linkCopied);
   };
 
   const handleShare = async () => {
     try {
-      await shareInviteLink(inviteCode);
+      await shareInviteLink(t, inviteCode, lang);
     } catch {
-      showMessage("Не удалось поделиться");
+      showMessage(t.invite.shareFailed);
     }
   };
 
   const handleCopyCode = async () => {
     await copyInviteCode(inviteCode);
-    showMessage("Код скопирован");
+    showMessage(t.invite.codeCopied);
   };
 
   return (
     <div className="invite-box">
-      <p className="invite-box__title">Ждём друга</p>
-      <p className="invite-box__hint">
-        Отправьте ссылку или код приглашения второму игроку
-      </p>
+      <p className="invite-box__title">{t.invite.title}</p>
+      <p className="invite-box__hint">{t.invite.hint}</p>
 
       <div className="invite-box__code">{inviteCode}</div>
       <div className="invite-box__link-wrap">
-        <div className="invite-box__link">{buildInviteLink(inviteCode)}</div>
+        <div className="invite-box__link">
+          {buildInviteLink(inviteCode, lang)}
+        </div>
       </div>
 
       <div className="invite-box__actions">
         <button type="button" className="btn btn--secondary" onClick={handleCopyLink}>
-          Копировать ссылку
+          {t.invite.copyLink}
         </button>
         <button type="button" className="btn btn--secondary" onClick={handleShare}>
-          Поделиться
+          {t.invite.share}
         </button>
         <button type="button" className="btn btn--secondary" onClick={handleCopyCode}>
-          Копировать код
+          {t.invite.copyCode}
         </button>
       </div>
 

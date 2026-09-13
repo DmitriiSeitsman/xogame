@@ -1,4 +1,5 @@
 import { createPortal } from "react-dom";
+import { useI18n } from "../../i18n/useI18n";
 import "./ConnectionOverlay.css";
 
 /**
@@ -9,6 +10,8 @@ import "./ConnectionOverlay.css";
  * onConnectionStateChange/onReconnected wiring in GamePage).
  */
 export function ConnectionOverlay({ visible }: { visible: boolean }) {
+  const { t } = useI18n();
+
   if (!visible) {
     return null;
   }
@@ -17,10 +20,8 @@ export function ConnectionOverlay({ visible }: { visible: boolean }) {
     <div className="connection-overlay" role="status" aria-live="polite">
       <div className="connection-overlay__panel">
         <span className="connection-overlay__spinner" aria-hidden="true" />
-        <p className="connection-overlay__title">Восстанавливаем соединение…</p>
-        <p className="connection-overlay__subtitle">
-          Проверьте подключение к интернету — переподключимся автоматически
-        </p>
+        <p className="connection-overlay__title">{t.connection.title}</p>
+        <p className="connection-overlay__subtitle">{t.connection.subtitle}</p>
       </div>
     </div>,
     document.body,

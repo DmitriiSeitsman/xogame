@@ -1,0 +1,22 @@
+{
+  "name": "Tic Tac Toe Online",
+  "short_name": "Tic Tac Toe",
+  "description": "Online tic tac toe against the computer, a friend, or a random player.",
+  "start_url": "/en",
+  "display": "standalone",
+  "background_color": "#fff7ed",
+  "theme_color": "#fff7ed",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png?v=2",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg?v=2",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

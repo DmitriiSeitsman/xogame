@@ -1,3 +1,5 @@
+import type { Dictionary } from "../../i18n/dictionaries/ru";
+import { useI18n } from "../../i18n/useI18n";
 import type { BoardSize, GameMode } from "../../types/game";
 import "./ModeSelector.css";
 
@@ -10,42 +12,32 @@ type ModeSelectorProps = {
 
 const BOARD_SIZES: BoardSize[] = [3, 4, 5, 6];
 
-const MODES: {
+function getModes(t: Dictionary): {
   value: GameMode;
   label: string;
   description: string;
   iconSrc: string;
-}[] = [
-  {
-    value: "computer",
-    label: "С компьютером",
-    description: "Тренируйся против бота",
-    iconSrc: "/computer.png",
-  },
-  {
-    value: "friend",
-    label: "С другом",
-    description: "Создай ссылку и отправь приглашение",
-    iconSrc: "/friend.png",
-  },
-  {
-    value: "random",
-    label: "Случайный игрок",
-    description: "Найди соперника онлайн",
-    iconSrc: "/random.png",
-  },
-];
-
-function formatQueueCount(count: number): string {
-  if (count === 0) {
-    return "0";
-  }
-
-  if (count === 1) {
-    return "1 ищет";
-  }
-
-  return `${count} ищут`;
+}[] {
+  return [
+    {
+      value: "computer",
+      label: t.modeSelector.computer,
+      description: t.modeSelector.computerDescription,
+      iconSrc: "/computer.png",
+    },
+    {
+      value: "friend",
+      label: t.modeSelector.friend,
+      description: t.modeSelector.friendDescription,
+      iconSrc: "/friend.png",
+    },
+    {
+      value: "random",
+      label: t.modeSelector.random,
+      description: t.modeSelector.randomDescription,
+      iconSrc: "/random.png",
+    },
+  ];
 }
 
 export function ModeSelector({
@@ -54,17 +46,20 @@ export function ModeSelector({
   disabled = false,
   queueCounts,
 }: ModeSelectorProps) {
+  const { t } = useI18n();
+  const modes = getModes(t);
+
   return (
     <div className="mode-selector">
       <h2 className="mode-selector__label" id="mode-selector-label">
-        Выберите режим игры
+        {t.modeSelector.label}
       </h2>
       <div
         className="mode-selector__options"
         role="group"
         aria-labelledby="mode-selector-label"
       >
-        {MODES.map((mode) => (
+        {modes.map((mode) => (
           <button
             key={mode.value}
             type="button"
@@ -91,7 +86,7 @@ export function ModeSelector({
               {mode.value === "random" && queueCounts && (
                 <span
                   className="mode-selector__queue"
-                  aria-label="Игроки в поиске соперника по размеру поля"
+                  aria-label={t.modeSelector.queueLabel}
                 >
                   {BOARD_SIZES.map((size) => (
                     <span key={size} className="mode-selector__queue-item">
@@ -99,7 +94,7 @@ export function ModeSelector({
                         {size}×{size}
                       </span>
                       <span className="mode-selector__queue-count">
-                        {formatQueueCount(queueCounts[size])}
+                        {t.modeSelector.queueCount(queueCounts[size])}
                       </span>
                     </span>
                   ))}

@@ -168,3 +168,33 @@ a {
 .btn--secondary:hover:not(:disabled) {
   border-color: rgba(249, 115, 22, 0.25);
 }
+
+/* Prerendered, crawler-visible page copy (scripts/prerender.mjs). React
+ * removes it on mount; these styles only matter for the split second
+ * before the bundle runs, and for visitors with JS disabled. */
+#prerender-seo {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+#prerender-seo h1 {
+  font-family: var(--font-family-display);
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+#prerender-seo ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding: 0;
+}
+
+#prerender-seo a {
+  color: var(--color-primary-start);
+}

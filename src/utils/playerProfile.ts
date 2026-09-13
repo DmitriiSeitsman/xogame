@@ -1,3 +1,5 @@
+import type { Dictionary } from "../i18n/dictionaries/ru";
+
 export type PlayerProfile = {
   name: string;
   age: number | null;
@@ -35,33 +37,23 @@ export function savePlayerProfile(profile: PlayerProfile): void {
   );
 }
 
-export function formatAge(age: number): string {
-  const mod10 = age % 10;
-  const mod100 = age % 100;
-
-  if (mod100 >= 11 && mod100 <= 14) {
-    return `${age} лет`;
-  }
-
-  if (mod10 === 1) {
-    return `${age} год`;
-  }
-
-  if (mod10 >= 2 && mod10 <= 4) {
-    return `${age} года`;
-  }
-
-  return `${age} лет`;
+/** Locale-aware age phrasing ("40 лет" / "40 years old"). */
+export function formatAge(t: Dictionary, age: number): string {
+  return t.profile.formatAge(age);
 }
 
-export function formatPlayerProfile(name: string, age: number | null): string {
+export function formatPlayerProfile(
+  t: Dictionary,
+  name: string,
+  age: number | null,
+): string {
   const trimmed = name.trim();
   if (!trimmed) {
     return "";
   }
 
   if (age != null) {
-    return `${trimmed}, ${formatAge(age)}`;
+    return `${trimmed}, ${formatAge(t, age)}`;
   }
 
   return trimmed;

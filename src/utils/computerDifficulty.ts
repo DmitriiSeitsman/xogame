@@ -1,13 +1,15 @@
+import type { Dictionary } from "../i18n/dictionaries/ru";
 import type { ComputerDifficulty } from "../types/game";
 import { COMPUTER_DIFFICULTIES } from "../types/game";
 
 const STORAGE_KEY = "xogame_computer_difficulty";
 
-export const COMPUTER_DIFFICULTY_LABELS: Record<ComputerDifficulty, string> = {
-  easy: "Лёгкий",
-  medium: "Средний",
-  hard: "Сложный",
-};
+export function getComputerDifficultyLabel(
+  t: Dictionary,
+  difficulty: ComputerDifficulty,
+): string {
+  return t.difficulty[difficulty];
+}
 
 export function isComputerDifficulty(
   value: string,

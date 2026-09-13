@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useI18n } from "../../i18n/useI18n";
 import "./FriendRematchDialog.css";
 
 type FriendRematchDialogProps = {
@@ -25,6 +26,8 @@ export function FriendRematchDialog({
   loading = false,
   closeOnBackdrop = false,
 }: FriendRematchDialogProps) {
+  const { t } = useI18n();
+
   useEffect(() => {
     if (!open) {
       return;
@@ -48,7 +51,7 @@ export function FriendRematchDialog({
         <button
           type="button"
           className="friend-rematch-dialog__backdrop"
-          aria-label="Закрыть"
+          aria-label={t.common.close}
           onClick={onSecondary}
           disabled={loading}
         />
@@ -83,7 +86,7 @@ export function FriendRematchDialog({
             onClick={onPrimary}
             disabled={loading}
           >
-            {loading ? "Загрузка…" : primaryLabel}
+            {loading ? t.common.loading : primaryLabel}
           </button>
         </div>
       </div>

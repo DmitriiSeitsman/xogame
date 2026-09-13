@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n/useI18n";
 import type { BoardSize, Cell } from "../../types/game";
 import type { SymbolTheme } from "../../types/gameTheme";
 import { GameCell } from "../GameCell/GameCell";
@@ -20,6 +21,7 @@ export function GameBoard({
   symbolTheme = "classic",
   onCellClick,
 }: GameBoardProps) {
+  const { t } = useI18n();
   const winningSet = new Set(winningCells);
 
   return (
@@ -30,7 +32,7 @@ export function GameBoard({
         gridTemplateRows: `repeat(${boardSize}, 1fr)`,
       }}
       role="grid"
-      aria-label={`Игровое поле ${boardSize} на ${boardSize}`}
+      aria-label={t.board.label(boardSize)}
     >
       {board.map((cell, index) => (
         <GameCell

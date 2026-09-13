@@ -22,7 +22,7 @@ function sendGoal(goal: string, params?: MetrikaParams): void {
   callYm("params", params);
 }
 
-/** Локальная игра с ботом (кнопка «Начать игру»). */
+/** Local game against the bot (the "Start game" button). */
 export function trackGameStartComputer(options: {
   boardSize: BoardSize;
   difficulty: ComputerDifficulty;
@@ -36,7 +36,7 @@ export function trackGameStartComputer(options: {
   });
 }
 
-/** Создание игры с другом (хост). */
+/** Creating a game with a friend (host side). */
 export function trackGameStartFriendHost(options: {
   boardSize: BoardSize;
   symbolTheme: SymbolTheme;
@@ -49,7 +49,7 @@ export function trackGameStartFriendHost(options: {
   });
 }
 
-/** Поиск случайного соперника. */
+/** Searching for a random opponent. */
 export function trackGameStartRandom(options: { boardSize: BoardSize }): void {
   sendGoal("game_start_random", {
     game_mode: "random",
@@ -58,7 +58,7 @@ export function trackGameStartRandom(options: { boardSize: BoardSize }): void {
   });
 }
 
-/** Подключение к игре друга по коду/ссылке (гость). */
+/** Joining a friend's game by code/link (guest side). */
 export function trackGameJoinFriend(options: { boardSize: BoardSize }): void {
   sendGoal("game_join_friend", {
     game_mode: "friend",

@@ -16,7 +16,7 @@
 
 Три режима: локальная игра с компьютером (полностью на клиенте, backend не нужен), игра с другом по инвайт-коду, случайный матчмейкинг с очередью и heartbeat 25 сек. Все мутации идут через RPC-функции (`create_friend_game`, `join_friend_game`, `join_random_matchmaking`, `heartbeat_random_matchmaking`, `leave_random_matchmaking`, `cancel_random_search`, `offer/accept/decline_friend_rematch`, `make_move`, `get_matchmaking_queue_counts`). Обновления партии игрок получает через Supabase Realtime — подписку на `UPDATE` события таблицы `games` с фильтром по `id`.
 
-Таблица `public.games` и функции лежат в `docs/database/001-007*.sql` — там же логика подсчёта победителя для досок 3×3..6×6, генерации инвайт-кода, честной блокировки строк при матчмейкинге. Фронтенд деплоится статикой на GitHub Pages, домен `крестик-нолик.рф`, секреты (`VITE_SUPABASE_URL/ANON_KEY`) лежат в GitHub Actions Secrets.
+Таблица `public.games` и функции лежат в `docs/database/001-007*.sql` — там же логика подсчёта победителя для досок 3×3..6×6, генерации инвайт-кода, честной блокировки строк при матчмейкинге. Фронтенд деплоится статикой на GitHub Pages, домен `xo-game.online`, секреты (`VITE_SUPABASE_URL/ANON_KEY`) лежат в GitHub Actions Secrets.
 
 ## 2. Что уже есть в JustTwoBackend и что из этого берём
 
@@ -32,7 +32,7 @@
 ## 3. Целевая архитектура
 
 ```
-Браузер (крестик-нолик.рф, GitHub Pages)
+Браузер (`xo-game.online`, GitHub Pages)
    │  fetch()  →  HTTPS  →  nginx  →  127.0.0.1:PORT  →  Vapor XOGameBackend
    │  WebSocket → WSS     →  nginx  →  127.0.0.1:PORT  →  /ws/game
    ▼
@@ -127,7 +127,7 @@ df -h; free -h                          # место и память
 
 Дальше по аналогии с разделением `cryptobot`/`justtwo` заводим отдельного непривилегированного юзера `xogame` (без sudo), кладём проект в `/home/xogame/XOGameBackend`, находим свободный локальный порт (например `8081` или `8082`, смотря что покажет `ss -tlnp`) и не трогаем существующие nginx-конфиги других проектов — только добавляем новый файл в `sites-available`. Если увидишь на сервере уже установленный Swift/Postgres — это ускорит установку, если нет — ставим с нуля тем же способом, что описан в `Docs/DEPLOYMENT.md` (Swift через Swiftly под юзером `xogame`, отдельная роль/база в существующем или новом кластере Postgres).
 
-Отдельный вопрос — домен. Фронтенд на `крестик-нолик.рф` отдаётся по HTTPS, значит и API/WS обязаны быть по HTTPS/WSS (браузер заблокирует смешанный контент и `ws://` с https-страницы). Нужен A-запись на поддомен, указывающая на `195.209.215.87` — например `api.крестик-нолик.рф` (в DNS/Certbot он будет как punycode `api.xn----itbjbgccgrkqnn.xn--p1ai`) или любой другой домен/поддомен, который у тебя есть под рукой. Без этого шага TLS не выпустить и wss:// не заработает.
+Отдельный вопрос — домен. Фронтенд на `xo-game.online` отдаётся по HTTPS, значит и API/WS обязаны быть по HTTPS/WSS (браузер заблокирует смешанный контент и `ws://` с https-страницы). Нужен A-запись на поддомен, указывающая на `195.209.215.87` — например `api.xo-game.online` (в DNS/Certbot он будет как punycode `api.xo-game.online`) или любой другой домен/поддомен, который у тебя есть под рукой. Без этого шага TLS не выпустить и wss:// не заработает.
 
 ## 5. Пошаговый план развёртывания
 
@@ -140,7 +140,7 @@ df -h; free -h                          # место и память
 7. Nginx: новый файл в `sites-available/xogame-api` (не трогая существующие), `location /` и `location /ws/` проксируют на `127.0.0.1:<PORT>` с `proxy_set_header Upgrade`/`Connection "upgrade"` и `proxy_read_timeout 3600s` для WS — конфиг можно взять почти дословно из `JustTwoBackend/Docs/ServerConfig.md`, раздел «WebSocket Proxy».
 8. Certbot на новый домен, проверка `curl https://<домен>/health` и WS смоук через `websocat` (тем же способом, каким уже проверяли `wss://api.jtwo.online/ws/realtime`).
 9. Правки фронтенда (раздел 6), тест против нового бэкенда локально (`.env` с новыми `VITE_API_BASE_URL`/`VITE_WS_URL`), все три режима игры + рематч + матчмейкинг на двух вкладках.
-10. Обновляем секреты в GitHub Actions (`VITE_API_BASE_URL`, `VITE_WS_URL` вместо `VITE_SUPABASE_*`), мерджим в `main`, GitHub Pages передеплоивается, проверяем на `крестик-нолик.рф`.
+10. Обновляем секреты в GitHub Actions (`VITE_API_BASE_URL`, `VITE_WS_URL` вместо `VITE_SUPABASE_*`), мерджим в `main`, GitHub Pages передеплоивается, проверяем на `xo-game.online`.
 11. Несколько дней смотрим логи (`journalctl -u xogame-api -f`, `nginx error.log`), затем удаляем `@supabase/supabase-js` из `package.json`, выключаем проект в Supabase.
 
 ## 6. Изменения во фронтенде

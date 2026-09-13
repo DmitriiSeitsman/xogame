@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "../../i18n/useI18n";
 import type { ChatMessage } from "../../services/gameService";
 import "./GameChat.css";
 
@@ -18,10 +19,10 @@ type GameChatProps = {
   onOpenChange?: (open: boolean) => void;
 };
 
-function formatTime(iso: string): string {
+function formatTime(iso: string, locale: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
 }
 
 /**
@@ -39,6 +40,8 @@ export function GameChat({
   onSend,
   onOpenChange,
 }: GameChatProps) {
+  const { t, lang } = useI18n();
+  const timeLocale = lang === "ru" ? "ru-RU" : "en-GB";
   const [open, setOpenState] = useState(false);
 
   const setOpen = (value: boolean | ((prev: boolean) => boolean)) => {
@@ -79,23 +82,25 @@ export function GameChat({
   return (
     <div className="game-chat">
       {open && (
-        <div className="game-chat__panel page-enter" role="log" aria-label="Чат с соперником">
+        <div
+          className="game-chat__panel page-enter"
+          role="log"
+          aria-label={t.chat.label}
+        >
           <div className="game-chat__header">
-            <span>Чат</span>
+            <span>{t.chat.title}</span>
             <button
               type="button"
               className="game-chat__close"
               onClick={() => setOpen(false)}
-              aria-label="Закрыть чат"
+              aria-label={t.chat.close}
             >
               ✕
             </button>
           </div>
           <div className="game-chat__messages" ref={listRef}>
             {messages.length === 0 && (
-              <p className="game-chat__empty">
-                Пока тихо… напишите первым! 👋
-              </p>
+              <p className="game-chat__empty">{t.chat.empty}</p>
             )}
             {messages.map((message, index) => {
               const isMine =
@@ -118,7 +123,9 @@ export function GameChat({
                     className={`game-chat__bubble${isMine ? " game-chat__bubble--mine" : ""}`}
                   >
                     <span className="game-chat__text">{message.text}</span>
-                    <span className="game-chat__time">{formatTime(message.sentAt)}</span>
+                    <span className="game-chat__time">
+                      {formatTime(message.sentAt, timeLocale)}
+                    </span>
                   </div>
                 </div>
               );
@@ -130,15 +137,15 @@ export function GameChat({
               className="game-chat__input"
               value={draft}
               onChange={(event) => setDraft(event.target.value.slice(0, MAX_MESSAGE_LENGTH))}
-              placeholder="Сообщение…"
+              placeholder={t.chat.inputPlaceholder}
               maxLength={MAX_MESSAGE_LENGTH}
-              aria-label="Текст сообщения"
+              aria-label={t.chat.inputLabel}
             />
             <button
               type="submit"
               className="game-chat__send"
               disabled={!draft.trim()}
-              aria-label="Отправить"
+              aria-label={t.chat.send}
             >
               ➤
             </button>
@@ -151,7 +158,7 @@ export function GameChat({
         className="game-chat__toggle"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        aria-label={open ? "Закрыть чат" : "Открыть чат"}
+        aria-label={open ? t.chat.close : t.chat.open}
       >
         💬
         {!open && unreadCount > 0 && (

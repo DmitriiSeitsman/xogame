@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n/useI18n";
 import type { BoardSize } from "../../types/game";
 import "./BoardSizeSelector.css";
 
@@ -14,10 +15,12 @@ export function BoardSizeSelector({
   onChange,
   disabled = false,
 }: BoardSizeSelectorProps) {
+  const { t } = useI18n();
+
   return (
     <div className="board-size-selector">
       <h2 className="board-size-selector__label" id="board-size-label">
-        Выберите размер поля
+        {t.boardSize.label}
       </h2>
       <div
         className="board-size-selector__options"

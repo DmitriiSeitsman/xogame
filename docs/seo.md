@@ -12,9 +12,7 @@
 
 - `https://xo-game.online`
 
-Домен латинский (ASCII), поэтому отдельного punycode-варианта для sitemap/robots больше не требуется — везде (UI, Open Graph, canonical, `sitemap.xml`, `robots.txt`) используется один и тот же `xo-game.online`.
-
-> До миграции сайт был на кириллическом IDN-домене `крестик-нолик.рф` (punycode `xn----itbjbgccgrkqnn.xn--p1ai`). Домен сменили из-за проблем с индексацией и открытием сайта; редиректа со старого домена нет, он просто оставлен.
+Домен латинский (ASCII), поэтому везде (UI, Open Graph, canonical, `sitemap.xml`, `robots.txt`) используется один и тот же `xo-game.online`.
 
 ## Индексация
 
@@ -65,7 +63,7 @@ npm run preview
 - `http://localhost:4173/site.webmanifest`
 - meta-теги в `<head>` главной страницы
 
-После деплоя на новом домене стоит заново отправить `xo-game.online` в Google Search Console / Яндекс.Вебмастер — старый домен `крестик-нолик.рф` там был отдельным сайтом и его индексация теперь не актуальна.
+После деплоя стоит подтвердить `xo-game.online` в Google Search Console / Яндекс.Вебмастере и отправить туда `sitemap.xml` — он содержит и русские, и английские URL с hreflang-альтернативами.
 
 ## Будущие улучшения
 

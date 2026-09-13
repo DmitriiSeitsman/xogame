@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useI18n } from "../../i18n/useI18n";
 import "./OpponentPresenceNotice.css";
 
 type OpponentPresenceNoticeProps = {
@@ -22,6 +23,7 @@ export function OpponentPresenceNotice({
   opponentLabel,
   onLeave,
 }: OpponentPresenceNoticeProps) {
+  const { t } = useI18n();
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export function OpponentPresenceNotice({
     return null;
   }
 
-  const name = opponentLabel || "Соперник";
+  const name = opponentLabel || t.common.opponent;
 
   if (!dismissed) {
     return createPortal(
@@ -53,22 +55,21 @@ export function OpponentPresenceNotice({
             id="opponent-presence-dialog-title"
             className="opponent-presence-dialog__title"
           >
-            {name} отключился
+            {t.presence.disconnectedTitle(name)}
           </h2>
           <p className="opponent-presence-dialog__description">
-            Возможно, дело в связи — можно подождать немного, соперник может
-            вернуться в игру.
+            {t.presence.disconnectedDescription}
           </p>
           <div className="opponent-presence-dialog__actions">
             <button type="button" className="btn btn--secondary" onClick={onLeave}>
-              Выйти из игры
+              {t.presence.leaveGame}
             </button>
             <button
               type="button"
               className="btn btn--primary"
               onClick={() => setDismissed(true)}
             >
-              Подождать
+              {t.presence.wait}
             </button>
           </div>
         </div>
@@ -80,13 +81,15 @@ export function OpponentPresenceNotice({
   return (
     <div className="opponent-presence-banner" role="status">
       <span className="opponent-presence-banner__spinner" aria-hidden="true" />
-      <span className="opponent-presence-banner__text">Ждём {name}…</span>
+      <span className="opponent-presence-banner__text">
+        {t.presence.waitingFor(name)}
+      </span>
       <button
         type="button"
         className="opponent-presence-banner__leave"
         onClick={onLeave}
       >
-        Выйти
+        {t.presence.leave}
       </button>
     </div>
   );

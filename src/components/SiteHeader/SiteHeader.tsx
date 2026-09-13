@@ -1,21 +1,35 @@
 import { useEffect, useId, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher";
+import type { Dictionary } from "../../i18n/dictionaries/ru";
+import { stripLanguagePrefix } from "../../i18n/language";
+import { useI18n } from "../../i18n/useI18n";
 import "./SiteHeader.css";
 
-const NAV_ITEMS: { to: string; label: string; end?: boolean }[] = [
-  { to: "/", label: "Главная", end: true },
-  { to: "/rules", label: "Правила" },
-  { to: "/about", label: "Об игре" },
-  { to: "/contacts", label: "Контакты" },
-];
+type NavItem = { to: string; label: string; end?: boolean };
+
+/** Routes are language-agnostic here; `path()` prefixes them for the
+ * active language when the links are rendered. */
+function getNavItems(t: Dictionary): NavItem[] {
+  return [
+    { to: "/", label: t.nav.home, end: true },
+    { to: "/rules", label: t.nav.rules },
+    { to: "/about", label: t.nav.about },
+    { to: "/contacts", label: t.nav.contacts },
+  ];
+}
 
 const MOBILE_MENU_MQ = "(max-width: 767px)";
 
-function isNavItemActive(pathname: string, item: (typeof NAV_ITEMS)[number]) {
-  return item.end ? pathname === item.to : pathname.startsWith(item.to);
+/** Compared against the prefix-stripped path so /en/rules highlights the
+ * same nav item as /rules. */
+function isNavItemActive(pathname: string, item: NavItem) {
+  const route = stripLanguagePrefix(pathname);
+  return item.end ? route === item.to : route.startsWith(item.to);
 }
 
 export function SiteHeader() {
+  const { t, path } = useI18n();
   const { pathname } = useLocation();
   const menuId = useId();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -69,13 +83,13 @@ export function SiteHeader() {
   };
 
   const renderNavLinks = (linkClassName: string) =>
-    NAV_ITEMS.map((item) => {
+    getNavItems(t).map((item) => {
       const isActive = isNavItemActive(pathname, item);
 
       return (
         <Link
           key={item.to}
-          to={item.to}
+          to={path(item.to)}
           className={`${linkClassName}${
             isActive ? ` ${linkClassName}--active` : ""
           }`}
@@ -97,7 +111,7 @@ export function SiteHeader() {
           }`}
           aria-expanded={menuOpen}
           aria-controls={menuId}
-          aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+          aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu}
           onClick={() => setMenuOpen((open) => !open)}
         >
           <span className="site-header__menu-icon" aria-hidden="true">
@@ -109,10 +123,13 @@ export function SiteHeader() {
 
         <nav
           className="site-header__nav site-header__nav--desktop"
-          aria-label="Навигация по сайту"
+          aria-label={t.nav.siteNavigation}
         >
           {renderNavLinks("site-header__link")}
+          <LanguageSwitcher className="language-switcher--header" />
         </nav>
+
+        <LanguageSwitcher className="language-switcher--mobile-bar" />
       </div>
 
       <div
@@ -124,7 +141,7 @@ export function SiteHeader() {
         <button
           type="button"
           className="site-header__backdrop"
-          aria-label="Закрыть меню"
+          aria-label={t.nav.closeMenu}
           tabIndex={menuOpen ? 0 : -1}
           onClick={closeMenu}
         />
@@ -132,13 +149,17 @@ export function SiteHeader() {
         <nav
           id={menuId}
           className="site-header__sheet"
-          aria-label="Навигация по сайту"
+          aria-label={t.nav.siteNavigation}
         >
           <div className="site-header__sheet-handle" aria-hidden="true" />
-          <p className="site-header__sheet-title">Меню</p>
+          <p className="site-header__sheet-title">{t.nav.menu}</p>
           <div className="site-header__sheet-links">
             {renderNavLinks("site-header__sheet-link")}
           </div>
+          <LanguageSwitcher
+            className="language-switcher--sheet"
+            onNavigate={closeMenu}
+          />
         </nav>
       </div>
     </header>

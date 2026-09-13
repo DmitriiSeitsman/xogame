@@ -1,3 +1,5 @@
+import { useI18n } from "../../../i18n/useI18n";
+
 type ClassicOIconProps = {
   isWinning?: boolean;
   className?: string;
@@ -7,6 +9,8 @@ export function ClassicOIcon({
   isWinning = false,
   className = "",
 }: ClassicOIconProps) {
+  const { t } = useI18n();
+
   return (
     <svg
       className={[
@@ -19,7 +23,7 @@ export function ClassicOIcon({
         .join(" ")}
       viewBox="0 0 100 100"
       role="img"
-      aria-label="Нолик"
+      aria-label={t.symbols.nought}
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>

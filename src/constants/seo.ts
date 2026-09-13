@@ -1,28 +1,59 @@
+import seoPages from "../i18n/seoPages.json";
+import { localizePath, type Language } from "../i18n/language";
+
 /** Production site URL. */
-export const SITE_URL = "https://xo-game.online";
+export const SITE_URL: string = seoPages.siteUrl;
 
-/** Kept for backward compat with anything that still imports the punycode
- * constant name — now just equals SITE_URL since xo-game.online is already
- * plain ASCII (no IDN punycode encoding needed). */
-export const SITE_URL_PUNYCODE = SITE_URL;
+export const SITE_NAME: string = seoPages.siteName;
 
-export const SITE_NAME = "XO Game";
+export const DEFAULT_OG_IMAGE: string = seoPages.ogImage;
 
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+export type PageSeo = {
+  title: string;
+  description: string;
+  keywords: string;
+  h1: string;
+  intro: string;
+};
 
-export const HOME_JSON_LD = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "Крестики-нолики онлайн",
-  url: `${SITE_URL}/`,
-  applicationCategory: "GameApplication",
-  operatingSystem: "Any",
-  inLanguage: "ru",
-  description:
-    "Бесплатная онлайн игра крестики-нолики с компьютером, другом по ссылке или случайным игроком.",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "RUB",
-  },
-} as const;
+/** Language-agnostic routes that exist in both languages and get indexed. */
+export type IndexedRoute = keyof typeof seoPages.pages;
+
+export const INDEXED_ROUTES = Object.keys(seoPages.pages) as IndexedRoute[];
+
+export function getPageSeo(route: IndexedRoute, language: Language): PageSeo {
+  return seoPages.pages[route][language];
+}
+
+/** Absolute URL of a route in a given language. */
+export function absoluteUrl(route: string, language: Language): string {
+  const path = localizePath(route, language);
+  return `${SITE_URL}${path === "/" ? "/" : path}`;
+}
+
+/**
+ * schema.org WebApplication markup, localised. Search engines use
+ * `inLanguage` to tell the two versions apart, so it has to match the page
+ * it's embedded in rather than being one shared Russian blob.
+ */
+export function getWebApplicationJsonLd(
+  language: Language,
+): Record<string, unknown> {
+  const home = getPageSeo("/", language);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: home.h1,
+    url: absoluteUrl("/", language),
+    applicationCategory: "GameApplication",
+    operatingSystem: "Any",
+    inLanguage: language,
+    description: home.description,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: language === "ru" ? "RUB" : "USD",
+    },
+  };
+}

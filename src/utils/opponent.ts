@@ -1,7 +1,9 @@
+import type { Dictionary } from "../i18n/dictionaries/ru";
 import type { Game } from "../types/game";
 import { formatPlayerProfile } from "./playerProfile";
 
 export function getOpponentProfileLabel(
+  t: Dictionary,
   game: Game,
   playerToken: string,
 ): string | null {
@@ -19,5 +21,5 @@ export function getOpponentProfileLabel(
     return null;
   }
 
-  return formatPlayerProfile(opponentName, opponentAge);
+  return formatPlayerProfile(t, opponentName, opponentAge);
 }

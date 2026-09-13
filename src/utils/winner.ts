@@ -1,11 +1,13 @@
+import type { Dictionary } from "../i18n/dictionaries/ru";
 import type { PlayerSymbol, Winner } from "../types/game";
 
 export function getWinnerMessage(
+  t: Dictionary,
   winner: Winner,
   playerSymbol: PlayerSymbol | null,
 ): string {
   if (winner === "draw") {
-    return "Ничья!";
+    return t.winner.draw;
   }
 
   if (winner === null) {
@@ -13,13 +15,14 @@ export function getWinnerMessage(
   }
 
   if (playerSymbol === winner) {
-    return "Вы победили!";
+    return t.winner.youWon;
   }
 
-  return "Вы проиграли";
+  return t.winner.youLost;
 }
 
 export function getTurnMessage(
+  t: Dictionary,
   currentTurn: PlayerSymbol,
   playerSymbol: PlayerSymbol | null,
   isFinished: boolean,
@@ -29,12 +32,12 @@ export function getTurnMessage(
   }
 
   if (playerSymbol === null) {
-    return `Ход: ${currentTurn}`;
+    return t.winner.turnOf(currentTurn);
   }
 
   if (currentTurn === playerSymbol) {
-    return "Ваш ход";
+    return t.winner.yourTurn;
   }
 
-  return "Ход соперника";
+  return t.winner.opponentTurn;
 }
