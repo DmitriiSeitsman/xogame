@@ -90,19 +90,21 @@ export const ru = {
     friendDescription: "Создай ссылку и отправь приглашение",
     random: "Случайный игрок",
     randomDescription: "Найди соперника онлайн",
-    queueLabel: "Игроки в поиске соперника по размеру поля",
-    queueCount: (count: number): string => {
-      if (count === 0) return "0";
-      const mod10 = count % 10;
-      const mod100 = count % 100;
-      if (mod100 >= 11 && mod100 <= 14) return `${count} ищут`;
-      if (mod10 === 1) return `${count} ищет`;
-      return `${count} ищут`;
-    },
   },
 
   boardSize: {
     label: "Выберите размер поля",
+    queueLabel: "Игроки в поиске соперника по размеру поля",
+    /** "1 игрок", "2 игрока", "5 игроков" — обычные правила счётной формы,
+     * с исключением для 11–14. */
+    playersWaiting: (count: number): string => {
+      const mod10 = count % 10;
+      const mod100 = count % 100;
+      if (mod100 >= 11 && mod100 <= 14) return `${count} игроков`;
+      if (mod10 === 1) return `${count} игрок`;
+      if (mod10 >= 2 && mod10 <= 4) return `${count} игрока`;
+      return `${count} игроков`;
+    },
   },
 
   difficulty: {

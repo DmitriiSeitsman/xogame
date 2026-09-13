@@ -89,15 +89,13 @@ export const en: Dictionary = {
     friendDescription: "Create a link and send an invite",
     random: "Random player",
     randomDescription: "Find an opponent online",
-    queueLabel: "Players searching for an opponent, by board size",
-    queueCount: (count: number): string => {
-      if (count === 0) return "0";
-      return count === 1 ? "1 waiting" : `${count} waiting`;
-    },
   },
 
   boardSize: {
     label: "Choose a board size",
+    queueLabel: "Players searching for an opponent, by board size",
+    playersWaiting: (count: number): string =>
+      count === 1 ? "1 player" : `${count} players`,
   },
 
   difficulty: {

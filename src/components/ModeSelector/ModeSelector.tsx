@@ -1,16 +1,13 @@
 import type { Dictionary } from "../../i18n/dictionaries/ru";
 import { useI18n } from "../../i18n/useI18n";
-import type { BoardSize, GameMode } from "../../types/game";
+import type { GameMode } from "../../types/game";
 import "./ModeSelector.css";
 
 type ModeSelectorProps = {
   value: GameMode;
   onChange: (mode: GameMode) => void;
   disabled?: boolean;
-  queueCounts?: Record<BoardSize, number>;
 };
-
-const BOARD_SIZES: BoardSize[] = [3, 4, 5, 6];
 
 function getModes(t: Dictionary): {
   value: GameMode;
@@ -44,7 +41,6 @@ export function ModeSelector({
   value,
   onChange,
   disabled = false,
-  queueCounts,
 }: ModeSelectorProps) {
   const { t } = useI18n();
   const modes = getModes(t);
@@ -83,23 +79,6 @@ export function ModeSelector({
             <span className="mode-selector__text">
               <span className="mode-selector__name">{mode.label}</span>
               <span className="mode-selector__desc">{mode.description}</span>
-              {mode.value === "random" && queueCounts && (
-                <span
-                  className="mode-selector__queue"
-                  aria-label={t.modeSelector.queueLabel}
-                >
-                  {BOARD_SIZES.map((size) => (
-                    <span key={size} className="mode-selector__queue-item">
-                      <span className="mode-selector__queue-size">
-                        {size}×{size}
-                      </span>
-                      <span className="mode-selector__queue-count">
-                        {t.modeSelector.queueCount(queueCounts[size])}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              )}
             </span>
           </button>
         ))}

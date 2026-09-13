@@ -228,12 +228,12 @@ export function HomePage() {
             value={mode}
             onChange={handleModeChange}
             disabled={loading}
-            queueCounts={queueCounts}
           />
           <BoardSizeSelector
             value={boardSize}
             onChange={setBoardSize}
             disabled={loading}
+            queueCounts={mode === "random" ? queueCounts : undefined}
           />
           <SymbolThemeSelector
             value={symbolTheme}

@@ -32,6 +32,10 @@
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
   transition:
     background var(--duration-fast),
     color var(--duration-fast),
@@ -62,6 +66,39 @@
 .board-size-selector__option:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+
+/* Queue counts (random matchmaking only). The pill keeps its rounded shape,
+   so the taller two-line buttons need a slightly softer radius to avoid the
+   text crowding the curve. */
+.board-size-selector__options--with-queue {
+  border-radius: var(--radius-card);
+}
+
+.board-size-selector__options--with-queue .board-size-selector__option {
+  padding: 8px 6px;
+  border-radius: var(--radius-md);
+}
+
+.board-size-selector__queue {
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.board-size-selector__hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 360px) {
+  .board-size-selector__queue {
+    font-size: 0.62rem;
+  }
 }
 
 @media (max-width: 400px) {
