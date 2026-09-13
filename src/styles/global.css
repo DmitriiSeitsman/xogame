@@ -12,6 +12,16 @@ body,
   min-height: 100%;
 }
 
+html {
+  /* iOS Safari inflates font sizes when the layout viewport is wider than
+     the visual one — which is what "Request Desktop Website" does. The
+     inflation ignores container widths, so nav links and selector options
+     grow past their boxes and collide. Opting out keeps every size the one
+     the layout was designed around. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   font-family: var(--font-family);

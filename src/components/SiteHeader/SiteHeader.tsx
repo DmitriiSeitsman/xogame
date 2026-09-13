@@ -126,7 +126,9 @@ export function SiteHeader() {
           className="site-header__nav site-header__nav--desktop"
           aria-label={t.nav.siteNavigation}
         >
-          {renderNavLinks("site-header__link")}
+          <div className="site-header__links">
+            {renderNavLinks("site-header__link")}
+          </div>
           <LanguageSwitcher className="language-switcher--header" />
           <ThemeToggle className="theme-toggle--header" />
         </nav>
