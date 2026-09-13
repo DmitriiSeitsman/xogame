@@ -10,6 +10,7 @@ import { OpponentPresenceNotice } from "../components/OpponentPresenceNotice/Opp
 import { ConnectionOverlay } from "../components/ConnectionOverlay/ConnectionOverlay";
 import { Seo } from "../components/Seo/Seo";
 import { WinCelebration } from "../components/WinCelebration/WinCelebration";
+import { LossConsolation } from "../components/LossConsolation/LossConsolation";
 import { useCelebrationKey } from "../hooks/useCelebrationKey";
 import { emitCelebration } from "../utils/celebrationBus";
 import { useI18n } from "../i18n/useI18n";
@@ -150,23 +151,44 @@ export function GamePage() {
 
     return localSymbolTheme;
   }, [isLocal, localSymbolTheme, remoteGame?.symbol_theme]);
-  const isLocalWin =
-    isLocal &&
-    localGame.status === "finished" &&
-    localGame.winner != null &&
-    localGame.winner !== "draw";
-  const isRemoteWin =
-    !isLocal &&
-    remoteGame?.status === "finished" &&
-    remoteGame?.winner != null &&
-    remoteGame?.winner !== "draw";
-  const celebrationKey = useCelebrationKey(isLocalWin || isRemoteWin);
+  /**
+   * The finished game's result from *this player's* point of view. The
+   * previous version only asked whether somebody had won, so the confetti
+   * fired at the loser too — applauding the player who had just been beaten.
+   */
+  const finishedResult = isLocal
+    ? localGame.status === "finished"
+      ? { winner: localGame.winner, mySymbol: "X" as PlayerSymbol }
+      : null
+    : remoteGame?.status === "finished"
+      ? {
+          winner: remoteGame.winner,
+          mySymbol: getPlayerSymbol(remoteGame, playerToken),
+        }
+      : null;
+
+  const outcome: "win" | "loss" | "draw" | null = !finishedResult
+    ? null
+    : finishedResult.winner == null || finishedResult.winner === "draw"
+      ? "draw"
+      : finishedResult.winner === finishedResult.mySymbol
+        ? "win"
+        : "loss";
+
+  const winKey = useCelebrationKey(outcome === "win");
+  const lossKey = useCelebrationKey(outcome === "loss");
 
   useEffect(() => {
-    if (celebrationKey !== null) {
-      emitCelebration();
+    if (winKey !== null) {
+      emitCelebration("win");
     }
-  }, [celebrationKey]);
+  }, [winKey]);
+
+  useEffect(() => {
+    if (lossKey !== null) {
+      emitCelebration("loss");
+    }
+  }, [lossKey]);
 
   const isWaitingRandomRef = useRef(false);
   const gameIdRef = useRef<string | undefined>(gameId);
@@ -694,11 +716,11 @@ export function GamePage() {
         ? getWinnerMessage(t, localGame.winner, "X")
         : getTurnMessage(t, localGame.currentTurn, "X", false);
 
-    const statusSymbol: PlayerSymbol | null = isFinished
-      ? localGame.winner === "draw"
-        ? null
-        : localGame.winner
-      : "X";
+    // The headline talks about the player ("Вы победили" / "Вы проиграли"),
+    // so the mark beside it is the player's own. Showing the winner's mark
+    // meant a loss displayed the opponent's symbol next to "you lost".
+    const statusSymbol: PlayerSymbol | null =
+      isFinished && outcome === "draw" ? null : "X";
 
     return (
       <GameLayout>
@@ -721,12 +743,21 @@ export function GamePage() {
                   getComputerDifficultyLabel(t, localGame.difficulty),
                 )
           }
-          variant={isFinished ? "success" : botThinking ? "muted" : "default"}
+          variant={
+            isFinished
+              ? outcome === "win"
+                ? "success"
+                : "muted"
+              : botThinking
+                ? "muted"
+                : "default"
+          }
           symbol={botThinking ? "O" : statusSymbol}
           symbolTheme={boardSymbolTheme}
           showLoader={botThinking}
         />
-        {celebrationKey !== null && <WinCelebration key={celebrationKey} />}
+        {winKey !== null && <WinCelebration key={winKey} />}
+        {lossKey !== null && <LossConsolation key={lossKey} />}
         {botThinking && (
           <div
             className="game-page__bot-thinking"
@@ -816,9 +847,10 @@ export function GamePage() {
         : remoteGame.winner
           ? t.game.winnerIs(remoteGame.winner)
           : undefined;
-    statusVariant = "success";
-    statusSymbol =
-      remoteGame.winner === "draw" ? null : remoteGame.winner;
+    // Same rule as the local board: the player's own mark, and a colour that
+    // reflects their result rather than always reading as success.
+    statusVariant = outcome === "win" ? "success" : "muted";
+    statusSymbol = outcome === "draw" ? null : playerSymbol;
   } else if (isPlaying) {
     statusTitle = getTurnMessage(
       t,
@@ -916,7 +948,8 @@ export function GamePage() {
         symbolTheme={boardSymbolTheme}
         showLoader={showLoader}
       />
-      {celebrationKey !== null && <WinCelebration key={celebrationKey} />}
+      {winKey !== null && <WinCelebration key={winKey} />}
+      {lossKey !== null && <LossConsolation key={lossKey} />}
       <ConnectionOverlay visible={connectionState !== "open"} />
       {showPresenceNotice && (
         <OpponentPresenceNotice

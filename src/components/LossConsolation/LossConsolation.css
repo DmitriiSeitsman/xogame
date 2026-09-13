@@ -1,0 +1,44 @@
+.loss-consolation {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.loss-consolation__piece {
+  position: absolute;
+  top: -6%;
+  display: block;
+  border-radius: 50%;
+  opacity: 0;
+  animation-name: consolation-drift;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+
+/* Sinks rather than falls: no rotation, a slow sideways sway, and a long
+   fade so the last pieces dissolve instead of hitting the bottom edge. */
+@keyframes consolation-drift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.7);
+  }
+  18% {
+    opacity: 0.55;
+    transform: translate3d(calc(var(--sway) * 0.3), 22vh, 0) scale(1);
+  }
+  70% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--sway), 96vh, 0) scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loss-consolation {
+    display: none;
+  }
+}

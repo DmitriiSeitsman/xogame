@@ -1,28 +1,35 @@
 import { useEffect, useRef, useState } from "react";
-import { onCelebration } from "../../utils/celebrationBus";
+import { onCelebration, type GameOutcome } from "../../utils/celebrationBus";
 import "./FairyMascot.css";
 
-const CELEBRATE_DURATION_MS = 2600;
+const REACTION_DURATION_MS = 2600;
 
 /**
  * A small friendly star that lives in the corner of every page — mostly
- * decorative (gentle idle bob + blink), but perks up and celebrates for a
- * couple of seconds whenever any game on the site is won (see
- * utils/celebrationBus.ts).
+ * decorative (gentle idle bob + blink), but reacts for a couple of seconds
+ * whenever a game on the site ends (see utils/celebrationBus.ts): it bounces
+ * for a win and gives a sympathetic droop for a loss. Bouncing at a player
+ * who just lost would read as gloating.
  */
 export function FairyMascot() {
-  const [celebrating, setCelebrating] = useState(false);
+  const [reaction, setReaction] = useState<GameOutcome | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const unsubscribe = onCelebration(() => {
-      setCelebrating(true);
-      const timeoutId = window.setTimeout(() => {
-        setCelebrating(false);
-      }, CELEBRATE_DURATION_MS);
-      return () => window.clearTimeout(timeoutId);
+    let timeoutId = 0;
+
+    const unsubscribe = onCelebration((outcome) => {
+      window.clearTimeout(timeoutId);
+      setReaction(outcome);
+      timeoutId = window.setTimeout(() => {
+        setReaction(null);
+      }, REACTION_DURATION_MS);
     });
-    return unsubscribe;
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      unsubscribe();
+    };
   }, []);
 
   /**
@@ -70,7 +77,7 @@ export function FairyMascot() {
   return (
     <div
       ref={ref}
-      className={`fairy-mascot${celebrating ? " fairy-mascot--celebrating" : ""}`}
+      className={`fairy-mascot${reaction ? ` fairy-mascot--${reaction}` : ""}`}
       aria-hidden="true"
     >
       <svg viewBox="0 0 100 100" className="fairy-mascot__svg">

@@ -47,7 +47,7 @@
   }
 }
 
-.fairy-mascot--celebrating {
+.fairy-mascot--win {
   animation: fairy-mascot-celebrate 0.5s ease-in-out infinite;
 }
 
@@ -58,6 +58,22 @@
   }
   50% {
     transform: translateY(-16px) rotate(10deg) scale(1.12);
+  }
+}
+
+/* Sympathy, not sadness: it sinks a little and tilts its head, slowly, at
+   about a third of the celebration's tempo. */
+.fairy-mascot--loss {
+  animation: fairy-mascot-console 1.6s ease-in-out infinite;
+}
+
+@keyframes fairy-mascot-console {
+  0%,
+  100% {
+    transform: translateY(2px) rotate(-8deg) scale(0.97);
+  }
+  50% {
+    transform: translateY(7px) rotate(-14deg) scale(0.94);
   }
 }
 
