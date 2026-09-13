@@ -266,7 +266,7 @@ export const en: Dictionary = {
   strategy: {
     heading: "How to Win at Tic Tac Toe",
     intro:
-      "The short answer: on a 3×3 board you cannot beat an attentive opponent — with perfect play from both sides the game always ends in a draw. Wins come from mistakes, and to avoid making them yourself you only need four things: the value of the first move, what a fork is, the order in which to claim squares, and how bigger boards differ.",
+      "The short answer: on a 3×3 board you cannot beat an attentive opponent — with perfect play from both sides the game always ends in a draw. Wins come from mistakes, and to avoid making them yourself you only need four things: the value of the first move, what a fork is (a move that leaves you two ways to complete a line at once — the opponent cannot block both), the order in which to claim squares, and how bigger boards differ.",
     firstMoveHeading: "The first move: centre, corner, edge",
     firstMoveText:
       "Four of the eight winning lines run through the centre, three through a corner and only two through an edge square. That makes the centre the strongest opening, a corner the runner-up, and an edge a move that usually hands over the initiative. If the opponent takes the centre first, reply in a corner — answering on an edge loses.",

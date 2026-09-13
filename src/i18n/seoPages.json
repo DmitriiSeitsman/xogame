@@ -41,7 +41,7 @@
         "description": "Как выигрывать в крестики-нолики: самый сильный первый ход, вилка, порядок приоритетов и тактика на полях 4×4, 5×5 и 6×6. Сразу можно проверить онлайн.",
         "keywords": "как выиграть в крестики нолики, стратегия крестики нолики, беспроигрышная стратегия крестики нолики, вилка крестики нолики, как всегда выигрывать в крестики нолики, тактика крестики нолики 4х4",
         "h1": "Как выиграть в крестики-нолики",
-        "intro": "Короткий ответ: на поле 3×3 выиграть у внимательного соперника нельзя — при точной игре обеих сторон партия всегда заканчивается ничьей. Побеждают за счёт чужих ошибок, а чтобы не ошибаться самому, достаточно знать четыре вещи: силу первого хода, что такое вилка, в каком порядке выбирать клетки и чем отличаются большие поля.",
+        "intro": "Короткий ответ: на поле 3×3 выиграть у внимательного соперника нельзя — при точной игре обеих сторон партия всегда заканчивается ничьей. Побеждают за счёт чужих ошибок, а чтобы не ошибаться самому, достаточно знать четыре вещи: силу первого хода, что такое вилка (ход, после которого у вас сразу две возможности собрать ряд — закрыть обе одним ходом соперник не может), в каком порядке выбирать клетки и чем отличаются большие поля.",
         "faq": [
           {
             "q": "Можно ли всегда выигрывать в крестики-нолики?",
@@ -70,7 +70,7 @@
         "description": "How to win at tic tac toe: the strongest opening move, the fork, a move-priority checklist and tactics for 4×4, 5×5 and 6×6 boards. Try them online for free.",
         "keywords": "how to win at tic tac toe, tic tac toe strategy, tic tac toe fork, never lose at tic tac toe, tic tac toe tips, 4x4 tic tac toe strategy",
         "h1": "How to Win at Tic Tac Toe",
-        "intro": "The short answer: on a 3×3 board you cannot beat an attentive opponent — with perfect play from both sides the game always ends in a draw. Wins come from mistakes, and to avoid making them yourself you only need four things: the value of the first move, what a fork is, the order in which to claim squares, and how bigger boards differ.",
+        "intro": "The short answer: on a 3×3 board you cannot beat an attentive opponent — with perfect play from both sides the game always ends in a draw. Wins come from mistakes, and to avoid making them yourself you only need four things: the value of the first move, what a fork is (a move that leaves you two ways to complete a line at once — the opponent cannot block both), the order in which to claim squares, and how bigger boards differ.",
         "faq": [
           {
             "q": "Can you always win at tic tac toe?",
