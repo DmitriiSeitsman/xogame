@@ -178,8 +178,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --shadow-cell: 0 8px 20px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  --shadow-board: 0 18px 38px rgba(0, 0, 0, 0.5),
-    0 0 32px rgba(168, 85, 247, 0.09);
+  --shadow-board: 0 10px 44px rgba(0, 0, 0, 0.42),
+    0 0 36px rgba(168, 85, 247, 0.1);
   --shadow-primary: 0 10px 24px rgba(0, 0, 0, 0.45);
   --shadow-primary-hover: 0 14px 30px rgba(0, 0, 0, 0.55);
 

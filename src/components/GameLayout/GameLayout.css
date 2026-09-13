@@ -15,7 +15,13 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
-  padding: 20px 18px 28px;
+  /* The generous bottom padding is not whitespace — it is room for the
+     board's shadow. `overflow` clips descendants' shadows at this element's
+     padding box, and the board's reaches ~50px below it, so without the
+     padding the shadow was sliced off in a hard horizontal line. Invisible
+     in the light theme, glaring in the dark one where the shadow is black.
+     The space itself is not seen: it extends into the empty grid row below. */
+  padding: 20px 18px 64px;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
@@ -31,7 +37,8 @@
 
   .game-content {
     gap: 10px;
-    padding: 8px 10px 18px;
+    /* Same shadow allowance as above — see the comment there. */
+    padding: 8px 10px 60px;
   }
 
   /* Chat panel is up to 60vh tall and pinned bottom-left — without this
