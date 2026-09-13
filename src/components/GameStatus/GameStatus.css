@@ -67,3 +67,27 @@
   animation: spin 0.8s linear infinite;
   flex-shrink: 0;
 }
+
+@media (max-width: 480px) {
+  .game-status {
+    padding: 8px 14px;
+  }
+
+  .game-status__row {
+    gap: 6px;
+  }
+
+  .game-status__symbol-wrap {
+    width: 24px;
+    height: 24px;
+  }
+
+  .game-status__title {
+    font-size: clamp(0.9rem, 4vw, 1rem);
+  }
+
+  .game-status__subtitle {
+    margin-top: 3px;
+    font-size: 0.78rem;
+  }
+}

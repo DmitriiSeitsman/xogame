@@ -20,16 +20,24 @@
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  transition: padding-bottom var(--duration-normal) var(--ease-out);
 }
 
 @media (max-width: 480px) {
   .game-page {
-    padding: 8px;
-    gap: 8px;
+    padding: 6px;
+    gap: 6px;
   }
 
   .game-content {
-    gap: 18px;
-    padding: 16px 14px 24px;
+    gap: 10px;
+    padding: 8px 10px 18px;
+  }
+
+  /* Chat panel is up to 60vh tall and pinned bottom-left — without this
+   * it can sit right on top of the board. Reserving space nudges the
+   * (centered) board and status up above the panel instead. */
+  .game-content--chat-open {
+    padding-bottom: min(58vh, 380px);
   }
 }

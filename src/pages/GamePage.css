@@ -121,3 +121,34 @@
 .game-page__waiting .btn {
   min-width: 140px;
 }
+
+@media (max-width: 480px) {
+  .game-page__opponent {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+  }
+
+  .game-page__waiting {
+    padding: 18px 16px;
+  }
+
+  .game-page__waiting-title {
+    margin-bottom: 4px;
+    font-size: 1rem;
+  }
+
+  .game-page__waiting-subtitle {
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+  }
+
+  .game-page__waiting-loader {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 14px;
+  }
+
+  .game-page__actions {
+    padding: 4px 8px 10px;
+  }
+}

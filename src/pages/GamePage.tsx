@@ -170,11 +170,28 @@ export function GamePage() {
 
   const remoteGameMode = remoteGame?.mode;
   const remoteGameStatus = remoteGame?.status;
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     gameIdRef.current = gameId;
     playerTokenRef.current = playerToken;
   }, [gameId, playerToken]);
+
+  // The floating chat toggle sits at the same bottom-left corner as the
+  // site footer; on short mobile screens the footer (in normal flow) can
+  // end up right underneath it. Hiding the footer while the chat button is
+  // showing (CSS gates this to narrow widths — see AppLayout.css) avoids
+  // the two ever overlapping.
+  const chatVisible =
+    !isLocal &&
+    (remoteGameStatus === "playing" || remoteGameStatus === "finished");
+
+  useEffect(() => {
+    document.body.classList.toggle("has-floating-chat", chatVisible);
+    return () => {
+      document.body.classList.remove("has-floating-chat");
+    };
+  }, [chatVisible]);
 
   useEffect(() => {
     if (isLocal || !gameId) {
@@ -844,7 +861,9 @@ export function GamePage() {
     isFriendFinished && remoteGame.rematch_status === "declined";
 
   return (
-    <GameLayout>
+    <GameLayout
+      contentClassName={chatOpen ? "game-content--chat-open" : undefined}
+    >
       <Seo
         title="Игра — Крестики-нолики"
         description="Игра в крестики-нолики онлайн"
@@ -925,6 +944,7 @@ export function GamePage() {
           myLabel={myChatLabel}
           opponentLabel={opponentLabel}
           onSend={handleSendChatMessage}
+          onOpenChange={setChatOpen}
         />
       )}
 

@@ -23,4 +23,12 @@
   .site-footer__text {
     font-size: 0.78rem;
   }
+
+  /* The floating chat button lives in this same bottom-left corner; on
+   * short screens the footer (normal document flow) can end up right
+   * behind it. Hiding it while chat is showing keeps them from
+   * overlapping — see GamePage's "has-floating-chat" body class. */
+  body.has-floating-chat .site-footer {
+    display: none;
+  }
 }

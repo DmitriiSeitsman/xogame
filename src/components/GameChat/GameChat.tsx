@@ -12,6 +12,10 @@ type GameChatProps = {
   /** Label shown above the opponent's bubbles. Omitted if empty. */
   opponentLabel?: string | null;
   onSend: (text: string) => void;
+  /** Reports open/closed transitions so the page can make room for the
+   * panel on mobile (it's tall enough to cover the board otherwise). Chat
+   * keeps owning its own open state — this is just an outward mirror. */
+  onOpenChange?: (open: boolean) => void;
 };
 
 function formatTime(iso: string): string {
@@ -27,8 +31,23 @@ function formatTime(iso: string): string {
  * Messages live only in memory for the current page session: nothing is
  * persisted, so a refresh clears the history (kept simple on purpose).
  */
-export function GameChat({ messages, myToken, myLabel, opponentLabel, onSend }: GameChatProps) {
-  const [open, setOpen] = useState(false);
+export function GameChat({
+  messages,
+  myToken,
+  myLabel,
+  opponentLabel,
+  onSend,
+  onOpenChange,
+}: GameChatProps) {
+  const [open, setOpenState] = useState(false);
+
+  const setOpen = (value: boolean | ((prev: boolean) => boolean)) => {
+    setOpenState((prev) => {
+      const next = typeof value === "function" ? value(prev) : value;
+      onOpenChange?.(next);
+      return next;
+    });
+  };
   const [draft, setDraft] = useState("");
   const [unreadCount, setUnreadCount] = useState(0);
   const listRef = useRef<HTMLDivElement | null>(null);
