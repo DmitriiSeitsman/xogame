@@ -1,7 +1,7 @@
 {
   "siteUrl": "https://xo-game.online",
   "siteName": "XO Game",
-  "ogImage": "https://xo-game.online/og-image.png",
+  "ogImage": "https://xo-game.online/og-image.jpg",
   "pages": {
     "/": {
       "ru": {

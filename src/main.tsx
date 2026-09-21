@@ -2,6 +2,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
 import { watchSystemTheme } from "./utils/theme";
+// Self-hosted display font (was Google Fonts — see index.html).
+import "@fontsource/comfortaa/500.css";
+import "@fontsource/comfortaa/600.css";
+import "@fontsource/comfortaa/700.css";
 import "./styles/global.css";
 
 // The prerendered, crawler-visible copy of the page (see

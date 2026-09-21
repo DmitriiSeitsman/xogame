@@ -1,3 +1,5 @@
+import seoPages from "./seoPages.json";
+
 /**
  * Language plumbing: the URL is the single source of truth for which
  * language is rendered (`/` = Russian, `/en/...` = English), because that's
@@ -92,16 +94,31 @@ export function stripLanguagePrefix(pathname: string): string {
 }
 
 /**
+ * Content pages ("/rules", "/privacy", …) are prerendered as directories —
+ * dist/rules/index.html — and GitHub Pages answers `/rules` with a 301 to
+ * `/rules/`. Their canonical URL therefore carries the trailing slash;
+ * without it every canonical, hreflang and sitemap entry pointed at a
+ * redirect, which search engines treat as "this isn't the real page".
+ * Game and invite URLs are served by the SPA fallback and stay as they are.
+ */
+const PAGE_ROUTES: ReadonlySet<string> = new Set(Object.keys(seoPages.pages));
+
+/**
  * Turns a language-agnostic route into a real one for `language`.
- * `localizePath("/rules", "en")` -> `/en/rules`.
+ * `localizePath("/rules", "en")` -> `/en/rules/`,
+ * `localizePath("/", "en")` -> `/en/`, `localizePath("/game/x", "en")` -> `/en/game/x`.
  */
 export function localizePath(path: string, language: Language): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
   const prefix = LANGUAGE_PREFIX[language];
+  const localized = !prefix
+    ? normalized
+    : normalized === "/"
+      ? `${prefix}/`
+      : `${prefix}${normalized}`;
 
-  if (!prefix) {
-    return normalized;
-  }
-
-  return normalized === "/" ? prefix : `${prefix}${normalized}`;
+  const bare = normalized.replace(/\/+$/, "") || "/";
+  return PAGE_ROUTES.has(bare) && !localized.endsWith("/")
+    ? `${localized}/`
+    : localized;
 }

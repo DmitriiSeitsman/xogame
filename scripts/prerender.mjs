@@ -30,10 +30,15 @@ const LANGUAGES = ["ru", "en"];
 const OG_LOCALE = { ru: "ru_RU", en: "en_US" };
 const PRICE_CURRENCY = { ru: "RUB", en: "USD" };
 
-/** "/rules" + "en" -> "/en/rules" */
+/**
+ * "/rules" + "en" -> "/en/rules/". Pages are written as directories
+ * (dist/rules/index.html), which GitHub Pages serves at the trailing-slash
+ * URL and 301-redirects to from the bare one — so the slash form is the
+ * canonical URL. Mirrors localizePath() in src/i18n/language.ts.
+ */
 function localizePath(route, language) {
-  if (language === "ru") return route;
-  return route === "/" ? "/en" : `/en${route}`;
+  const prefixed = language === "ru" ? route : route === "/" ? "/en/" : `/en${route}`;
+  return prefixed.endsWith("/") ? prefixed : `${prefixed}/`;
 }
 
 /** Where the file lands in dist/ for a given URL path. */
@@ -86,6 +91,18 @@ function buildHead(route, language, page) {
       },
     },
   ];
+
+  // Names the site itself (Google shows it next to the URL in results).
+  if (route === "/") {
+    documents.push({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: seo.siteName,
+      alternateName: page.h1,
+      url: absoluteUrl("/", language),
+      inLanguage: language,
+    });
+  }
 
   // Breadcrumbs only make sense below the home page, where there is an
   // actual trail to describe.

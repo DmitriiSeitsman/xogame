@@ -20,7 +20,7 @@ const DARK_QUERY = "(prefers-color-scheme: dark)";
 /** Background colour reported to the browser chrome (address bar on mobile).
  * Must match --color-bg-middle for each theme in variables.css. */
 const THEME_COLOR: Record<Theme, string> = {
-  light: "#fff7ed",
+  light: "#fbf7ff",
   dark: "#181524",
 };
 
