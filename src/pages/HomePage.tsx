@@ -14,6 +14,7 @@ import {
 import { useMatchmakingQueueCounts } from "../hooks/useMatchmakingQueueCounts";
 import { getPageSeo, getWebApplicationJsonLd } from "../constants/seo";
 import { useI18n } from "../i18n/useI18n";
+import type { JoinGameLocationState } from "./JoinGamePage";
 import type { BoardSize, ComputerDifficulty, GameMode } from "../types/game";
 import type { SymbolTheme } from "../types/gameTheme";
 import {
@@ -121,7 +122,9 @@ export function HomePage() {
       const code = pendingJoinCode;
       setPendingJoinCode(null);
       setDialogIntent(null);
-      navigate(path(`/join/${code}`));
+      // The name was just confirmed here; tell the join page not to ask again.
+      const state: JoinGameLocationState = { profileConfirmed: true };
+      navigate(path(`/join/${code}`), { state });
       return;
     }
 

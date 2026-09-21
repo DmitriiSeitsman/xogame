@@ -9,11 +9,16 @@
 }
 
 .game-content {
+  /* Pinned to the stretchy middle row. Auto-placement used to put it here
+     only when the top ad slot rendered something; with ads off (always,
+     so far) AdSlot renders nothing, the content slid up into the
+     content-sized first row, and the 1fr row sat empty underneath. Nothing
+     was ever vertically centred, it just looked top-aligned. */
+  grid-row: 2;
   min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 20px;
   /* The generous bottom padding is not whitespace — it is room for the
      board's shadow. `overflow` clips descendants' shadows at this element's
@@ -29,6 +34,35 @@
   transition: padding-bottom var(--duration-normal) var(--ease-out);
 }
 
+/* Vertical centring that can't cut anything off. With plain
+   `justify-content: center`, content taller than this scroll box (the
+   board with the chat panel open on a small phone) overflows upwards as
+   well as downwards, and the top part can't be scrolled to. Auto margins on
+   these two empty items soak up spare space when there is some and
+   collapse to zero when there isn't, so an overflow only ever goes down. */
+.game-content::before,
+.game-content::after {
+  content: "";
+  flex: none;
+}
+
+.game-content::before {
+  margin-top: auto;
+}
+
+.game-content::after {
+  margin-bottom: auto;
+}
+
+/* Waiting for an opponent there's no board, so the bottom allowance for
+   its shadow isn't needed — and keeping it would push the centred group
+   ~22px above the real middle of the screen. Equal padding on both sides
+   centres it properly while still leaving room for the cards' own shadow. */
+.game-content--waiting {
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+
 @media (max-width: 480px) {
   .game-page {
     padding: 6px;
@@ -39,6 +73,11 @@
     gap: 10px;
     /* Same shadow allowance as above — see the comment there. */
     padding: 8px 10px 60px;
+  }
+
+  .game-content--waiting {
+    padding-top: 32px;
+    padding-bottom: 32px;
   }
 
   /* Chat panel is up to 60vh tall and pinned bottom-left — without this

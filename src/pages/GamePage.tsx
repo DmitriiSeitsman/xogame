@@ -932,7 +932,14 @@ export function GamePage() {
 
   return (
     <GameLayout
-      contentClassName={chatOpen ? "game-content--chat-open" : undefined}
+      contentClassName={
+        [
+          chatOpen ? "game-content--chat-open" : "",
+          isWaitingFriend || isWaitingRandom ? "game-content--waiting" : "",
+        ]
+          .filter(Boolean)
+          .join(" ") || undefined
+      }
     >
       <Seo
         title={`${t.game.heading} — ${t.home.heading}`}
@@ -971,24 +978,18 @@ export function GamePage() {
         <InviteBox inviteCode={remoteGame.invite_code} />
       )}
 
+      {/* Same as the friend invite: the status bar carries the spinner,
+          "looking for an opponent" and the board size, so only the control
+          is left down here. */}
       {isWaitingRandom && (
-        <div className="game-page__waiting">
-          <div className="game-page__waiting-loader" aria-hidden="true" />
-          <p className="game-page__waiting-title">
-            {t.game.waitingRandomTitle}
-          </p>
-          <p className="game-page__waiting-subtitle">
-            {t.game.boardSubtitle(remoteGame.board_size)}
-          </p>
-          <button
-            type="button"
-            className="btn btn--secondary"
-            onClick={handleCancelSearch}
-            disabled={actionLoading}
-          >
-            {t.game.cancelSearch}
-          </button>
-        </div>
+        <button
+          type="button"
+          className="btn btn--secondary game-page__cancel-search"
+          onClick={handleCancelSearch}
+          disabled={actionLoading}
+        >
+          {t.game.cancelSearch}
+        </button>
       )}
 
       {(isPlaying || isFinished) && (

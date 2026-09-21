@@ -47,42 +47,6 @@
   color: var(--color-text-primary);
 }
 
-.game-page__waiting {
-  width: 100%;
-  max-width: var(--layout-content-max);
-  padding: 28px 24px;
-  border-radius: var(--radius-card);
-  background: var(--color-surface-strong);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-soft);
-  text-align: center;
-  animation: fade-in-up var(--duration-normal) var(--ease-out) both;
-}
-
-.game-page__waiting-title {
-  margin: 0 0 8px;
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--color-text-primary);
-}
-
-.game-page__waiting-subtitle {
-  margin: 0 0 20px;
-  font-size: 0.92rem;
-  color: var(--color-text-secondary);
-}
-
-.game-page__waiting-loader {
-  width: 36px;
-  height: 36px;
-  margin: 0 auto 20px;
-  border: 3px solid var(--color-track);
-  border-top-color: var(--color-primary-start);
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-}
-
 .game-page__bot-thinking {
   width: 100%;
   max-width: min(var(--layout-content-max), 94vw);
@@ -109,34 +73,16 @@
   transition: width 0.2s var(--ease-out);
 }
 
-.game-page__waiting .btn {
-  min-width: 140px;
+/* Random matchmaking's only control while searching. The status bar above
+   already shows the spinner, "looking for an opponent" and the board size. */
+.game-page__cancel-search {
+  min-width: 180px;
 }
 
 @media (max-width: 480px) {
   .game-page__opponent {
     padding: 6px 14px;
     font-size: 0.82rem;
-  }
-
-  .game-page__waiting {
-    padding: 18px 16px;
-  }
-
-  .game-page__waiting-title {
-    margin-bottom: 4px;
-    font-size: 1rem;
-  }
-
-  .game-page__waiting-subtitle {
-    margin-bottom: 14px;
-    font-size: 0.85rem;
-  }
-
-  .game-page__waiting-loader {
-    width: 28px;
-    height: 28px;
-    margin-bottom: 14px;
   }
 
   .game-page__actions {
