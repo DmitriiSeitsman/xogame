@@ -58,7 +58,7 @@ import {
 } from "../utils/computerDifficulty";
 import type { ComputerMoveWorkerResponse } from "../workers/computerMove.worker";
 import { getOpponentProfileLabel } from "../utils/opponent";
-import { formatPlayerProfile } from "../utils/playerProfile";
+import { playerLabel } from "../utils/playerProfile";
 import { getOrCreatePlayerToken } from "../utils/playerToken";
 import {
   getHostProfileLabel,
@@ -885,17 +885,9 @@ export function GamePage() {
 
   const myChatLabel =
     playerSymbol === "X"
-      ? formatPlayerProfile(
-          t,
-          remoteGame.player_x_name ?? "",
-          remoteGame.player_x_age,
-        )
+      ? playerLabel(t, remoteGame.player_x_name, "X")
       : playerSymbol === "O"
-        ? formatPlayerProfile(
-            t,
-            remoteGame.player_o_name ?? "",
-            remoteGame.player_o_age,
-          )
+        ? playerLabel(t, remoteGame.player_o_name, "O")
         : "";
 
   // Presence only matters once there's an actual opponent to lose — a
@@ -967,7 +959,7 @@ export function GamePage() {
       )}
 
       {opponentLabel && (
-        <p className="game-page__opponent">
+        <p className="game-page__opponent ym-hide-content">
           {t.game.opponentPrefix} <span>{opponentLabel}</span>
         </p>
       )}

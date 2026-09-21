@@ -27,6 +27,7 @@ import {
 } from "../utils/symbolTheme";
 import {
   loadPlayerProfile,
+  playerNameForApi,
   savePlayerProfile,
   type PlayerProfile,
 } from "../utils/playerProfile";
@@ -70,8 +71,7 @@ export function HomePage() {
       const game = await createFriendGame({
         playerToken,
         boardSize,
-        playerName: profile.name,
-        playerAge: profile.age,
+        playerName: playerNameForApi(profile),
         symbolTheme,
       });
       trackGameStartFriendHost({ boardSize, symbolTheme });
@@ -92,8 +92,7 @@ export function HomePage() {
       const game = await joinRandomMatchmaking({
         playerToken,
         boardSize,
-        playerName: profile.name,
-        playerAge: profile.age,
+        playerName: playerNameForApi(profile),
       });
       trackGameStartRandom({ boardSize });
       navigate(path(`/game/${game.id}`));
@@ -202,6 +201,13 @@ export function HomePage() {
       <PlayerProfileDialog
         open={profileDialogOpen}
         initialProfile={playerProfile}
+        fallbackName={
+          dialogIntent === "host"
+            ? t.common.player1
+            : dialogIntent === "join"
+              ? t.common.player2
+              : t.common.player
+        }
         title={
           dialogIntent === "join" || dialogIntent === "random"
             ? t.profileDialog.titleForOpponent

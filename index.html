@@ -148,7 +148,10 @@
 
       ym(109419714, "init", {
         ssr: true,
-        webvisor: true,
+        // Session recording is off: it captured the chat and players'
+        // names, which the site otherwise never stores. Visit and click
+        // statistics are unaffected.
+        webvisor: false,
         clickmap: true,
         ecommerce: "dataLayer",
         referrer: document.referrer,

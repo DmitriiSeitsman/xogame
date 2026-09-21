@@ -10,6 +10,10 @@ type PlayerProfileDialogProps = {
   title?: string;
   description?: string;
   initialProfile?: PlayerProfile;
+  /** What the player will be called if they leave the name blank
+   * ("Игрок 1" when creating a game, "Игрок 2" when joining one). Shown
+   * as the input's placeholder so the fallback is visible up front. */
+  fallbackName?: string;
   onConfirm: (profile: PlayerProfile) => void;
   onCancel: () => void;
 };
@@ -18,7 +22,8 @@ export function PlayerProfileDialog({
   open,
   title,
   description,
-  initialProfile = { name: "", age: null },
+  initialProfile = { name: "" },
+  fallbackName,
   onConfirm,
   onCancel,
 }: PlayerProfileDialogProps) {
@@ -43,11 +48,12 @@ export function PlayerProfileDialog({
 
   return createPortal(
     <PlayerProfileDialogForm
-      key={`${initialProfile.name}-${initialProfile.age ?? ""}`}
+      key={initialProfile.name}
       t={t}
       title={title ?? t.profileDialog.titleForFriend}
       description={description ?? t.profileDialog.descriptionDefault}
       initialProfile={initialProfile}
+      fallbackName={fallbackName ?? t.common.player}
       onConfirm={onConfirm}
       onCancel={onCancel}
     />,
@@ -60,6 +66,7 @@ type PlayerProfileDialogFormProps = {
   title: string;
   description: string;
   initialProfile: PlayerProfile;
+  fallbackName: string;
   onConfirm: (profile: PlayerProfile) => void;
   onCancel: () => void;
 };
@@ -69,43 +76,25 @@ function PlayerProfileDialogForm({
   title,
   description,
   initialProfile,
+  fallbackName,
   onConfirm,
   onCancel,
 }: PlayerProfileDialogFormProps) {
   const titleId = useId();
   const [name, setName] = useState(initialProfile.name);
-  const [ageInput, setAgeInput] = useState(
-    initialProfile.age != null ? String(initialProfile.age) : "",
-  );
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
+    // Blank is fine: the player is then shown as `fallbackName`.
     const trimmedName = name.trim();
-    if (!trimmedName) {
-      setError(t.profileDialog.errorNameRequired);
-      return;
-    }
-
     if (trimmedName.length > 32) {
       setError(t.profileDialog.errorNameTooLong);
       return;
     }
 
-    let age: number | null = null;
-    const trimmedAge = ageInput.trim();
-
-    if (trimmedAge) {
-      const parsedAge = Number(trimmedAge);
-      if (!Number.isInteger(parsedAge) || parsedAge < 1 || parsedAge > 120) {
-        setError(t.profileDialog.errorAgeRange);
-        return;
-      }
-      age = parsedAge;
-    }
-
-    onConfirm({ name: trimmedName, age });
+    onConfirm({ name: trimmedName });
   };
 
   return (
@@ -129,35 +118,21 @@ function PlayerProfileDialogForm({
 
         <form className="player-profile-dialog__form" onSubmit={handleSubmit}>
           <label className="player-profile-dialog__field">
-            <span className="player-profile-dialog__label">{t.profileDialog.nameLabel}</span>
+            <span className="player-profile-dialog__label">
+              {t.profileDialog.nameLabel}{" "}
+              <span className="player-profile-dialog__optional">
+                {t.profileDialog.optional}
+              </span>
+            </span>
             <input
               type="text"
               className="player-profile-dialog__input"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder={t.profileDialog.namePlaceholder}
+              placeholder={fallbackName}
               maxLength={32}
               autoFocus
               autoComplete="nickname"
-            />
-          </label>
-
-          <label className="player-profile-dialog__field">
-            <span className="player-profile-dialog__label">
-              {t.profileDialog.ageLabel}{" "}
-              <span className="player-profile-dialog__optional">
-                {t.profileDialog.ageOptional}
-              </span>
-            </span>
-            <input
-              type="number"
-              className="player-profile-dialog__input"
-              value={ageInput}
-              onChange={(event) => setAgeInput(event.target.value)}
-              placeholder={t.profileDialog.agePlaceholder}
-              min={1}
-              max={120}
-              inputMode="numeric"
             />
           </label>
 

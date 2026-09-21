@@ -38,11 +38,7 @@ function mapGame(row: Record<string, unknown>): Game {
     player_x_token: row.player_x_token as string,
     player_o_token: (row.player_o_token as string | null) ?? null,
     player_x_name: (row.player_x_name as string | null) ?? null,
-    player_x_age:
-      row.player_x_age == null ? null : (row.player_x_age as number),
     player_o_name: (row.player_o_name as string | null) ?? null,
-    player_o_age:
-      row.player_o_age == null ? null : (row.player_o_age as number),
     current_turn: row.current_turn as Game["current_turn"],
     board: row.board as Game["board"],
     winner: (row.winner as Game["winner"]) ?? null,
@@ -56,15 +52,14 @@ function mapGame(row: Record<string, unknown>): Game {
 export async function createFriendGame(params: {
   playerToken: string;
   boardSize: BoardSize;
-  playerName: string;
-  playerAge?: number | null;
+  /** `null` when the player left the name blank. */
+  playerName: string | null;
   symbolTheme?: SymbolTheme;
 }): Promise<Game> {
   const data = await apiPost<Record<string, unknown>>("/games/friend", {
     playerToken: params.playerToken,
     boardSize: params.boardSize,
     playerName: params.playerName,
-    playerAge: params.playerAge ?? null,
     symbolTheme: params.symbolTheme ?? "classic",
   });
   return mapGame(data);
@@ -73,14 +68,13 @@ export async function createFriendGame(params: {
 export async function joinFriendGame(params: {
   playerToken: string;
   inviteCode: string;
-  playerName: string;
-  playerAge?: number | null;
+  /** `null` when the player left the name blank. */
+  playerName: string | null;
 }): Promise<Game> {
   const data = await apiPost<Record<string, unknown>>("/games/friend/join", {
     playerToken: params.playerToken,
     inviteCode: params.inviteCode.toUpperCase(),
     playerName: params.playerName,
-    playerAge: params.playerAge ?? null,
   });
   return mapGame(data);
 }
@@ -95,14 +89,13 @@ export async function getMatchmakingQueueCounts(): Promise<
 export async function joinRandomMatchmaking(params: {
   playerToken: string;
   boardSize: BoardSize;
-  playerName: string;
-  playerAge?: number | null;
+  /** `null` when the player left the name blank. */
+  playerName: string | null;
 }): Promise<Game> {
   const data = await apiPost<Record<string, unknown>>("/games/random/join", {
     playerToken: params.playerToken,
     boardSize: params.boardSize,
     playerName: params.playerName,
-    playerAge: params.playerAge ?? null,
   });
   return mapGame(data);
 }

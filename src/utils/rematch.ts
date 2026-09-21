@@ -1,6 +1,6 @@
 import type { Dictionary } from "../i18n/dictionaries/ru";
 import type { Game } from "../types/game";
-import { formatPlayerProfile } from "./playerProfile";
+import { playerLabel } from "./playerProfile";
 
 export type RematchStatus = "offered" | "declined";
 
@@ -13,9 +13,5 @@ export function isFriendGameGuest(game: Game, playerToken: string): boolean {
 }
 
 export function getHostProfileLabel(t: Dictionary, game: Game): string {
-  if (!game.player_x_name) {
-    return t.common.player;
-  }
-
-  return formatPlayerProfile(t, game.player_x_name, game.player_x_age);
+  return playerLabel(t, game.player_x_name, "X");
 }

@@ -7,6 +7,7 @@ import { joinFriendGame } from "../services/gameService";
 import type { Game } from "../types/game";
 import {
   loadPlayerProfile,
+  playerNameForApi,
   savePlayerProfile,
   type PlayerProfile,
 } from "../utils/playerProfile";
@@ -34,8 +35,7 @@ async function joinAs(inviteCode: string, profile: PlayerProfile): Promise<Game>
   const game = await joinFriendGame({
     playerToken: getOrCreatePlayerToken(),
     inviteCode,
-    playerName: profile.name,
-    playerAge: profile.age,
+    playerName: playerNameForApi(profile),
   });
   trackGameJoinFriend({ boardSize: game.board_size });
   return game;
@@ -120,6 +120,7 @@ export function JoinGamePage() {
         title={t.join.dialogTitle}
         description={t.join.dialogDescription}
         initialProfile={profile}
+        fallbackName={t.common.player2}
         onConfirm={handleProfileConfirm}
         onCancel={handleProfileCancel}
       />

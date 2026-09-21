@@ -37,6 +37,8 @@ export const en: Dictionary = {
     loading: "Loading…",
     advertisement: "Advertisement",
     player: "Player",
+    player1: "Player 1",
+    player2: "Player 2",
     opponent: "Opponent",
     rateLimited: "Too many attempts in a row. Wait a minute and try again.",
   },
@@ -71,22 +73,17 @@ export const en: Dictionary = {
     titleForFriend: "How should we introduce you to your friend?",
     titleForOpponent: "How should we introduce you to your opponent?",
     descriptionDefault:
-      "Enter your name and, if you like, your age. Your friend will see this during the game.",
+      "You can add a name — your friend will see it during the game. No need for a surname.",
     descriptionHost:
-      "Enter your name and, if you like, your age. We'll then create the game and show you a link to share.",
+      "You can add a name — your friend will see it during the game. Leave it blank and you'll be \"Player 1\". No need for a surname.",
     descriptionJoin:
-      "Enter your name and, if you like, your age — whoever created the game will see it on screen.",
+      "You can add a name — whoever created the game will see it on screen. Leave it blank and you'll be \"Player 2\". No need for a surname.",
     descriptionRandom:
-      "Enter your name and, if you like, your age — your random opponent will see it during the game.",
+      "You can add a name — your opponent will see it during the game. Leave it blank and you'll be \"Player 1\" or \"Player 2\". Best not to use your full real name.",
     nameLabel: "Name",
-    namePlaceholder: "Maria",
-    ageLabel: "Age",
-    ageOptional: "(optional)",
-    agePlaceholder: "12",
+    optional: "(optional)",
     submit: "Continue",
-    errorNameRequired: "Please enter a name",
     errorNameTooLong: "That name is too long (32 characters max)",
-    errorAgeRange: "Age must be between 1 and 120",
   },
 
   modeSelector: {
@@ -332,10 +329,5 @@ export const en: Dictionary = {
 
   footer: {
     text: "This site was made for my beloved daughter Maria. By Dmitrii Seitsman. © 2026",
-  },
-
-  profile: {
-    formatAge: (age: number): string =>
-      age === 1 ? "1 year old" : `${age} years old`,
   },
 };

@@ -1,25 +1,19 @@
 import type { Dictionary } from "../i18n/dictionaries/ru";
 import type { Game } from "../types/game";
-import { formatPlayerProfile } from "./playerProfile";
+import { playerLabel } from "./playerProfile";
 
+/** The opponent's name, or "Игрок 1/2" if they didn't give one. `null`
+ * when the viewer isn't one of the two players. */
 export function getOpponentProfileLabel(
   t: Dictionary,
   game: Game,
   playerToken: string,
 ): string | null {
-  const isX = game.player_x_token === playerToken;
-  const isO = game.player_o_token === playerToken;
-
-  if (!isX && !isO) {
-    return null;
+  if (game.player_x_token === playerToken) {
+    return playerLabel(t, game.player_o_name, "O");
   }
-
-  const opponentName = isX ? game.player_o_name : game.player_x_name;
-  const opponentAge = isX ? game.player_o_age : game.player_x_age;
-
-  if (!opponentName) {
-    return null;
+  if (game.player_o_token === playerToken) {
+    return playerLabel(t, game.player_x_name, "X");
   }
-
-  return formatPlayerProfile(t, opponentName, opponentAge);
+  return null;
 }

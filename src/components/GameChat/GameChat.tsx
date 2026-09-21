@@ -80,7 +80,7 @@ export function GameChat({
   };
 
   return (
-    <div className="game-chat">
+    <div className="game-chat ym-hide-content">
       {open && (
         <div
           className="game-chat__panel page-enter"
