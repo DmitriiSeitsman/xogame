@@ -171,3 +171,21 @@
 .seo-page__actions--tight {
   margin-top: 12px;
 }
+
+.seo-page__contact-rows {
+  display: grid;
+  gap: 10px;
+  max-width: 360px;
+}
+
+.seo-page__contact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--color-text-secondary);
+}
+
+.seo-page__contact-row .btn {
+  min-width: 150px;
+}

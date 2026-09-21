@@ -434,6 +434,8 @@ export const en: Dictionary = {
     contactsHeading: "Contact",
     emailLabel: "Email",
     telegramLabel: "Telegram",
+    writeEmail: "Write",
+    contactTelegram: "Get in touch",
   },
 
   footer: {

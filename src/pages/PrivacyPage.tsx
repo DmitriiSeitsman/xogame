@@ -11,6 +11,7 @@ import {
 import "./SeoPage.css";
 
 const RELOAD_DELAY_MS = 1500;
+const PRIVACY_MAIL_SUBJECT = "xo-game";
 
 /**
  * The retention periods quoted here are the ones enforced on the backend
@@ -28,6 +29,14 @@ export function PrivacyPage() {
       setReloading(true);
       window.setTimeout(() => window.location.reload(), RELOAD_DELAY_MS);
     }
+  };
+
+  // The address is only assembled when the button is pressed, so it never
+  // appears on the page or in its markup for scrapers to collect.
+  const openMail = () => {
+    window.location.href = `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(
+      PRIVACY_MAIL_SUBJECT,
+    )}`;
   };
 
   const status =
@@ -106,25 +115,25 @@ export function PrivacyPage() {
 
           <section className="seo-page__section">
             <h2>{t.privacy.contactsHeading}</h2>
-            <ul>
-              <li>
-                {t.privacy.emailLabel}:{" "}
-                <a href={`mailto:${DEVELOPER_EMAIL}`} className="seo-page__inline-link">
-                  {DEVELOPER_EMAIL}
-                </a>
-              </li>
-              <li>
-                {t.privacy.telegramLabel}:{" "}
+            <div className="seo-page__contact-rows">
+              <div className="seo-page__contact-row">
+                <span>{t.privacy.emailLabel}</span>
+                <button type="button" className="btn btn--secondary" onClick={openMail}>
+                  {t.privacy.writeEmail}
+                </button>
+              </div>
+              <div className="seo-page__contact-row">
+                <span>{t.privacy.telegramLabel}</span>
                 <a
                   href={TELEGRAM_URL}
-                  className="seo-page__inline-link"
+                  className="btn btn--primary"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  @{TELEGRAM_URL.split("/").pop()}
+                  {t.privacy.contactTelegram}
                 </a>
-              </li>
-            </ul>
+              </div>
+            </div>
           </section>
         </article>
       </main>

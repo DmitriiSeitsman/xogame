@@ -448,6 +448,8 @@ export const ru = {
     contactsHeading: "Контакты",
     emailLabel: "Почта",
     telegramLabel: "Telegram",
+    writeEmail: "Написать",
+    contactTelegram: "Связаться",
   },
 
   footer: {
