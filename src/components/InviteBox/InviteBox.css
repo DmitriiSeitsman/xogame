@@ -11,23 +11,11 @@
   animation: fade-in-up var(--duration-normal) var(--ease-out) both;
 }
 
-.invite-box__title {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--color-text-primary);
-}
-
-.invite-box__hint {
-  margin: 8px 0 18px;
-  color: var(--color-text-secondary);
-  font-size: 0.92rem;
-  line-height: 1.45;
-}
-
 .invite-box__code {
-  display: inline-block;
-  padding: 12px 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 24px;
   margin-bottom: 14px;
   border-radius: var(--radius-md);
   background: linear-gradient(
@@ -38,7 +26,57 @@
   color: var(--color-text-primary);
   font-size: clamp(1.6rem, 6vw, 2rem);
   font-weight: 800;
+}
+
+.invite-box__code-text {
   letter-spacing: 0.2em;
+  /* letter-spacing also pads after the last glyph; pull it back so the gap
+     to the copy button is the gap we set, not gap + 0.2em. */
+  margin-right: -0.2em;
+}
+
+.invite-box__code-copy {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  margin-left: 6px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-strong);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.invite-box__code-copy:hover {
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-cell);
+}
+
+.invite-box__code-copy:focus-visible {
+  outline: 2px solid var(--color-primary-start);
+  outline-offset: 2px;
+}
+
+.invite-box__code-copy svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.invite-box__code-copy--done {
+  color: var(--color-success);
 }
 
 .invite-box__link-wrap {
@@ -64,15 +102,29 @@
   justify-content: center;
 }
 
-.invite-box__message {
-  margin: 14px 0 0;
+.invite-box__action--done {
   color: var(--color-success);
-  font-weight: 700;
-  font-size: 0.92rem;
-  animation: fade-in-up var(--duration-fast) var(--ease-out) both;
+}
+
+/* Screen-reader-only announcement of copy/share feedback; sighted users see
+   it on the control itself. */
+.invite-box__sr-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 480px) {
+  .invite-box {
+    padding: 18px 16px;
+  }
+
   .invite-box__actions {
     flex-direction: column;
   }

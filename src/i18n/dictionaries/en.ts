@@ -213,8 +213,6 @@ export const en: Dictionary = {
   },
 
   invite: {
-    title: "Waiting for your friend",
-    hint: "Send the link or the invite code to the other player",
     copyLink: "Copy link",
     share: "Share",
     copyCode: "Copy code",

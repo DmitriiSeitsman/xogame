@@ -965,19 +965,10 @@ export function GamePage() {
         </p>
       )}
 
-      {isWaitingFriend && (
-        <div className="game-page__waiting">
-          <div className="game-page__waiting-loader" aria-hidden="true" />
-          <p className="game-page__waiting-title">
-            {t.game.waitingFriendTitle}
-          </p>
-          <p className="game-page__waiting-subtitle">
-            {t.game.waitingFriendSubtitle}
-          </p>
-          {remoteGame.invite_code && (
-            <InviteBox inviteCode={remoteGame.invite_code} />
-          )}
-        </div>
+      {/* The status bar above already carries the loader, "waiting for your
+          friend" and the hint, so the card below it is only the invite. */}
+      {isWaitingFriend && remoteGame.invite_code && (
+        <InviteBox inviteCode={remoteGame.invite_code} />
       )}
 
       {isWaitingRandom && (
