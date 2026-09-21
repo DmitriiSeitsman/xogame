@@ -39,6 +39,7 @@ export const ru = {
     advertisement: "Реклама",
     player: "Игрок",
     opponent: "Соперник",
+    rateLimited: "Слишком много попыток подряд. Подождите минуту и попробуйте снова.",
   },
 
   home: {

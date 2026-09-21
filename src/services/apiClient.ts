@@ -3,6 +3,9 @@
  * supabase.rpc(...) calls. Same idea as supabaseClient.ts before it: a
  * single place that knows the base URL and how to surface errors.
  */
+import { en } from "../i18n/dictionaries/en";
+import { ru } from "../i18n/dictionaries/ru";
+
 const API_BASE_URL: string =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8092";
 
@@ -27,6 +30,24 @@ type ApiErrorBody = {
   field?: string | null;
 };
 
+/**
+ * The API's error messages are English and written for logs. The few a
+ * player can actually run into are shown in the page's language instead —
+ * I18nProvider keeps <html lang> in sync, and this module has no React
+ * context to read it from otherwise.
+ */
+function localizedMessage(code: string | undefined): string | undefined {
+  const t = document.documentElement.lang.startsWith("en") ? en : ru;
+  switch (code) {
+    case "game_not_found":
+      return t.game.notFound;
+    case "rate_limited":
+      return t.common.rateLimited;
+    default:
+      return undefined;
+  }
+}
+
 async function request<T>(
   path: string,
   init?: RequestInit,
@@ -50,7 +71,9 @@ async function request<T>(
     throw new ApiError(
       response.status,
       body.code ?? "request_failed",
-      body.message ?? `Request failed with status ${response.status}`,
+      localizedMessage(body.code) ??
+        body.message ??
+        `Request failed with status ${response.status}`,
       body.field ?? undefined,
     );
   }

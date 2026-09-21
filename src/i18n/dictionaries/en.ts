@@ -38,6 +38,7 @@ export const en: Dictionary = {
     advertisement: "Advertisement",
     player: "Player",
     opponent: "Opponent",
+    rateLimited: "Too many attempts in a row. Wait a minute and try again.",
   },
 
   home: {
