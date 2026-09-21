@@ -271,6 +271,7 @@ const SITEMAP_HINTS = {
   "/rules": { changefreq: "monthly", priority: "0.7" },
   "/about": { changefreq: "monthly", priority: "0.6" },
   "/contacts": { changefreq: "yearly", priority: "0.4" },
+  "/privacy": { changefreq: "yearly", priority: "0.3" },
 };
 
 const lastmod = new Date().toISOString().slice(0, 10);

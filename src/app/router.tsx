@@ -7,6 +7,7 @@ import { JoinGamePage } from "../pages/JoinGamePage";
 import { RulesPage } from "../pages/RulesPage";
 import { StrategyPage } from "../pages/StrategyPage";
 import { ContactsPage } from "../pages/ContactsPage";
+import { PrivacyPage } from "../pages/PrivacyPage";
 
 /**
  * The same page tree is mounted twice — unprefixed for Russian and under
@@ -20,6 +21,7 @@ const pageRoutes: RouteObject[] = [
   { path: "strategy", element: <StrategyPage /> },
   { path: "about", element: <AboutPage /> },
   { path: "contacts", element: <ContactsPage /> },
+  { path: "privacy", element: <PrivacyPage /> },
   { path: "join/:inviteCode", element: <JoinGamePage /> },
   { path: "game/:gameId", element: <GamePage /> },
 ];

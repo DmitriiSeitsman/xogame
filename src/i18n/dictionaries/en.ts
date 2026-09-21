@@ -16,6 +16,7 @@ export const en: Dictionary = {
     strategy: "How to win",
     about: "About",
     contacts: "Contact",
+    privacy: "Privacy",
     menu: "Menu",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -325,6 +326,114 @@ export const en: Dictionary = {
     telegram: "Message on Telegram",
     email: "Send an email",
     emailSubject: "TIC TAC TOE",
+  },
+
+  cookieBanner: {
+    label: "Cookie consent",
+    text: "We use Yandex Metrika cookies to see visit statistics. Metrika only switches on if you agree.",
+    more: "Learn more",
+    accept: "Accept",
+    decline: "Decline",
+  },
+
+  privacy: {
+    heading: "Privacy Policy",
+    intro:
+      "In short: we know next to nothing about you and try to keep it that way. A name is optional, we never ask for your age or contact details, chat messages are not stored anywhere, and Yandex Metrika statistics only run with your consent.",
+    updated: "Last updated 21 September 2026.",
+    sections: [
+      {
+        heading: "Who is responsible",
+        paragraphs: [
+          "xo-game.online is made and run by a private individual, Dmitrii Seitsman. For any question about your data, write by email or on Telegram — the contacts are at the end of this page.",
+        ],
+        items: [],
+        links: [],
+      },
+      {
+        heading: "What we receive",
+        paragraphs: [
+          "We don't ask for a surname, age, email address or phone number, and there is no sign-up. Please don't put anything in your name or in the chat that could be used to find you.",
+        ],
+        items: [
+          "A name — only if you enter one. It's optional: without it you're \"Player 1\" or \"Player 2\". Your opponent in that game sees it.",
+          "A random player ID. Your browser creates it on your first visit and keeps it; it isn't linked to who you are and only tells the server whose moves are whose.",
+          "Game data: board size, moves, result, invite code.",
+          "Technical request data: IP address and time. The server uses them to limit overly frequent requests and to protect against abuse.",
+          "Yandex Metrika cookies and data — only if you allow statistics.",
+        ],
+        links: [],
+      },
+      {
+        heading: "Chat",
+        paragraphs: [
+          "Chat messages are never saved — not in the database, not in logs. The server only passes them from one player to the other in real time, and once the tab is closed they exist nowhere. We don't read your conversations.",
+        ],
+        items: [],
+        links: [],
+      },
+      {
+        heading: "How long we keep data",
+        paragraphs: [],
+        items: [
+          "Names are erased 24 hours after the last move in the game.",
+          "Game records are deleted 30 days after they were created.",
+          "Chat messages are not kept at all.",
+          "Web server logs with IP addresses are kept for no more than 14 days.",
+          "The player ID, the name remembered for next time, and your chosen theme and language live only in your browser — clearing the site's data removes them.",
+        ],
+        links: [],
+      },
+      {
+        heading: "What we use data for",
+        paragraphs: [
+          "We don't sell data, don't show personalised ads, and don't share data with anyone except Yandex — and only if you allow statistics.",
+        ],
+        items: [
+          "To run the game and show your name and moves to your opponent.",
+          "To protect the service from abuse and overload.",
+          "With your consent, to count visits and make the site better.",
+        ],
+        links: [],
+      },
+      {
+        heading: "Yandex Metrika",
+        paragraphs: [
+          "Metrika tells us how many people visit and which pages they use. It sets cookies and receives your IP address, device and browser type, and the addresses of pages you view. Session recording (Webvisor) is switched off.",
+          "Metrika only loads after you press \"Accept\". You can change your mind at any time further down this page. Data collected by Metrika is processed by Yandex LLC under its own privacy policy.",
+        ],
+        items: [],
+        links: [
+          { label: "Yandex Privacy Policy", href: "https://yandex.com/legal/confidential/" },
+        ],
+      },
+      {
+        heading: "Children",
+        paragraphs: [
+          "The game is made for children and adults alike. We deliberately don't ask for age and don't require a name. If a child plays with a stranger, explain that it's best not to write anything about themselves in their name or in the chat.",
+        ],
+        items: [],
+        links: [],
+      },
+      {
+        heading: "Your rights",
+        paragraphs: [
+          "You can ask what data we hold about you, ask us to delete it, or withdraw consent to statistics. Consent is withdrawn with the button below; for anything else, send an email. Include roughly when you played and the name you used, if any — otherwise we can't tell which records are yours. We reply within 10 working days.",
+        ],
+        items: [],
+        links: [],
+      },
+    ],
+    consentHeading: "Visit statistics",
+    consentGranted: "Statistics are currently on.",
+    consentDenied: "Statistics are currently off.",
+    consentUnset: "You haven't chosen yet, so statistics are off.",
+    allow: "Allow statistics",
+    deny: "Turn statistics off",
+    reloading: "Statistics are off. Reloading the page to stop the counter…",
+    contactsHeading: "Contact",
+    emailLabel: "Email",
+    telegramLabel: "Telegram",
   },
 
   footer: {

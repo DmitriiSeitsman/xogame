@@ -126,6 +126,22 @@
         "h1": "Contact",
         "intro": "Got a question, an idea, or spotted a bug? Drop the developer of Tic Tac Toe Online a line. Pick whichever suits you: Telegram or email."
       }
+    },
+    "/privacy": {
+      "ru": {
+        "title": "Политика конфиденциальности — Крестики-нолики онлайн",
+        "description": "Какие данные собирает игра «Крестики-нолики онлайн», зачем и сколько хранит: необязательное имя, чат без сохранения, Яндекс Метрика только с согласия.",
+        "keywords": "политика конфиденциальности, персональные данные, cookies, крестики нолики",
+        "h1": "Политика конфиденциальности",
+        "intro": "Коротко: мы почти ничего о вас не знаем и стараемся так и оставить. Имя указывать необязательно, возраст и контакты мы не спрашиваем, переписка в чате нигде не сохраняется, а статистика Яндекс Метрики включается только с вашего согласия."
+      },
+      "en": {
+        "title": "Privacy Policy — Tic Tac Toe Online",
+        "description": "What data Tic Tac Toe Online collects, why, and for how long: an optional name, chat that is never stored, Yandex Metrika only with consent.",
+        "keywords": "privacy policy, personal data, cookies, tic tac toe",
+        "h1": "Privacy Policy",
+        "intro": "In short: we know next to nothing about you and try to keep it that way. A name is optional, we never ask for your age or contact details, chat messages are not stored anywhere, and Yandex Metrika statistics only run with your consent."
+      }
     }
   }
 }

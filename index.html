@@ -120,55 +120,70 @@
     <div id="root"></div>
 
     <!-- Yandex.Metrika counter -->
+    <!--
+      Loaded only with the visitor's consent. Metrika sets cookies and sees
+      the IP address, which under 152-FZ is processing personal data, so
+      nothing is fetched from Yandex until "Принять" is pressed in the
+      cookie banner (src/components/CookieConsent) or the choice is stored
+      from an earlier visit. src/utils/analyticsConsent.ts owns the storage
+      key and calls window.__xoLoadMetrika() when consent is given later.
+      The <noscript> tracking pixel is gone for the same reason: without JS
+      there is no way to ask first.
+    -->
     <script type="text/javascript">
-      (function (m, e, t, r, i, k, a) {
-        m[i] =
-          m[i] ||
-          function () {
-            (m[i].a = m[i].a || []).push(arguments);
-          };
-        m[i].l = 1 * new Date();
-        for (var j = 0; j < document.scripts.length; j++) {
-          if (document.scripts[j].src === r) {
-            return;
-          }
+      window.__xoLoadMetrika = function () {
+        if (window.__xoMetrikaLoaded) {
+          return;
         }
-        k = e.createElement(t);
-        a = e.getElementsByTagName(t)[0];
-        k.async = 1;
-        k.src = r;
-        a.parentNode.insertBefore(k, a);
-      })(
-        window,
-        document,
-        "script",
-        "https://mc.yandex.ru/metrika/tag.js?id=109419714",
-        "ym",
-      );
+        window.__xoMetrikaLoaded = true;
 
-      ym(109419714, "init", {
-        ssr: true,
-        // Session recording is off: it captured the chat and players'
-        // names, which the site otherwise never stores. Visit and click
-        // statistics are unaffected.
-        webvisor: false,
-        clickmap: true,
-        ecommerce: "dataLayer",
-        referrer: document.referrer,
-        url: location.href,
-        accurateTrackBounce: true,
-        trackLinks: true,
-      });
+        (function (m, e, t, r, i, k, a) {
+          m[i] =
+            m[i] ||
+            function () {
+              (m[i].a = m[i].a || []).push(arguments);
+            };
+          m[i].l = 1 * new Date();
+          for (var j = 0; j < document.scripts.length; j++) {
+            if (document.scripts[j].src === r) {
+              return;
+            }
+          }
+          k = e.createElement(t);
+          a = e.getElementsByTagName(t)[0];
+          k.async = 1;
+          k.src = r;
+          a.parentNode.insertBefore(k, a);
+        })(
+          window,
+          document,
+          "script",
+          "https://mc.yandex.ru/metrika/tag.js?id=109419714",
+          "ym",
+        );
+
+        ym(109419714, "init", {
+          ssr: true,
+          // Session recording stays off: it captured the chat and players'
+          // names, which the site otherwise never stores.
+          webvisor: false,
+          clickmap: true,
+          ecommerce: "dataLayer",
+          referrer: document.referrer,
+          url: location.href,
+          accurateTrackBounce: true,
+          trackLinks: true,
+        });
+      };
+
+      try {
+        if (localStorage.getItem("xogame_analytics_consent") === "granted") {
+          window.__xoLoadMetrika();
+        }
+      } catch (e) {
+        // Storage blocked: no stored consent, so Metrika stays off.
+      }
     </script>
-    <noscript>
-      <div>
-        <img
-          src="https://mc.yandex.ru/watch/109419714"
-          style="position: absolute; left: -9999px"
-          alt=""
-        />
-      </div>
-    </noscript>
     <!-- /Yandex.Metrika counter -->
 
     <script type="module" src="/src/main.tsx"></script>

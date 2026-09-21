@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import { CookieConsent } from "../components/CookieConsent/CookieConsent";
 import { FairyBackground } from "../components/FairyBackground/FairyBackground";
 import { FairyMascot } from "../components/FairyMascot/FairyMascot";
 import { SiteFooter } from "../components/SiteFooter/SiteFooter";
@@ -17,6 +18,7 @@ export function AppLayout() {
         <Outlet />
       </div>
       <SiteFooter />
+      <CookieConsent />
     </div>
   );
 }

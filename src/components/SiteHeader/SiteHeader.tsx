@@ -17,6 +17,7 @@ function getNavItems(t: Dictionary): NavItem[] {
     { to: "/rules", label: t.nav.rules },
     { to: "/about", label: t.nav.about },
     { to: "/contacts", label: t.nav.contacts },
+    { to: "/privacy", label: t.nav.privacy },
   ];
 }
 

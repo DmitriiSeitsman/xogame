@@ -1,10 +1,9 @@
 import { Seo } from "../components/Seo/Seo";
+import { DEVELOPER_EMAIL, TELEGRAM_URL } from "../constants/contacts";
 import { getPageSeo } from "../constants/seo";
 import { useI18n } from "../i18n/useI18n";
 import "./SeoPage.css";
 
-const TELEGRAM_URL = "https://t.me/dseitsman";
-const DEVELOPER_EMAIL = "seytsman@gmail.com";
 
 export function ContactsPage() {
   const { t, lang } = useI18n();
