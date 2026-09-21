@@ -20,15 +20,17 @@ const SEEN_EVENT_IDS_LIMIT = 50;
 const MAX_CHAT_MESSAGE_LENGTH = 300;
 
 export type ChatMessage = {
+  /** Your own token on messages you sent; a placeholder on the opponent's.
+   * The server never sends the other player's real token. */
   senderToken: string;
   text: string;
   sentAt: string;
 };
 
-/** `playerToken` is always the *other* participant — the server never
- * reports a connection's own presence back to itself. */
+/** Always about the *other* participant — the server never reports a
+ * connection's own presence back to itself, which is also why the event
+ * carries no token. */
 export type PresenceEvent = {
-  playerToken: string;
   online: boolean;
 };
 

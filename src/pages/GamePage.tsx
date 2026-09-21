@@ -239,7 +239,7 @@ export function GamePage() {
 
     const load = async () => {
       try {
-        const game = await getGameById(gameId);
+        const game = await getGameById(gameId, playerTokenRef.current);
         if (cancelled) return;
 
         setRemoteGame(game);
@@ -268,7 +268,7 @@ export function GamePage() {
           onReconnected: () => {
             // Realtime is best-effort — resync via REST in case a move or
             // chat message was missed while our own socket was down.
-            void getGameById(gameId)
+            void getGameById(gameId, playerTokenRef.current)
               .then((freshGame) => {
                 if (!cancelled) setRemoteGame(freshGame);
               })

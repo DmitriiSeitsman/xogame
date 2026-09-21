@@ -58,8 +58,11 @@ async function request<T>(
   return (await response.json()) as T;
 }
 
-export function apiGet<T>(path: string): Promise<T> {
-  return request<T>(path, { method: "GET" });
+export function apiGet<T>(
+  path: string,
+  headers?: Record<string, string>,
+): Promise<T> {
+  return request<T>(path, { method: "GET", headers });
 }
 
 export function apiPost<T>(path: string, body?: unknown): Promise<T> {

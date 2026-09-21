@@ -185,7 +185,17 @@ export async function makeMove(params: {
   return mapGame(data);
 }
 
-export async function getGameById(gameId: string): Promise<Game> {
-  const data = await apiGet<Record<string, unknown>>(`/games/${gameId}`);
+/**
+ * Only the two players may read a game, so the request carries the player
+ * token as a bearer credential. A header rather than a query parameter keeps
+ * the token out of server access logs; without it the API answers 404.
+ */
+export async function getGameById(
+  gameId: string,
+  playerToken: string,
+): Promise<Game> {
+  const data = await apiGet<Record<string, unknown>>(`/games/${gameId}`, {
+    Authorization: `Bearer ${playerToken}`,
+  });
   return mapGame(data);
 }
