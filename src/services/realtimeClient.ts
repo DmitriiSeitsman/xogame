@@ -14,6 +14,7 @@ import { getOrCreatePlayerToken } from "../utils/playerToken";
 const WS_URL: string =
   import.meta.env.VITE_WS_URL ?? "ws://localhost:8092/ws/game";
 
+const WS_SUBPROTOCOL = "xogame";
 const PING_INTERVAL_MS = 20_000;
 const MAX_BACKOFF_MS = 30_000;
 const SEEN_EVENT_IDS_LIMIT = 50;
@@ -114,8 +115,10 @@ export function subscribeToGame(params: {
       params.onConnectionStateChange?.("connecting");
     }
 
-    const url = `${WS_URL}?token=${encodeURIComponent(playerToken)}`;
-    socket = new WebSocket(url);
+    // The token rides in Sec-WebSocket-Protocol rather than the query
+    // string: browsers can't set headers on a WebSocket, and URLs end up in
+    // server access logs. The server echoes "xogame" back to accept.
+    socket = new WebSocket(WS_URL, [WS_SUBPROTOCOL, playerToken]);
 
     socket.addEventListener("open", () => {
       reconnectAttempt = 0;
